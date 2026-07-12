@@ -1,10 +1,8 @@
 # Add this block to the Caddyfile your existing Caddy container already uses.
 # Caddy handles TLS automatically. The container name below must match
 # `container_name` in compose.yaml, and both must sit on the same Docker network.
-#
-# NOTE: change the domain if the marketing site is not cvcarbon.com.
 
-cvcarbon.com, www.cvcarbon.com {
+cvcarbon.eco, www.cvcarbon.eco {
 	encode zstd gzip
 
 	# Next.js fingerprints everything under /_next/static, so it is safe to cache hard.

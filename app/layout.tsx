@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cvcarbon.com"),
+  metadataBase: new URL("https://cvcarbon.eco"),
   title: {
     default: "CV Carbon — Oyster Reef Restoration & Blue Carbon Credits",
     template: "%s — CV Carbon",
