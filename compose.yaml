@@ -1,0 +1,26 @@
+# Joins the network your existing Caddy container is already on, and does NOT
+# publish a host port — Caddy reaches it internally as http://cvcarbon-web:3000.
+#
+# Set CADDY_NETWORK to the name of that network (check with `docker network ls`),
+# either in a .env file next to this one or inline:
+#   CADDY_NETWORK=caddy docker compose up -d --build
+
+services:
+  web:
+    build: .
+    image: cvcarbon-web
+    container_name: cvcarbon-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+    networks:
+      - caddy
+    expose:
+      - "3000"
+
+networks:
+  caddy:
+    external: true
+    name: ${CADDY_NETWORK:-caddy}
