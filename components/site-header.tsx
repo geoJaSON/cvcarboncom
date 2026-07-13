@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PHONE, REGISTRY } from "@/lib/site";
+import { PHONE, PORTAL, REGISTRY } from "@/lib/site";
 
 const ExternalArrow = () => (
   <svg viewBox="0 0 12 12" aria-hidden="true" className="h-2.5 w-2.5 shrink-0 opacity-70">
@@ -135,6 +135,16 @@ export function SiteHeader() {
           </a>
 
           <a
+            href={PORTAL.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-mist transition-colors hover:text-white"
+          >
+            {PORTAL.label}
+            <ExternalArrow />
+          </a>
+
+          <a
             href={PHONE.href}
             className="ml-3 rounded-full bg-verdigris px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-verdigris-600"
           >
@@ -190,6 +200,16 @@ export function SiteHeader() {
             className="flex items-center gap-2 border-b border-white/5 py-3 font-display text-lg text-white"
           >
             {REGISTRY.longLabel}
+            <ExternalArrow />
+          </a>
+          <a
+            href={PORTAL.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenu}
+            className="flex items-center gap-2 border-b border-white/5 py-3 font-display text-lg text-white"
+          >
+            {PORTAL.longLabel}
             <ExternalArrow />
           </a>
           <a
