@@ -18,6 +18,7 @@ const COLUMNS = [
     links: [
       { href: "/restoration", label: "Restoring Oyster Habitat" },
       { href: "/partnering", label: "Partnering with Oystermen" },
+      { href: "/guide", label: "Field App Guide" },
       { href: "/contact", label: "Contact" },
     ],
   },

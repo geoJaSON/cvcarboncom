@@ -25,7 +25,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           # If your SSH port isn't 22, add: port: ${{ secrets.VPS_PORT }}
-          script_stop: true # abort on the first failed command
+          # (v1 aborts on the first failed command by default — the old
+          # script_stop input no longer exists.)
           script: |
             cd ~/cvcarboncom
             git pull --ff-only
