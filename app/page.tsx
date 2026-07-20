@@ -316,13 +316,13 @@ export default function HomePage() {
             src="/images/live-oysters-hand.jpg"
             alt="A handful of live oysters pulled from a restored reef"
             aspect="aspect-[4/5]"
-            caption="Live oysters from a working lease."
+            caption="Spat settled on cultch — the beginning of new reef."
           />
           <Figure
             src="/images/spat-on-cultch.jpg"
             alt="Oyster spat settled on cultch material"
             aspect="aspect-[4/5]"
-            caption="Spat settled on cultch — the beginning of new reef."
+            caption="Live oysters from a working lease."
           />
           <Figure
             src="/images/oyster-boats.jpg"

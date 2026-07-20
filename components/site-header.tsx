@@ -29,6 +29,7 @@ const ABOUT_LINKS = [
   { href: "/history", label: "The History", blurb: "The impact of oyster shell mining" },
   { href: "/beyond-carbon", label: "Beyond Carbon", blurb: "The other benefits of oyster reefs" },
   { href: "/team", label: "Meet the Team", blurb: "The people behind CV Carbon" },
+  { href: "/guide", label: "Field App Guide", blurb: "Using the CV Carbon Field app on the water" },
 ];
 
 const NAV_LINKS = [

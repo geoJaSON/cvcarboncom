@@ -18,6 +18,7 @@ const COLUMNS = [
     links: [
       { href: "/restoration", label: "Restoring Oyster Habitat" },
       { href: "/partnering", label: "Partnering with Oystermen" },
+      { href: "/guide", label: "Field App Guide" },
       { href: "/contact", label: "Contact" },
     ],
   },
@@ -84,24 +85,29 @@ export function SiteFooter() {
               Houston, Texas
             </p>
 
-            <a
-              href={REGISTRY.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group mt-6 inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-verdigris hover:bg-verdigris"
-            >
-              {REGISTRY.longLabel}
-              <svg viewBox="0 0 12 12" aria-hidden="true" className="h-2.5 w-2.5">
-                <path
-                  d="M3 9L9 3M9 3H4M9 3v5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </a>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {[REGISTRY, PORTAL].map((dest) => (
+                <a
+                  key={dest.href}
+                  href={dest.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-verdigris hover:bg-verdigris"
+                >
+                  {dest.longLabel}
+                  <svg viewBox="0 0 12 12" aria-hidden="true" className="h-2.5 w-2.5">
+                    <path
+                      d="M3 9L9 3M9 3H4M9 3v5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 

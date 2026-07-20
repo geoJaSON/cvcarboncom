@@ -103,21 +103,29 @@ The compose file deliberately **does not publish a host port**. It joins the Doc
 existing Caddy container is already on, and Caddy reaches the app internally at
 `cvcarbon-web:3000`.
 
-```bash
-docker network ls                     # find the network your Caddy container uses
+One-time setup on the VPS:
 
-# then, on the VPS:
-CADDY_NETWORK=<that-network> docker compose up -d --build
+```bash
+cd ~
+git clone <this-repo> cvcarboncom
+cd cvcarboncom
+
+# Find a network the Caddy container is on (the portal's network works):
+docker inspect garmin_gui-caddy-1 --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}} {{end}}'
+
+echo "CADDY_NETWORK=<one-of-those>" > .env   # compose reads .env automatically
+docker compose up -d --build
 ```
 
 Then paste the block from [`Caddyfile.snippet`](Caddyfile.snippet) into the Caddyfile your Caddy
-container already mounts, and reload it. Caddy issues TLS automatically.
+container already mounts, and reload it (`docker exec garmin_gui-caddy-1 caddy reload --config
+/etc/caddy/Caddyfile`). Caddy issues TLS automatically once DNS for `cvcarbon.eco` + `www` points
+at the server. The domain is already set to `cvcarbon.eco` in both `Caddyfile.snippet` and
+`metadataBase` ([`app/layout.tsx`](app/layout.tsx)).
 
-**Two values to change before deploying:**
-
-1. The domain in `Caddyfile.snippet` — it assumes `cvcarbon.com`.
-2. `metadataBase` in [`app/layout.tsx`](app/layout.tsx) — same assumption. It only affects the
-   absolute URLs in Open Graph tags, but it should match the real domain.
+Updates are `git pull && docker compose up -d --build`, or automatic on push to `main` via
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) — add the same `VPS_HOST` /
+`VPS_USER` / `VPS_SSH_KEY` secrets this repo's sibling (the portal) uses.
 
 Image optimization needs `sharp`, which arrives as an optional dependency of Next. The lockfile
 carries the `linuxmusl` binaries, so `npm ci` inside the Alpine builder resolves it correctly — no
