@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { PHONE, REGISTRY } from "@/lib/site";
+import { EMAIL, REGISTRY } from "@/lib/site";
 
 const ExternalArrow = () => (
   <svg viewBox="0 0 12 12" aria-hidden="true" className="h-2.5 w-2.5 shrink-0 opacity-70">
@@ -135,10 +135,10 @@ export function SiteHeader() {
           </a>
 
           <a
-            href={PHONE.href}
+            href={EMAIL.href}
             className="ml-3 rounded-full bg-verdigris px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-verdigris-600"
           >
-            {PHONE.display}
+            Message Us
           </a>
         </nav>
 
@@ -193,11 +193,11 @@ export function SiteHeader() {
             <ExternalArrow />
           </a>
           <a
-            href={PHONE.href}
+            href={EMAIL.href}
             onClick={closeMenu}
             className="mt-4 block rounded-full bg-verdigris px-5 py-3 text-center text-xs font-semibold uppercase tracking-[0.16em] text-white"
           >
-            Call {PHONE.display}
+            Message Us
           </a>
         </nav>
       </div>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { TideRule } from "@/components/ui";
-import { PHONE, REGISTRY } from "@/lib/site";
+import { EMAIL, REGISTRY } from "@/lib/site";
 
 const COLUMNS = [
   {
@@ -73,10 +73,10 @@ export function SiteFooter() {
               Get in Touch
             </h2>
             <a
-              href={PHONE.href}
-              className="mt-5 block font-display text-2xl text-white transition-colors hover:text-verdigris"
+              href={EMAIL.href}
+              className="mt-5 block break-words font-display text-xl text-white transition-colors hover:text-verdigris"
             >
-              {PHONE.display}
+              {EMAIL.display}
             </a>
             <p className="mt-3 text-sm leading-relaxed text-mist/60">
               Gulf of Mexico &amp; U.S. East Coast
@@ -107,8 +107,11 @@ export function SiteFooter() {
 
         <div className="mt-16 flex flex-col gap-4 border-t border-white/10 pt-8 text-xs uppercase tracking-[0.14em] text-mist/50 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} CV Carbon &middot; All Rights Reserved</p>
-          <a href="tel:+17138295271" className="transition-colors hover:text-white">
-            713 829 5271
+          <a
+            href={EMAIL.href}
+            className="normal-case tracking-normal transition-colors hover:text-white"
+          >
+            {EMAIL.display}
           </a>
         </div>
       </div>

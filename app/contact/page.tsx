@@ -1,7 +1,6 @@
-import { Placeholder } from "@/components/placeholder";
 import { Reveal } from "@/components/reveal";
 import { PageHero, Section, SectionHeading } from "@/components/ui";
-import { PHONE, REGISTRY } from "@/lib/site";
+import { EMAIL, REGISTRY } from "@/lib/site";
 
 export const metadata = {
   title: "Contact Us",
@@ -45,31 +44,15 @@ export default function ContactPage() {
               <dl className="mt-8 space-y-8">
                 <div>
                   <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-ink/45">
-                    Phone
+                    Email
                   </dt>
                   <dd className="mt-2">
                     <a
-                      href="tel:+17138295271"
-                      className="font-display text-3xl text-navy transition-colors hover:text-verdigris"
+                      href={EMAIL.href}
+                      className="font-display text-2xl text-navy transition-colors hover:text-verdigris"
                     >
-                      713 829 5271
+                      {EMAIL.display}
                     </a>
-                  </dd>
-                </div>
-
-                <div>
-                  <dt className="text-xs font-semibold uppercase tracking-[0.16em] text-ink/45">
-                    Email
-                  </dt>
-                  <dd className="mt-2 font-display text-2xl text-navy">
-                    {/* TODO: no email address appeared anywhere in the legacy site. */}
-                    <a
-                      href="mailto:support@cvcarbon.com"
-                      className="text-navy underline underline-offset-2 hover:text-verdigris transition-colors"
-                    >
-                      support@cvcarbon.com
-                    </a>
-               
                   </dd>
                 </div>
 
@@ -103,7 +86,7 @@ export default function ContactPage() {
           <div>
             <SectionHeading
               eyebrow="What can we help with?"
-              title="Three reasons people call"
+              title="Three reasons people reach out"
             />
 
             <div className="mt-10 space-y-4">
@@ -114,10 +97,10 @@ export default function ContactPage() {
                     <p className="prose-cv mt-3 text-[0.9375rem]">{route.copy}</p>
                     <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
                       <a
-                        href={PHONE.href}
+                        href={EMAIL.href}
                         className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-verdigris transition-colors hover:text-verdigris-600"
                       >
-                        Call {PHONE.display}
+                        Message us
                         <svg viewBox="0 0 16 10" aria-hidden="true" className="h-2.5 w-4">
                           <path
                             d="M0 5h14M10 1l4 4-4 4"

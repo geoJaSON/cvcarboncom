@@ -42,7 +42,7 @@ Type is **Fraunces** (display) over **Inter** (body). Shared pieces — `PageHer
 | `/beyond-carbon` | Legacy "Beyond Carbon: The Other Benefits of Oyster Reefs" |
 | `/restoration` | Legacy "Restoring Oyster Habitat" |
 | `/team` | Legacy "Meet the Team" |
-| `/contact` | Rebuilt (phone only — see below) |
+| `/contact` | Rebuilt (email only — see below) |
 
 Body copy, statistics, and every "Literature Cited" entry are carried over verbatim from the legacy
 site. Nothing scientific was invented or paraphrased into new claims.
@@ -75,13 +75,11 @@ defined once in [`components/featured-article.tsx`](components/featured-article.
 - **`/restoration`** — an inline link where field data collection is described.
 - **`/`** — a compact "Featured in" band under the stat band.
 
-## ⚠️ Before this ships
+## Contact details
 
-**One thing:** no email address appears anywhere in the legacy site, so the address on `/contact` is
-a guess. It is wrapped in [`<Placeholder>`](components/placeholder.tsx) (amber highlight) so it
-cannot ship unnoticed. Replace it and delete the import — that is the last stand-in on the site.
-
-The phone number (713 829 5271) is real, taken from the legacy footer.
+All contact points to **support@cvcarbon.com**, defined once in [`lib/site.ts`](lib/site.ts) —
+change it there and the header button, footer, and `/contact` page all follow. The legacy phone
+number (713 829 5271) was removed sitewide in favor of a "Message Us" mailto button.
 
 ### Facts worth reconciling
 
