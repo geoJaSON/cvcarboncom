@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { TideRule } from "@/components/ui";
-import { EMAIL, REGISTRY } from "@/lib/site";
+import { EMAIL, PORTAL, REGISTRY } from "@/lib/site";
 
 const COLUMNS = [
   {
