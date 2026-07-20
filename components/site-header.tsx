@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { EMAIL, REGISTRY } from "@/lib/site";
+import { EMAIL, PORTAL, REGISTRY } from "@/lib/site";
 
 const ExternalArrow = () => (
   <svg viewBox="0 0 12 12" aria-hidden="true" className="h-2.5 w-2.5 shrink-0 opacity-70">
@@ -125,15 +125,18 @@ export function SiteHeader() {
             </NavLink>
           ))}
 
-          <a
-            href={REGISTRY.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-mist transition-colors hover:text-white"
-          >
-            {REGISTRY.label}
-            <ExternalArrow />
-          </a>
+          {[REGISTRY, PORTAL].map((dest) => (
+            <a
+              key={dest.href}
+              href={dest.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-mist transition-colors hover:text-white"
+            >
+              {dest.label}
+              <ExternalArrow />
+            </a>
+          ))}
 
           <a
             href={EMAIL.href}
@@ -183,16 +186,19 @@ export function SiteHeader() {
               {link.label}
             </MobileLink>
           ))}
-          <a
-            href={REGISTRY.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={closeMenu}
-            className="flex items-center gap-2 border-b border-white/5 py-3 font-display text-lg text-white"
-          >
-            {REGISTRY.longLabel}
-            <ExternalArrow />
-          </a>
+          {[REGISTRY, PORTAL].map((dest) => (
+            <a
+              key={dest.href}
+              href={dest.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeMenu}
+              className="flex items-center gap-2 border-b border-white/5 py-3 font-display text-lg text-white"
+            >
+              {dest.longLabel}
+              <ExternalArrow />
+            </a>
+          ))}
           <a
             href={EMAIL.href}
             onClick={closeMenu}
