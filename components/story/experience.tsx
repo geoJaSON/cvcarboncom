@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { PHONE } from "@/lib/site";
 import "./story.css";
-import { CreditsBand, LostBand, ProofBand, WorkBand } from "./bands";
+import { CreditsBand, LostBand, ProofBand, TrajectoryBand, WorkBand } from "./bands";
 import { Hud } from "./hud";
 import { MapStage, type ChartView } from "./map-stage";
 import type { SceneId } from "./scenes";
@@ -147,7 +147,7 @@ export default function Experience() {
         </ChartStep>
 
         <div data-scene="coverage" data-covered="true">
-          <WorkBand />
+          <WorkBand manifest={data.manifest} />
         </div>
 
         {/* ---- Chapter three — the proof ---- */}
@@ -203,6 +203,7 @@ export default function Experience() {
         </ChartStep>
 
         <div data-scene="close" data-covered="true">
+          <TrajectoryBand manifest={data.manifest} />
           <CreditsBand manifest={data.manifest} />
         </div>
 

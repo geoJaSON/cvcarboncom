@@ -3,6 +3,14 @@
 import Image from "next/image";
 import { Figure, NumberedCard, PullQuote, SectionHeading, StatBand, TideRule } from "@/components/ui";
 import { Reveal } from "@/components/reveal";
+import {
+  EquivalentsStrip,
+  ManhattanTile,
+  NetWaterfall,
+  PerspectiveTiles,
+  SeasonStack,
+  VintageBars,
+} from "./charts";
 import { fmtCompact, fmtInt, type StoryManifest } from "./use-story-data";
 
 /* ------------------------------------------------------------------
@@ -74,7 +82,7 @@ export function LostBand() {
 }
 
 /* ---- After the cultch chapter ---- */
-export function WorkBand() {
+export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
   return (
     <BandShell>
       <SectionHeading
@@ -104,6 +112,37 @@ export function WorkBand() {
           alt="Juvenile oyster spat attached to a piece of cultch"
           caption="Spat on cultch — the return on investment, at actual size."
         />
+      </div>
+      <PerspectiveTiles manifest={manifest} />
+    </BandShell>
+  );
+}
+
+/* ---- The growth story, before the ledger ---- */
+export function TrajectoryBand({ manifest }: { manifest: StoryManifest | null }) {
+  return (
+    <BandShell>
+      <SectionHeading
+        eyebrow="The trajectory"
+        title="Each season, the chart fills in further"
+        intro={
+          <p>
+            Reef at commercial density has grown roughly fivefold across three survey seasons,
+            and the credits issued against it have kept pace. These are surveyed acres and
+            serialized credits, not projections.
+          </p>
+        }
+      />
+      <div className="mt-14 grid gap-12 lg:grid-cols-2">
+        <Reveal>
+          <SeasonStack manifest={manifest} />
+        </Reveal>
+        <Reveal delay={90}>
+          <VintageBars manifest={manifest} />
+        </Reveal>
+      </div>
+      <div className="mt-10 max-w-sm">
+        <ManhattanTile manifest={manifest} />
       </div>
     </BandShell>
   );
@@ -212,6 +251,21 @@ export function CreditsBand({ manifest }: { manifest: StoryManifest | null }) {
           ]}
         />
       </div>
+
+      <Reveal className="mt-16">
+        <p className="eyebrow text-steel-400">Where the number comes from</p>
+        <p className="prose-cv mt-4 max-w-2xl !text-mist/80">
+          The net figure is not the gross figure. Everything our boats, barges, and equipment
+          emit doing this work is measured and taken off the top before a credit exists.
+        </p>
+        <div className="mt-8">
+          <NetWaterfall manifest={manifest} />
+        </div>
+      </Reveal>
+
+      <Reveal className="mt-16">
+        <EquivalentsStrip manifest={manifest} />
+      </Reveal>
 
       {PROVIDED.leaseholderPaybackUsd != null && (
         <Reveal className="mt-12">
