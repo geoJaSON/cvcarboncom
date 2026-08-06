@@ -53,6 +53,7 @@ export type StoryData = {
     cssTiers: StoryFeatureCollection | null;
     density: StoryFeatureCollection | null;
     coverage: StoryFeatureCollection | null;
+    counties: StoryFeatureCollection | null;
   };
   /** True once every fetch has settled, hit or miss. */
   ready: boolean;
@@ -75,7 +76,13 @@ async function fetchJson<T>(path: string): Promise<T | null> {
 export function useStoryData(): StoryData {
   const [data, setData] = useState<StoryData>({
     manifest: null,
-    layers: { bedding: null, cssTiers: null, density: null, coverage: null },
+    layers: {
+      bedding: null,
+      cssTiers: null,
+      density: null,
+      coverage: null,
+      counties: null,
+    },
     ready: false,
   });
 
@@ -83,15 +90,20 @@ export function useStoryData(): StoryData {
     let cancelled = false;
 
     (async () => {
-      const [manifest, bedding, cssTiers, density, coverage] = await Promise.all([
+      const [manifest, bedding, cssTiers, density, coverage, counties] = await Promise.all([
         fetchJson<StoryManifest>("manifest.json"),
         fetchJson<StoryFeatureCollection>("bedding.geojson"),
         fetchJson<StoryFeatureCollection>("css_tiers.geojson"),
         fetchJson<StoryFeatureCollection>("density.geojson"),
         fetchJson<StoryFeatureCollection>("coverage.geojson"),
+        fetchJson<StoryFeatureCollection>("counties.geojson"),
       ]);
       if (cancelled) return;
-      setData({ manifest, layers: { bedding, cssTiers, density, coverage }, ready: true });
+      setData({
+        manifest,
+        layers: { bedding, cssTiers, density, coverage, counties },
+        ready: true,
+      });
     })();
 
     return () => {

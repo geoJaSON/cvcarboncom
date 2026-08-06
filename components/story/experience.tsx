@@ -13,8 +13,8 @@ import {
   WorkBand,
 } from "./bands";
 import { Hud } from "./hud";
-import { MapStage, type ChartView } from "./map-stage";
-import type { SceneId } from "./scenes";
+import { MapStage, type ChartView, type StageState } from "./map-stage";
+import { SCENES, type SceneId } from "./scenes";
 import { fmtCompact, fmtInt, useStoryData } from "./use-story-data";
 
 /* ------------------------------------------------------------------
@@ -30,6 +30,11 @@ export default function Experience() {
   const [scene, setScene] = useState<SceneId>("hero");
   const [hudVisible, setHudVisible] = useState(true);
   const [view, setView] = useState<ChartView | null>(null);
+  const [manualTarget, setManualTarget] = useState<string | null>(null);
+  const [stageState, setStageState] = useState<StageState>({
+    status: "STANDBY",
+    progress: 0,
+  });
   const reducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const viewThrottle = useRef(0);
@@ -47,7 +52,10 @@ export default function Experience() {
           if (entry.isIntersecting) {
             const el = entry.target as HTMLElement;
             const next = el.dataset.scene as SceneId;
-            if (next) setScene(next);
+            if (next) {
+              setScene(next);
+              setManualTarget(null);
+            }
             setHudVisible(el.dataset.covered !== "true");
           }
         }
@@ -67,13 +75,34 @@ export default function Experience() {
     setView(v);
   }, []);
 
+  const onStageState = useCallback((next: StageState) => {
+    setStageState(next);
+  }, []);
+
+  const activeTarget = manualTarget ?? SCENES[scene].targetGeoid ?? null;
+
   const snapshotDate = data.manifest?.snapshot_date;
   const s = data.manifest?.stats;
 
   return (
     <div ref={rootRef} className="story-root relative">
-      <MapStage data={data} activeScene={scene} reducedMotion={reducedMotion} onView={onView} />
-      <Hud view={view} scene={scene} snapshotDate={snapshotDate} visible={hudVisible} />
+      <MapStage
+        data={data}
+        activeScene={scene}
+        targetGeoid={activeTarget}
+        reducedMotion={reducedMotion}
+        onView={onView}
+        onStageState={onStageState}
+      />
+      <Hud
+        view={view}
+        scene={scene}
+        snapshotDate={snapshotDate}
+        visible={hudVisible}
+        targetGeoid={activeTarget}
+        stageState={stageState}
+        onTarget={setManualTarget}
+      />
 
       {/* Way home — the site chrome is hidden on this route. */}
       <Link

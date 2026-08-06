@@ -18,14 +18,42 @@
   z-index: 0;
 }
 
+/* Optical treatment: a chart-table vignette and faint display raster.
+   These sit above MapLibre but below every piece of narrative chrome. */
+.story-map::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 68% 48%, transparent 0 32%, rgba(2, 11, 19, 0.24) 76%, rgba(2, 9, 16, 0.52) 100%),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(197, 216, 227, 0.018) 0,
+      rgba(197, 216, 227, 0.018) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
 .story-map .maplibregl-ctrl-attrib {
-  background: color-mix(in srgb, var(--color-abyss) 78%, transparent);
-  color: color-mix(in srgb, var(--color-mist) 60%, transparent);
-  font-size: 10px;
+  max-width: min(32rem, calc(100vw - 2rem));
+  border: 1px solid color-mix(in srgb, var(--color-mist) 16%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-abyss) 88%, transparent) !important;
+  color: color-mix(in srgb, var(--color-mist) 60%, transparent) !important;
+  font-family: var(--font-chart);
+  font-size: 8px;
+  letter-spacing: 0.03em;
 }
 
 .story-map .maplibregl-ctrl-attrib a {
-  color: color-mix(in srgb, var(--color-mist) 75%, transparent);
+  color: color-mix(in srgb, var(--color-mist) 75%, transparent) !important;
+}
+
+.story-map .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
+  opacity: 0.7;
 }
 
 /* Chart annotations — small caps, tracked out, monospace. */
@@ -73,6 +101,250 @@
 
 .story-hud-value {
   color: var(--color-pearl);
+}
+
+/* Camera target rail. */
+.story-target-panel {
+  pointer-events: auto;
+  box-shadow: 0 24px 55px -30px rgba(1, 8, 14, 0.95);
+}
+
+.story-target-button {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  color: color-mix(in srgb, var(--color-mist) 66%, transparent);
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.story-target-button:hover,
+.story-target-button:focus-visible {
+  color: var(--color-pearl);
+  border-color: color-mix(in srgb, var(--color-mist) 18%, transparent);
+  background: rgba(255, 255, 255, 0.035);
+  outline: none;
+}
+
+.story-target-button.is-active {
+  color: var(--color-pearl);
+  border-color: color-mix(in srgb, var(--color-verdigris) 58%, transparent);
+  background: color-mix(in srgb, var(--color-verdigris) 12%, transparent);
+}
+
+.story-target-index {
+  font-size: 0.58rem;
+  color: color-mix(in srgb, var(--color-mist) 40%, transparent);
+}
+
+.story-target-button strong,
+.story-target-button small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.story-target-button strong {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.story-target-button small {
+  margin-top: 0.15rem;
+  font-size: 0.53rem;
+  letter-spacing: 0.11em;
+  opacity: 0.52;
+}
+
+.story-target-dot {
+  width: 0.38rem;
+  height: 0.38rem;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--color-mist) 45%, transparent);
+  border-radius: 999px;
+}
+
+.story-target-button.is-active .story-target-dot {
+  border-color: var(--color-verdigris);
+  background: var(--color-verdigris);
+  box-shadow: 0 0 0.7rem rgba(47, 138, 116, 0.8);
+  animation: story-target-breathe 1.9s ease-in-out infinite;
+}
+
+.story-compass {
+  position: relative;
+  width: 1.65rem;
+  height: 1.65rem;
+  border: 1px solid color-mix(in srgb, var(--color-mist) 26%, transparent);
+  border-radius: 999px;
+}
+
+.story-compass span {
+  position: absolute;
+  left: 50%;
+  top: -0.2rem;
+  padding: 0 0.12rem;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--color-abyss) 92%, transparent);
+  font-size: 0.48rem;
+  color: var(--color-pearl);
+}
+
+.story-compass i {
+  position: absolute;
+  inset: 0.28rem 0.72rem;
+  transform-origin: 50% 50%;
+  transition: transform 180ms linear;
+}
+
+.story-compass i::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-left: 0.18rem solid transparent;
+  border-right: 0.18rem solid transparent;
+  border-bottom: 0.5rem solid var(--color-verdigris);
+}
+
+/* Acquisition strip in the bottom instrument panel. */
+.story-status-light {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--color-sand);
+  box-shadow: 0 0 0.7rem rgba(214, 197, 170, 0.65);
+  animation: story-status-pulse 1.05s steps(1) infinite;
+}
+
+.story-status-light.is-verified {
+  background: var(--color-verdigris);
+  box-shadow: 0 0 0.7rem rgba(47, 138, 116, 0.8);
+  animation: none;
+}
+
+.story-status-track {
+  display: block;
+  height: 2px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.story-status-track > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-steel-400), var(--color-verdigris));
+  box-shadow: 0 0 0.5rem rgba(47, 138, 116, 0.65);
+  transition: width 90ms linear;
+}
+
+/* Four chart marks around the selected geography. */
+.story-reticle {
+  display: none;
+  left: calc(68% - 5.5rem);
+  top: calc(51% - 3.5rem);
+  width: 11rem;
+  height: 7rem;
+  animation: story-reticle-in 900ms ease-out both;
+}
+
+.story-reticle i {
+  position: absolute;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-color: color-mix(in srgb, var(--color-verdigris) 78%, transparent);
+}
+
+.story-reticle i:nth-child(1) {
+  left: 0;
+  top: 0;
+  border-left: 1px solid;
+  border-top: 1px solid;
+}
+
+.story-reticle i:nth-child(2) {
+  right: 0;
+  top: 0;
+  border-right: 1px solid;
+  border-top: 1px solid;
+}
+
+.story-reticle i:nth-child(3) {
+  right: 0;
+  bottom: 0;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.story-reticle i:nth-child(4) {
+  left: 0;
+  bottom: 0;
+  border-left: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.story-reticle > span {
+  position: absolute;
+  left: 50%;
+  bottom: -1.45rem;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-chart);
+  font-size: 0.52rem;
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--color-mist) 58%, transparent);
+}
+
+@media (min-width: 1024px) {
+  .story-reticle {
+    display: block;
+  }
+}
+
+@keyframes story-target-breathe {
+  0%,
+  100% {
+    transform: scale(0.86);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.14);
+    opacity: 1;
+  }
+}
+
+@keyframes story-status-pulse {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0.28;
+  }
+}
+
+@keyframes story-reticle-in {
+  from {
+    opacity: 0;
+    transform: scale(1.24);
+  }
+  to {
+    opacity: 0.68;
+    transform: scale(1);
+  }
 }
 
 /* Legend swatch chip. */
@@ -124,7 +396,15 @@
 
 @media (prefers-reduced-motion: reduce) {
   .story-cursor,
-  .story-scroll-cue {
+  .story-scroll-cue,
+  .story-status-light,
+  .story-target-button.is-active .story-target-dot,
+  .story-reticle {
     animation: none;
+  }
+
+  .story-compass i,
+  .story-status-track > span {
+    transition: none;
   }
 }

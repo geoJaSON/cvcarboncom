@@ -8,7 +8,13 @@ import type { BBox } from "./use-story-data";
    the fallbacks below only matter before a snapshot is baked.
    ------------------------------------------------------------------ */
 
-export type LayerKey = "graticule" | "bedding" | "coverage" | "density" | "css";
+export type LayerKey =
+  | "graticule"
+  | "counties"
+  | "bedding"
+  | "coverage"
+  | "density"
+  | "css";
 
 export type SceneId =
   | "hero"
@@ -27,9 +33,21 @@ export type Scene = {
   bearing: number;
   /** Extra zoom applied after fitBounds, to push in or pull back. */
   zoomBias?: number;
+  /** County-equivalent target used for the scene's authored flight. */
+  targetGeoid?: string;
+  /** Flight and on-station camera choreography, in milliseconds/degrees. */
+  flightDuration?: number;
+  orbitDegrees?: number;
+  orbitDuration?: number;
   layers: Partial<Record<LayerKey, boolean>>;
   /** Replay the year-by-year cultch sweep when this scene activates. */
   beddingSweep?: boolean;
+  /** Sweep the aggregated survey footprint across the target area. */
+  coverageSweep?: boolean;
+  /** Grow density prisms from the chart floor. */
+  densityGrow?: boolean;
+  /** Replay the available surveyed-reef vintages. */
+  cssPlayback?: boolean;
   /** Which density tiers of reef polygons to show. */
   cssTiers?: ("low" | "med" | "high")[];
 };
@@ -40,6 +58,9 @@ export const SCENES: Record<SceneId, Scene> = {
     view: "overall",
     pitch: 0,
     bearing: 0,
+    flightDuration: 3000,
+    orbitDegrees: 4,
+    orbitDuration: 3200,
     layers: { graticule: true },
   },
   lost: {
@@ -48,40 +69,60 @@ export const SCENES: Record<SceneId, Scene> = {
     pitch: 0,
     bearing: 0,
     zoomBias: -0.4,
+    flightDuration: 2800,
     layers: { graticule: true },
   },
   bedding: {
     id: "bedding",
     view: "bedding",
-    pitch: 38,
-    bearing: -12,
-    zoomBias: 0.4,
-    layers: { graticule: true, bedding: true },
+    pitch: 48,
+    bearing: -16,
+    zoomBias: 0.2,
+    targetGeoid: "22075",
+    flightDuration: 3000,
+    orbitDegrees: 18,
+    orbitDuration: 4200,
+    layers: { graticule: true, counties: true, bedding: true },
     beddingSweep: true,
   },
   coverage: {
     id: "coverage",
     view: "coverage",
-    pitch: 0,
-    bearing: 0,
-    zoomBias: 0.3,
-    layers: { graticule: true, coverage: true },
+    pitch: 38,
+    bearing: 12,
+    zoomBias: 0.2,
+    targetGeoid: "22109",
+    flightDuration: 2900,
+    orbitDegrees: -14,
+    orbitDuration: 4000,
+    layers: { graticule: true, counties: true, coverage: true },
+    coverageSweep: true,
   },
   density: {
     id: "density",
     view: "density",
     pitch: 52,
-    bearing: -17,
-    zoomBias: 0.7,
-    layers: { graticule: true, density: true },
+    bearing: -24,
+    zoomBias: 0.35,
+    targetGeoid: "22087",
+    flightDuration: 3000,
+    orbitDegrees: 24,
+    orbitDuration: 4600,
+    layers: { graticule: true, counties: true, density: true },
+    densityGrow: true,
   },
   return: {
     id: "return",
     view: "css",
-    pitch: 30,
-    bearing: -8,
-    zoomBias: 0.5,
-    layers: { graticule: true, css: true },
+    pitch: 42,
+    bearing: 18,
+    zoomBias: 0.25,
+    targetGeoid: "22109",
+    flightDuration: 3000,
+    orbitDegrees: -18,
+    orbitDuration: 4400,
+    layers: { graticule: true, counties: true, css: true },
+    cssPlayback: true,
     cssTiers: ["low", "med", "high"],
   },
   close: {
@@ -89,10 +130,25 @@ export const SCENES: Record<SceneId, Scene> = {
     view: "overall",
     pitch: 0,
     bearing: 0,
-    layers: { graticule: true, bedding: true, css: true },
+    flightDuration: 3400,
+    layers: { graticule: true, counties: true, bedding: true, css: true },
     cssTiers: ["low", "med", "high"],
   },
 };
+
+/** A short, authored flight deck rather than a directory of every
+ * county-equivalent in the snapshot. Each target has substantial
+ * survey coverage and gives the briefing a useful geographic jump. */
+export const MAP_TARGETS = [
+  { geoid: "22075", name: "Plaquemines", suffix: "Parish", state: "LA" },
+  { geoid: "22109", name: "Terrebonne", suffix: "Parish", state: "LA" },
+  { geoid: "22087", name: "St. Bernard", suffix: "Parish", state: "LA" },
+  { geoid: "48167", name: "Galveston", suffix: "County", state: "TX" },
+] as const;
+
+export function mapTarget(geoid: string | null | undefined) {
+  return MAP_TARGETS.find((target) => target.geoid === geoid) ?? null;
+}
 
 /* Louisiana public oyster grounds — placeholder chart extent used only
    until manifest.json ships real per-layer bounds. */
