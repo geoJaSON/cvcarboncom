@@ -4,7 +4,14 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { EMAIL } from "@/lib/site";
 import "./story.css";
-import { CreditsBand, LostBand, ProofBand, TrajectoryBand, WorkBand } from "./bands";
+import {
+  CoBenefitsBand,
+  CreditsBand,
+  LostBand,
+  ProofBand,
+  TrajectoryBand,
+  WorkBand,
+} from "./bands";
 import { Hud } from "./hud";
 import { MapStage, type ChartView } from "./map-stage";
 import type { SceneId } from "./scenes";
@@ -205,6 +212,7 @@ export default function Experience() {
         <div data-scene="close" data-covered="true">
           <TrajectoryBand manifest={data.manifest} />
           <CreditsBand manifest={data.manifest} />
+          <CoBenefitsBand manifest={data.manifest} />
         </div>
 
         {/* ---- Close ---- */}
@@ -212,14 +220,14 @@ export default function Experience() {
           data-scene="close"
           className="relative flex min-h-screen flex-col items-center justify-center px-6 text-center"
         >
-          <p className="eyebrow text-steel-400">The invitation</p>
+          <p className="eyebrow text-steel-400">The ask</p>
           <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight text-white sm:text-5xl">
-            Come see it from the boat.
+            Buy the ton that builds the reef.
           </h2>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-mist/85">
-            The chart behind this page is live water we work every week. If what your
-            organization needs is carbon with a paper trail — or a coast with its reefs back —
-            let&rsquo;s talk.
+            Credits are available now, by the ton or by the batch, retired in your name with a
+            certificate that points back to the water on this chart. And the chart is live
+            water we work every week — so before you sign anything, come see it from the boat.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <a

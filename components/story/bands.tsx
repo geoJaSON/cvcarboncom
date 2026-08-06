@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { Figure, NumberedCard, PullQuote, SectionHeading, StatBand, TideRule } from "@/components/ui";
 import { Reveal } from "@/components/reveal";
 import {
@@ -25,7 +26,16 @@ import { fmtCompact, fmtInt, type StoryManifest } from "./use-story-data";
 const PROVIDED = {
   /** Dollars paid back to leaseholders for restoration work. */
   leaseholderPaybackUsd: null as number | null,
+  /** Total restoration spend, USD. Drives the jobs-supported figure. */
+  restorationSpendUsd: null as number | null,
 };
+
+/* Peer-reviewed per-unit factors. Peterson and Grabowski are already
+   cited on /beyond-carbon; keep the two pages in agreement. */
+const FISH_G_PER_M2_YR = 260; // Peterson et al. 2003
+const ACRE_M2 = 4046.8564;
+const JOBS_PER_MILLION = 18.55; // Hall & DeAngelis 2022
+const LB_PER_KG = 2.20462;
 
 function BandShell({
   children,
@@ -209,6 +219,159 @@ export function ProofBand() {
         </div>
       </div>
     </BandShell>
+  );
+}
+
+/* ---- The buying case: what rides along with the ton ---- */
+export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null }) {
+  const s = manifest?.stats;
+
+  /* Fish and crustacean production added per restored acre, per year —
+     Peterson's 260 g/m²/yr, expressed at a scale a person can hold. */
+  const fishLbPerAcreYear = (FISH_G_PER_M2_YR * ACRE_M2) / 1000 * LB_PER_KG;
+
+  /* Reef gained across the surveyed seasons. Deliberately the INCREASE,
+     not the standing total — we only claim what the program added. */
+  const byYear = s?.css_by_year ?? [];
+  const acresGained =
+    byYear.length >= 2
+      ? byYear[byYear.length - 1].low_acres +
+        byYear[byYear.length - 1].med_acres +
+        byYear[byYear.length - 1].high_acres -
+        (byYear[0].low_acres + byYear[0].med_acres + byYear[0].high_acres)
+      : null;
+
+  const jobs =
+    PROVIDED.restorationSpendUsd != null
+      ? (PROVIDED.restorationSpendUsd / 1_000_000) * JOBS_PER_MILLION
+      : null;
+
+  return (
+    <BandShell>
+      <SectionHeading
+        eyebrow="Why this ton and not another"
+        title="The carbon is the receipt. The reef is the point."
+        intro={
+          <p>
+            A ton of CO₂e is the same molecule wherever it comes from. What differs is
+            everything it drags along with it. This one buys hard bottom on the American Gulf
+            Coast — and the fishery, the shoreline, and the working fleet that come with it.
+          </p>
+        }
+      />
+
+      <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <BenefitCard
+          figure={`${fmtInt(Math.round(fishLbPerAcreYear))} lb`}
+          unit="per acre, every year"
+          title="A fishery, not just a habitat"
+          source="Peterson et al., 2003"
+        >
+          Added fish and crustacean production on restored reef — shrimp, blue crab, speckled
+          trout, red drum, flounder. It recurs annually for as long as the reef lives.
+        </BenefitCard>
+
+        <BenefitCard figure="~50%" unit="less shoreline erosion" title="A breakwater that grows" source="LSU AgCenter monitoring">
+          Measured behind restored Louisiana reefs. Unlike rock or bulkhead, reef builds itself
+          higher over time instead of settling and needing replacement.
+        </BenefitCard>
+
+        <BenefitCard
+          figure={jobs != null ? fmtInt(Math.round(jobs)) : `${fmtInt(s?.entities_enrolled)}`}
+          unit={jobs != null ? "jobs supported" : "family oyster businesses"}
+          title="Money that lands on the dock"
+          source={jobs != null ? "Hall & DeAngelis, 2022" : "CV Carbon program records"}
+        >
+          The work is done by commercial oystermen on their own leases, in their own boats.
+          Thirty percent of gross revenue goes back into the water.
+        </BenefitCard>
+
+        <BenefitCard
+          figure={acresGained != null ? fmtCompact(acresGained) : "—"}
+          unit="acres gained, 3 seasons"
+          title="Additional by construction"
+          source="CV Carbon survey record"
+        >
+          Flat mud does not spontaneously become reef. Without the cultch there is no substrate,
+          no settlement, and no carbon — the counterfactual is visible on the seafloor.
+        </BenefitCard>
+      </div>
+
+      <Reveal className="mt-14">
+        <div className="rounded-lg border border-navy/10 bg-white p-8">
+          <p className="eyebrow">The due-diligence answers</p>
+          <dl className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              [
+                "Where is it?",
+                "US public water on the Gulf Coast. No jurisdictional risk, no overseas intermediary — you can stand on the boat above it.",
+              ],
+              [
+                "How is it measured?",
+                "Hand-counted oyster density on a geolocated survey grid, not remote-sensed estimation or a growth model.",
+              ],
+              [
+                "Who checks it?",
+                "Independent verifiers resample our leases. Their numbers gate ours; disagreement means no credit issues.",
+              ],
+              [
+                "Is it net?",
+                "Yes. Our own fuel and equipment emissions are measured and subtracted before a credit exists.",
+              ],
+              [
+                "Can I trace one?",
+                "Every credit carries a serial encoding vintage, area, and sequence, resolvable in the public registry.",
+              ],
+              [
+                "What if I want to see it?",
+                "The leases are working water. We will take you out on them.",
+              ],
+            ].map(([q, a]) => (
+              <div key={q}>
+                <dt className="font-display text-lg text-navy">{q}</dt>
+                <dd className="prose-cv mt-2 text-[0.9375rem]">{a}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </Reveal>
+
+      <p className="mt-8 text-xs leading-relaxed text-ink/45">
+        Ecosystem-service factors from Peterson, Grabowski &amp; Powers (2003) and Grabowski et
+        al. (2012); Gulf-specific evidence per Warnell et al. (2020), Duke University. Job
+        intensity per Hall &amp; DeAngelis (2022). Full literature cited on{" "}
+        <a href="/beyond-carbon" className="underline underline-offset-2">
+          Beyond Carbon
+        </a>
+        .
+      </p>
+    </BandShell>
+  );
+}
+
+function BenefitCard({
+  figure,
+  unit,
+  title,
+  source,
+  children,
+}: {
+  figure: string;
+  unit: string;
+  title: string;
+  source: string;
+  children: ReactNode;
+}) {
+  return (
+    <Reveal>
+      <article className="h-full rounded-lg border border-navy/10 bg-white p-7">
+        <span className="font-display text-3xl text-verdigris-600">{figure}</span>
+        <p className="story-chart-note mt-1 normal-case tracking-normal text-ink/50">{unit}</p>
+        <h3 className="mt-5 font-display text-lg text-navy">{title}</h3>
+        <div className="prose-cv mt-3 text-[0.9375rem]">{children}</div>
+        <p className="mt-4 text-[0.6875rem] uppercase tracking-[0.12em] text-ink/40">{source}</p>
+      </article>
+    </Reveal>
   );
 }
 
