@@ -22,7 +22,11 @@ export default function StoryPage() {
             </h1>
             <p style={{ marginTop: "1rem", color: "#c5d8e3" }}>
               This brief is an interactive chart and needs JavaScript. For the story in person,
-              call 713&nbsp;829&nbsp;5271 or visit{" "}
+              email{" "}
+              <a href="mailto:support@cvcarbon.com" style={{ color: "#2f8a74" }}>
+                support@cvcarbon.com
+              </a>{" "}
+              or visit{" "}
               <a href="/contact" style={{ color: "#2f8a74" }}>
                 cvcarbon.eco/contact
               </a>

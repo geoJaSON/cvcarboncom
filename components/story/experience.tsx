@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { PHONE } from "@/lib/site";
+import { EMAIL } from "@/lib/site";
 import "./story.css";
 import { CreditsBand, LostBand, ProofBand, TrajectoryBand, WorkBand } from "./bands";
 import { Hud } from "./hud";
@@ -223,10 +223,10 @@ export default function Experience() {
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <a
-              href={PHONE.href}
+              href={EMAIL.href}
               className="inline-flex items-center gap-2.5 rounded-full bg-verdigris px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-verdigris-600"
             >
-              Call {PHONE.display}
+              Message Us
             </a>
             <Link
               href="/contact"
