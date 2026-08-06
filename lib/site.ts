@@ -5,14 +5,14 @@ export const REGISTRY = {
   longLabel: "Carbon Credit Registry",
 } as const;
 
-/** Client portal — lease dashboards, monitoring, and reporting for partners. */
+/** Client portal — where buyers and partners sign in. */
 export const PORTAL = {
   href: "https://portal.cvcarbon.eco",
-  label: "Client Portal",
+  label: "Portal",
   longLabel: "Client Portal",
 } as const;
 
-export const PHONE = {
-  display: "713 829 5271",
-  href: "tel:+17138295271",
+export const EMAIL = {
+  display: "support@cvcarbon.com",
+  href: "mailto:support@cvcarbon.com",
 } as const;
