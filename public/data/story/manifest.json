@@ -1,0 +1,134 @@
+{
+  "snapshot_date": "2026-08-06",
+  "bounds": {
+    "overall": [
+      -97.8516,
+      27.935,
+      -88.3284,
+      30.26
+    ],
+    "bedding": [
+      -95.5678,
+      29.1191,
+      -88.5687,
+      30.0894
+    ],
+    "css": [
+      -95.5568,
+      29.032,
+      -88.5632,
+      30.148
+    ],
+    "density": [
+      -95.5568,
+      29.032,
+      -88.5632,
+      30.148
+    ],
+    "coverage": [
+      -97.8516,
+      27.935,
+      -88.3284,
+      30.26
+    ]
+  },
+  "stats": {
+    "leases_total": 12736,
+    "leases_in_program": 5351,
+    "entities_enrolled": 405,
+    "parishes": 18,
+    "states": 3,
+    "signed_acres": 488026.0,
+    "polling_points": 1676428,
+    "dredge_samples": 21549,
+    "point_samples": 7533,
+    "bedding_placements": 1731,
+    "bedding_short_tons": 340633.0,
+    "bedding_track_miles": 1697.0,
+    "css_by_year": [
+      {
+        "year": 2023,
+        "low_acres": 1373.0,
+        "med_acres": 1982.0,
+        "high_acres": 5567.0
+      },
+      {
+        "year": 2024,
+        "low_acres": 2602.0,
+        "med_acres": 3052.0,
+        "high_acres": 14897.0
+      },
+      {
+        "year": 2025,
+        "low_acres": 6388.0,
+        "med_acres": 7198.0,
+        "high_acres": 31151.0
+      }
+    ],
+    "css_acres": {
+      "low": 6388.0,
+      "med": 7198.0,
+      "high": 31151.0,
+      "total": 44737,
+      "year": 2025
+    },
+    "net_mt_total": 1075628.0,
+    "gross_mt_total": 1275278.0,
+    "credits": {
+      "total": 1074368,
+      "issued": 1074367,
+      "retired": 0,
+      "by_status": {
+        "issued": 1074367,
+        "transferred": 1
+      },
+      "by_vintage": [
+        {
+          "year": 2023,
+          "count": 156455
+        },
+        {
+          "year": 2024,
+          "count": 300239
+        },
+        {
+          "year": 2025,
+          "count": 617674
+        }
+      ]
+    },
+    "samples_by_year": [
+      {
+        "year": 2023,
+        "dredges": 625,
+        "points": 141,
+        "polling": 59052
+      },
+      {
+        "year": 2024,
+        "dredges": 5239,
+        "points": 11,
+        "polling": 265878
+      },
+      {
+        "year": 2025,
+        "dredges": 15045,
+        "points": 7377,
+        "polling": 1086947
+      },
+      {
+        "year": 2026,
+        "dredges": 640,
+        "points": 4,
+        "polling": 216131
+      }
+    ],
+    "bedding_by_year": [
+      {
+        "year": 2026,
+        "placements": 1731,
+        "short_tons": 340633.0
+      }
+    ]
+  }
+}

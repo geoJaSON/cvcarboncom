@@ -50,6 +50,9 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // The /story brief is a full-bleed chart with its own chrome.
+  if (pathname?.startsWith("/story")) return null;
+
   const closeMenu = () => setMenuOpen(false);
 
   const aboutActive = ABOUT_LINKS.some((link) => pathname === link.href);

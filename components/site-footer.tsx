@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { TideRule } from "@/components/ui";
 import { PHONE, PORTAL, REGISTRY } from "@/lib/site";
 
@@ -25,6 +28,11 @@ const COLUMNS = [
 ];
 
 export function SiteFooter() {
+  const pathname = usePathname();
+
+  // The /story brief closes with its own sign-off instead of the footer.
+  if (pathname?.startsWith("/story")) return null;
+
   return (
     <footer className="relative bg-abyss text-mist">
       <TideRule className="text-abyss" flip />
