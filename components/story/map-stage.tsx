@@ -386,6 +386,88 @@ export function MapStage({
         },
       });
     }
+
+    /* Chapter five — one lease at survey resolution. Boundary under
+       cultch under soundings, all added last so they ride above the
+       program layers at close zoom. */
+    if (data.layers.caseBoundary) {
+      ensureSource(map, "case-boundary", data.layers.caseBoundary);
+      ensureLayer(map, {
+        id: "case-boundary-fill",
+        type: "fill",
+        source: "case-boundary",
+        layout: { visibility: "none" },
+        paint: { "fill-color": CHART.tiers.med, "fill-opacity": 0.05 },
+      });
+      ensureLayer(map, {
+        id: "case-boundary-glow",
+        type: "line",
+        source: "case-boundary",
+        layout: { visibility: "none" },
+        paint: {
+          "line-color": CHART.tiers.med,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 6, 16, 14],
+          "line-opacity": 0.2,
+          "line-blur": 4,
+        },
+      });
+      ensureLayer(map, {
+        id: "case-boundary-line",
+        type: "line",
+        source: "case-boundary",
+        layout: { visibility: "none" },
+        paint: {
+          "line-color": CHART.tiers.med,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 1.5, 16, 2.5],
+          "line-opacity": 0.95,
+        },
+      });
+    }
+
+    if (data.layers.caseBedding) {
+      ensureSource(map, "case-bedding", prepareBedding(data.layers.caseBedding));
+      ensureLayer(map, {
+        id: "case-bedding-glow",
+        type: "line",
+        source: "case-bedding",
+        layout: { visibility: "none", "line-cap": "round" },
+        paint: {
+          "line-color": CHART.cultch,
+          "line-opacity": 0.14,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 6, 16, 12],
+          "line-blur": 3,
+        },
+      });
+      ensureLayer(map, {
+        id: "case-bedding",
+        type: "line",
+        source: "case-bedding",
+        layout: { visibility: "none", "line-cap": "round" },
+        paint: {
+          "line-color": CHART.cultch,
+          "line-opacity": 0.9,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 1.6, 16, 4],
+        },
+      });
+    }
+
+    if (data.layers.casePolling) {
+      ensureSource(map, "case-polling", prepareCoverage(data.layers.casePolling));
+      for (const id of ["case-polling-before", "case-polling-after"] as const) {
+        ensureLayer(map, {
+          id,
+          type: "circle",
+          source: "case-polling",
+          layout: { visibility: "none" },
+          paint: {
+            "circle-color": substrateColor(),
+            "circle-blur": 0.25,
+            "circle-opacity": 0.9,
+            "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2.2, 14, 3.6, 16, 6.5],
+          },
+        });
+      }
+    }
   }, [ready, data]);
 
   /* ---- invitation-only POIs, enabled by the story URL ---- */
@@ -463,6 +545,13 @@ export function MapStage({
     setVisible(map, "css-line", !!scene.layers.css);
     setVisible(map, "bedding", !!scene.layers.bedding);
     setVisible(map, "bedding-glow", !!scene.layers.bedding);
+    setVisible(map, "case-boundary-fill", !!scene.layers.case);
+    setVisible(map, "case-boundary-glow", !!scene.layers.case);
+    setVisible(map, "case-boundary-line", !!scene.layers.case);
+    setVisible(map, "case-polling-before", !!scene.layers.case);
+    setVisible(map, "case-polling-after", !!scene.layers.case);
+    setVisible(map, "case-bedding", !!scene.layers.caseBedding);
+    setVisible(map, "case-bedding-glow", !!scene.layers.caseBedding);
     setVisible(map, "scan-line-glow", false);
     setVisible(map, "scan-line", false);
 
@@ -486,6 +575,26 @@ export function MapStage({
     }
     if (map.getLayer("density")) {
       map.setPaintProperty("density", "fill-extrusion-height", densityHeight(1));
+    }
+    if (map.getLayer("case-polling-before")) {
+      /* Wipe scenes fly in still showing the old survey; the wipe itself
+         swaps it for the resurvey once on station. Reduced motion (and
+         every non-wipe scene) cuts straight to the scene's phase. */
+      const phase = scene.casePhase ?? "after";
+      if (scene.caseWipe && !reducedMotion) {
+        map.setFilter("case-polling-before", PHASE_BEFORE);
+        map.setFilter("case-polling-after", PHASE_NONE);
+      } else {
+        map.setFilter("case-polling-before", phase === "before" ? PHASE_BEFORE : PHASE_NONE);
+        map.setFilter("case-polling-after", phase === "after" ? PHASE_AFTER : PHASE_NONE);
+      }
+    }
+    if (map.getLayer("case-bedding")) {
+      /* Sweep scenes arrive over bare bottom; the placements replay there. */
+      const start: FilterSpecification | null =
+        scene.caseBeddingSweep && !reducedMotion ? ["<=", ["get", "_storyOrder"], 0] : null;
+      map.setFilter("case-bedding", start);
+      map.setFilter("case-bedding-glow", start);
     }
 
     /* reef tier filter — latest survey year only, or fills stack up */
@@ -610,6 +719,57 @@ export function MapStage({
         return;
       }
 
+      if (scene.caseBeddingSweep && map.getLayer("case-bedding") && data.layers.caseBedding) {
+        animateLayer(
+          sweepTimer,
+          3200,
+          (progress) => {
+            const filter: FilterSpecification = ["<=", ["get", "_storyOrder"], progress];
+            map.setFilter("case-bedding", filter);
+            map.setFilter("case-bedding-glow", filter);
+            onStageState?.({ status: "ACQUIRING", progress });
+          },
+          () => {
+            map.setFilter("case-bedding", null);
+            map.setFilter("case-bedding-glow", null);
+            finish();
+          },
+        );
+        return;
+      }
+
+      if (scene.caseWipe && map.getLayer("case-polling-after") && data.layers.casePolling) {
+        setVisible(map, "scan-line-glow", true);
+        setVisible(map, "scan-line", true);
+        animateLayer(
+          sweepTimer,
+          3600,
+          (progress) => {
+            const scanLongitude = bounds[0] + (bounds[2] - bounds[0]) * progress;
+            map.setFilter("case-polling-before", [
+              "all",
+              PHASE_BEFORE,
+              [">", ["get", "_storyLongitude"], scanLongitude],
+            ]);
+            map.setFilter("case-polling-after", [
+              "all",
+              PHASE_AFTER,
+              ["<=", ["get", "_storyLongitude"], scanLongitude],
+            ]);
+            setScanLine(map, bounds, progress);
+            onStageState?.({ status: "ACQUIRING", progress });
+          },
+          () => {
+            map.setFilter("case-polling-before", PHASE_NONE);
+            map.setFilter("case-polling-after", PHASE_AFTER);
+            setVisible(map, "scan-line-glow", false);
+            setVisible(map, "scan-line", false);
+            finish();
+          },
+        );
+        return;
+      }
+
       onStageState?.({ status: "ON STATION", progress: 1, vintage: latestCssYear });
     };
 
@@ -674,6 +834,28 @@ function tierColor(): ExpressionSpecification {
     "high",
     CHART.tiers.high,
     CHART.tiers.low,
+  ];
+}
+
+/* Case-study polling: which survey pass a sounding belongs to. Typed as
+   expressions so they compose under ["all", ...] and stand alone as filters. */
+const PHASE_BEFORE: ExpressionSpecification = ["==", ["get", "phase"], "before"];
+const PHASE_AFTER: ExpressionSpecification = ["==", ["get", "phase"], "after"];
+const PHASE_NONE: ExpressionSpecification = ["==", ["get", "phase"], "__none__"];
+
+function substrateColor(): ExpressionSpecification {
+  return [
+    "match",
+    ["get", "s"],
+    "mud",
+    CHART.substrate.mud,
+    "firm",
+    CHART.substrate.firm,
+    ["scat", "buried"],
+    CHART.substrate.scat,
+    "reef",
+    CHART.substrate.reef,
+    CHART.substrate.firm,
   ];
 }
 

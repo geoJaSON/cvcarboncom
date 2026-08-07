@@ -12,7 +12,12 @@ import {
   SeasonStack,
   VintageBars,
 } from "./charts";
-import { fmtCompact, fmtInt, type StoryManifest } from "./use-story-data";
+import {
+  fmtCompact,
+  fmtInt,
+  type CaseStudyManifest,
+  type StoryManifest,
+} from "./use-story-data";
 
 /* ------------------------------------------------------------------
    Editorial interludes. These are the opaque bands that slide over
@@ -70,9 +75,10 @@ export function LostBand() {
       />
       <div className="mt-14 grid gap-10 lg:grid-cols-2">
         <Figure
-          src="/images/historic-tonging.jpg"
-          alt="Oystermen tonging for oysters from a small boat, historical photograph"
-          caption="Hand tonging on public grounds. The fishery survived the mining era; the bottom under it mostly did not."
+          src="/images/historic-shell-dredge-1968.jpg"
+          alt="Two oystermen hold live oysters taken from a dredge basket, a giant shell dredge working the bay behind them"
+          aspect="aspect-[6/7]"
+          caption="East Galveston Bay, 1968. Oystermen hold live oysters picked up twenty feet from the cutter blade of the shell dredge behind them — a dredge destroying a 25–30 acre working reef. Houston Post, via Houston Public Library."
         />
         <Figure
           src="/images/historic-shell-roads-map.png"
@@ -87,6 +93,13 @@ export function LostBand() {
           cite="The premise of everything that follows"
         />
       </div>
+      <p className="mt-10 text-xs leading-relaxed text-ink/50">
+        Reference: zu Ermgassen, P.S.E., M.D. Spalding, B. Blake, L.D. Coen, B. Dumbauld, S.
+        Geiger, J.H. Grabowski, R. Grizzle, M. Luckenbach, K.A. McGraw, B. Rodney, J.L.
+        Ruesink, S.P. Powers, and R.D. Brumbaugh. 2012. Historical ecology with real numbers:
+        Past and present extent and biomass of an imperiled estuarine ecosystem.{" "}
+        <em>Proceedings of the Royal Society B</em> 279 (1742): 3393–3400.
+      </p>
     </BandShell>
   );
 }
@@ -218,6 +231,157 @@ export function ProofBand() {
           ))}
         </div>
       </div>
+    </BandShell>
+  );
+}
+
+/* ---- Chapter five's cover page: the case study, before the dive ---- */
+
+function fmtPct(n: number | null | undefined): string {
+  if (n == null) return "—";
+  return `${Number.isInteger(n) ? n.toFixed(0) : n.toFixed(1)}%`;
+}
+
+function fmtMonth(iso: string | undefined): string {
+  if (!iso) return "—";
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function fmtWindow(window: [string, string] | undefined): string {
+  if (!window) return "—";
+  const [a, b] = [fmtMonth(window[0]), fmtMonth(window[1])];
+  return a === b ? a : `${a} – ${b}`;
+}
+
+function CasePanel({
+  phase,
+  window,
+  figure,
+  unit,
+  children,
+  accent = false,
+}: {
+  phase: string;
+  window: string;
+  figure: string;
+  unit: string;
+  children: ReactNode;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className={`rounded-lg border p-7 ${
+        accent ? "border-verdigris/40 bg-verdigris/5" : "border-navy/10 bg-white/60"
+      }`}
+    >
+      <div className="flex items-baseline justify-between gap-4">
+        <p className="eyebrow">{phase}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-steel">{window}</p>
+      </div>
+      <p className="mt-5">
+        <span className="font-display text-5xl text-navy">{figure}</span>
+        <span className="ml-2 font-display text-lg text-steel">{unit}</span>
+      </p>
+      <p className="mt-4 text-sm leading-relaxed text-ink/70">{children}</p>
+    </div>
+  );
+}
+
+export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
+  const { before, after, bedding } = manifest;
+  return (
+    <BandShell>
+      <SectionHeading
+        eyebrow="Chapter five — the case study"
+        title="One lease, start to finish"
+        intro={
+          <p>
+            The whole argument, told once at full survey resolution. Lease{" "}
+            {manifest.lease_number} is {fmtInt(manifest.acres)} acres on{" "}
+            {manifest.location || "the water"}, {manifest.county} Parish. We sounded it for
+            months before the work, bedded it in one summer window, then sent the survey boat
+            back over the same bottom. What follows is that record, plotted where it happened.
+          </p>
+        }
+      />
+
+      <div className="mt-14 grid gap-6 lg:grid-cols-3">
+        <Reveal>
+          <CasePanel
+            phase="Before"
+            window={fmtWindow(before.window)}
+            figure={fmtPct(before.pct_unproductive)}
+            unit="unproductive bottom"
+          >
+            {fmtInt(before.points)} soundings found mud and bare clay bottom — clean, hard,
+            and empty. Nothing for an oyster larva to hold.
+          </CasePanel>
+        </Reveal>
+        <Reveal delay={90}>
+          <CasePanel
+            phase="The work"
+            window={fmtWindow(bedding.window)}
+            figure={fmtInt(bedding.placements)}
+            unit="placements"
+            accent
+          >
+            {bedding.materials.join(" and ")}
+            {bedding.short_tons != null
+              ? ` — ${fmtInt(bedding.short_tons)} short tons`
+              : ""}{" "}
+            over the side in one month, every pass GPS-logged from the barge.
+          </CasePanel>
+        </Reveal>
+        <Reveal delay={180}>
+          <CasePanel
+            phase="After"
+            window={fmtWindow(after.window)}
+            figure={fmtPct(after.pct_reef)}
+            unit="solid reef"
+          >
+            {fmtInt(after.points)} soundings on the resurvey — more than twice the density of
+            the first pass — and the bottom now rings hard.
+          </CasePanel>
+        </Reveal>
+      </div>
+
+      {!!manifest.media?.length && (
+        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {manifest.media.map((item) => (
+            <Figure key={item.src} src={item.src} alt={item.alt} caption={item.caption} />
+          ))}
+        </div>
+      )}
+
+      {manifest.video && (
+        <Reveal className="mt-16">
+          <figure>
+            <div className="overflow-hidden rounded-lg bg-navy">
+              {/* Ambient loops run muted; anything with audio keeps controls. */}
+              <video
+                className="w-full"
+                src={manifest.video.src}
+                poster={manifest.video.poster}
+                controls={!manifest.video.muteLoop}
+                autoPlay={!!manifest.video.muteLoop}
+                muted={!!manifest.video.muteLoop}
+                loop={!!manifest.video.muteLoop}
+                playsInline
+                preload="metadata"
+              />
+            </div>
+            {manifest.video.caption && (
+              <figcaption className="mt-3 text-sm leading-relaxed text-ink/70">
+                {manifest.video.caption}
+              </figcaption>
+            )}
+          </figure>
+        </Reveal>
+      )}
     </BandShell>
   );
 }

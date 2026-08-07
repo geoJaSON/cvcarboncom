@@ -14,7 +14,9 @@ export type LayerKey =
   | "bedding"
   | "coverage"
   | "density"
-  | "css";
+  | "css"
+  | "case"
+  | "caseBedding";
 
 export type SceneId =
   | "hero"
@@ -23,6 +25,9 @@ export type SceneId =
   | "coverage"
   | "density"
   | "return"
+  | "case-before"
+  | "case-work"
+  | "case-after"
   | "close";
 
 export type Scene = {
@@ -50,6 +55,12 @@ export type Scene = {
   cssPlayback?: boolean;
   /** Which density tiers of reef polygons to show. */
   cssTiers?: ("low" | "med" | "high")[];
+  /** Which survey pass of the case-study lease to sound. */
+  casePhase?: "before" | "after";
+  /** Replay the lease's cultch placements in deployment order. */
+  caseBeddingSweep?: boolean;
+  /** Scan-line wipe that resurveys the lease: before points swap to after. */
+  caseWipe?: boolean;
 };
 
 export const SCENES: Record<SceneId, Scene> = {
@@ -125,6 +136,45 @@ export const SCENES: Record<SceneId, Scene> = {
     cssPlayback: true,
     cssTiers: ["low", "med", "high"],
   },
+  /* Chapter five — the coast-wide argument told again on one lease.
+     Same camera target throughout; only the survey data changes. */
+  "case-before": {
+    id: "case-before",
+    view: "overall",
+    pitch: 30,
+    bearing: -8,
+    targetId: "lease-30260",
+    flightDuration: 3400,
+    orbitDegrees: 10,
+    orbitDuration: 4600,
+    layers: { graticule: true, counties: true, case: true },
+    casePhase: "before",
+  },
+  "case-work": {
+    id: "case-work",
+    view: "overall",
+    pitch: 50,
+    bearing: -24,
+    zoomBias: 0.1,
+    targetId: "lease-30260",
+    flightDuration: 2600,
+    layers: { graticule: true, counties: true, case: true, caseBedding: true },
+    casePhase: "before",
+    caseBeddingSweep: true,
+  },
+  "case-after": {
+    id: "case-after",
+    view: "overall",
+    pitch: 36,
+    bearing: 10,
+    targetId: "lease-30260",
+    flightDuration: 2600,
+    orbitDegrees: -12,
+    orbitDuration: 5200,
+    layers: { graticule: true, counties: true, case: true },
+    casePhase: "after",
+    caseWipe: true,
+  },
   close: {
     id: "close",
     view: "overall",
@@ -173,6 +223,16 @@ export const MAP_TARGETS = [
     suffix: "Bay",
     state: "MD · VA",
     bounds: [-77.2, 36.75, -75.35, 39.7] as BBox,
+    tag: "REGION",
+  },
+  {
+    id: "lease-30260",
+    name: "Lease 30260",
+    suffix: "Bay Boudreau",
+    state: "LA",
+    /* View extent baked by scripts/bake_lease_case.py (lease + soundings). */
+    bounds: [-89.37423, 29.99187, -89.35457, 29.99646] as BBox,
+    tag: "CASE STUDY",
   },
 ] as const;
 
@@ -202,4 +262,12 @@ export const CHART = {
   densityRamp: ["#16405f", "#3e7191", "#2f8a74", "#5ea183", "#d6c5aa"],
   /** Density bin edges in oysters per square meter (survey convention). */
   densityBins: [20, 119, 244],
+  /** Polling substrate classes — cool, bare bottom up to shell-gold reef. */
+  substrate: {
+    mud: "#16405f", // navy  — mud
+    firm: "#3e7191", // steel — firm/hard bottom
+    scat: "#c5d8e3", // mist  — scattered shell
+    buried: "#c5d8e3", // mist — buried shell
+    reef: "#d6c5aa", // sand  — solid reef
+  },
 } as const;

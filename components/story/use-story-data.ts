@@ -46,14 +46,53 @@ export type StoryManifest = {
 
 export type StoryFeatureCollection = FeatureCollection;
 
+/** Substrate codes shipped by scripts/bake_lease_case.py. */
+export type SubstrateCode = "mud" | "firm" | "scat" | "buried" | "reef";
+
+/* One lease told start to finish — chapter five's data pack, baked by
+   scripts/bake_lease_case.py from the raw survey exports. Optional like
+   everything else: no files, no chapter. */
+export type CaseStudyManifest = {
+  lease_number: string;
+  location: string;
+  county: string;
+  state: string;
+  acres: number | null;
+  bounds: { lease: BBox; view: BBox };
+  before: CasePhaseStats;
+  after: CasePhaseStats;
+  bedding: {
+    placements: number;
+    window: [string, string];
+    materials: string[];
+    /** Unitless lines count as tons; cubic-yard/no-amount lines excluded. */
+    short_tons: number | null;
+    excluded_from_total?: number;
+  };
+  media?: { src: string; alt: string; caption?: string }[];
+  video?: { src: string; poster?: string; caption?: string; muteLoop?: boolean } | null;
+};
+
+export type CasePhaseStats = {
+  points: number;
+  window: [string, string];
+  classes: Partial<Record<SubstrateCode, number>>;
+  pct_unproductive: number | null;
+  pct_reef: number | null;
+};
+
 export type StoryData = {
   manifest: StoryManifest | null;
+  caseManifest: CaseStudyManifest | null;
   layers: {
     bedding: StoryFeatureCollection | null;
     cssTiers: StoryFeatureCollection | null;
     density: StoryFeatureCollection | null;
     coverage: StoryFeatureCollection | null;
     counties: StoryFeatureCollection | null;
+    caseBoundary: StoryFeatureCollection | null;
+    casePolling: StoryFeatureCollection | null;
+    caseBedding: StoryFeatureCollection | null;
   };
   /** True once every fetch has settled, hit or miss. */
   ready: boolean;
@@ -76,12 +115,16 @@ async function fetchJson<T>(path: string): Promise<T | null> {
 export function useStoryData(): StoryData {
   const [data, setData] = useState<StoryData>({
     manifest: null,
+    caseManifest: null,
     layers: {
       bedding: null,
       cssTiers: null,
       density: null,
       coverage: null,
       counties: null,
+      caseBoundary: null,
+      casePolling: null,
+      caseBedding: null,
     },
     ready: false,
   });
@@ -90,18 +133,43 @@ export function useStoryData(): StoryData {
     let cancelled = false;
 
     (async () => {
-      const [manifest, bedding, cssTiers, density, coverage, counties] = await Promise.all([
+      const [
+        manifest,
+        bedding,
+        cssTiers,
+        density,
+        coverage,
+        counties,
+        caseManifest,
+        caseBoundary,
+        casePolling,
+        caseBedding,
+      ] = await Promise.all([
         fetchJson<StoryManifest>("manifest.json"),
         fetchJson<StoryFeatureCollection>("bedding.geojson"),
         fetchJson<StoryFeatureCollection>("css_tiers.geojson"),
         fetchJson<StoryFeatureCollection>("density.geojson"),
         fetchJson<StoryFeatureCollection>("coverage.geojson"),
         fetchJson<StoryFeatureCollection>("counties.geojson"),
+        fetchJson<CaseStudyManifest>("lease_30260.json"),
+        fetchJson<StoryFeatureCollection>("lease_30260_boundary.geojson"),
+        fetchJson<StoryFeatureCollection>("lease_30260_polling.geojson"),
+        fetchJson<StoryFeatureCollection>("lease_30260_bedding.geojson"),
       ]);
       if (cancelled) return;
       setData({
         manifest,
-        layers: { bedding, cssTiers, density, coverage, counties },
+        caseManifest,
+        layers: {
+          bedding,
+          cssTiers,
+          density,
+          coverage,
+          counties,
+          caseBoundary,
+          casePolling,
+          caseBedding,
+        },
         ready: true,
       });
     })();

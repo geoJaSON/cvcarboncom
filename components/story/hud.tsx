@@ -25,6 +25,7 @@ function heading(value: number | undefined): string {
 
 const LEGENDS: { key: keyof (typeof SCENES)["hero"]["layers"]; label: string; color: string }[] = [
   { key: "bedding", label: "Cultch placed", color: CHART.cultch },
+  { key: "caseBedding", label: "Cultch placed", color: CHART.cultch },
   { key: "coverage", label: "Survey soundings", color: CHART.coverage },
 ];
 
@@ -32,6 +33,14 @@ const TIER_LEGEND = [
   { label: `${CHART.densityBins[0]}–${CHART.densityBins[1]} oysters/m²`, color: CHART.tiers.low },
   { label: `${CHART.densityBins[1]}–${CHART.densityBins[2]} oysters/m²`, color: CHART.tiers.med },
   { label: `≥ ${CHART.densityBins[2]} oysters/m²`, color: CHART.tiers.high },
+];
+
+/* Polling substrate classes, worst bottom first — chapter five's key. */
+const SUBSTRATE_LEGEND = [
+  { label: "Mud", color: CHART.substrate.mud },
+  { label: "Clay", color: CHART.substrate.firm },
+  { label: "Scattered shell", color: CHART.substrate.scat },
+  { label: "Solid reef", color: CHART.substrate.reef },
 ];
 
 export function Hud({
@@ -53,7 +62,8 @@ export function Hud({
 }) {
   const layers = SCENES[scene].layers;
   const showTiers = !!layers.density || !!layers.css;
-  const showLegend = showTiers || LEGENDS.some((legend) => layers[legend.key]);
+  const showSubstrate = !!layers.case;
+  const showLegend = showTiers || showSubstrate || LEGENDS.some((legend) => layers[legend.key]);
   const canTarget = !!layers.counties;
   const target = mapTarget(targetId);
   const compassBearing = view?.bearing ?? 0;
@@ -112,7 +122,9 @@ export function Hud({
           {target && (
             <span>
               {target.state}
-              {"geoid" in target ? ` · GEOID ${target.geoid}` : " · REGION"}
+              {"geoid" in target
+                ? ` · GEOID ${target.geoid}`
+                : ` · ${"tag" in target ? target.tag : "REGION"}`}
             </span>
           )}
         </div>
@@ -177,6 +189,13 @@ export function Hud({
                     <div key={tier.label} className="flex items-center gap-2.5">
                       <span className="story-swatch" style={{ background: tier.color }} />
                       <span>{tier.label}</span>
+                    </div>
+                  ))}
+                {showSubstrate &&
+                  SUBSTRATE_LEGEND.map((entry) => (
+                    <div key={entry.label} className="flex items-center gap-2.5">
+                      <span className="story-swatch" style={{ background: entry.color }} />
+                      <span>{entry.label}</span>
                     </div>
                   ))}
               </div>

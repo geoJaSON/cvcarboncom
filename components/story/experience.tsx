@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { EMAIL } from "@/lib/site";
 import "./story.css";
 import {
+  CaseStudyBand,
   CoBenefitsBand,
   CreditsBand,
   LostBand,
@@ -38,6 +39,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
   const reducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const viewThrottle = useRef(0);
+  const hasCaseStudy = data.caseManifest != null;
 
   /* Scene trigger: the section straddling the viewport's center wins.
      Opaque bands (data-covered) also fade the HUD out while they hold
@@ -64,7 +66,9 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
     );
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-  }, []);
+    // Chapter five's sections mount once the case-study pack loads, so
+    // the observer must be rebuilt when they appear.
+  }, [hasCaseStudy]);
 
   /* The map fires per animation frame during a 2.4 s ease; the HUD only
      needs ~8 updates a second, and each setView re-renders this tree. */
@@ -83,6 +87,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
 
   const snapshotDate = data.manifest?.snapshot_date;
   const s = data.manifest?.stats;
+  const cs = data.caseManifest;
 
   return (
     <div ref={rootRef} className="story-root relative">
@@ -124,11 +129,12 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
               CV Carbon · Field operations brief · Shared by invitation
             </p>
             <h1 className="mt-7 font-display text-4xl leading-[1.05] text-white sm:text-6xl">
-              The reef is going back in the water.
+              We are bringing the reef back!
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-mist/85 sm:text-lg">
-              Plotted below, from our own survey database: the shell we placed, the acres we
-              measured, and the carbon the reef is holding — on the water where it happened.
+              Plotted below, from our own survey database: the cultch (shells, recycled
+              concrete, crushed limestone) we placed, the acres we measured, and the carbon the
+              reef is holding — on the water where it happened.
             </p>
             <p className="story-chart-note mt-9">
               Chart № {snapshotDate ?? "PRE-RELEASE"} · Soundings in oysters per square meter
@@ -155,10 +161,14 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
             title="An engine of the coast, dismantled"
           >
             <p>
-              An estimated 85 percent of the world&rsquo;s oyster reef is gone — the most
-              degraded marine habitat on Earth. On this coast the reefs didn&rsquo;t collapse;
-              they were <strong>mined</strong>, dredged up for shell until flat mud was all
-              that was left for the next generation of oysters to land on.
+              An estimated 85 percent of the Atlantic and Gulf Coasts&rsquo; oyster reef is
+              gone — the most degraded marine habitat on Earth. A major cause of the collapse
+              of our oyster reefs was <strong>shell mining</strong>. For more than 100 years,
+              shells were mined from our bays, leaving a muddy landscape incapable of
+              regenerating the lost reef on its own.
+            </p>
+            <p className="story-chart-note !mt-4 normal-case tracking-normal">
+              zu Ermgassen et al. 2012, Proceedings of the Royal Society B 279: 3393–3400
             </p>
           </ChapterCard>
         </ChartStep>
@@ -206,11 +216,10 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         </ChartStep>
 
         <ChartStep scene="density" tall>
-          <ChapterCard eyebrow="Chapter three — the proof" title="Counted, not modeled">
+          <ChapterCard eyebrow="Chapter three — the proof" title="Counted, not modeled, and independently verified">
             <p>
-              Each column is measured oyster density — animals counted by hand on the culling
-              board, binned at the survey convention of 20, 119, and 244 oysters per square
-              meter. Where the columns turn shell-gold, the reef is at commercial density.
+              Each column is measured carbon capture and sequestration — oysters are counted by hand on the board, binned at the survey convention of 20, 119, and 244 oysters per square
+              meter. Where the columns turn shell-gold, the reef is at maxiumum carbon capture. Results are independently verified by a disinterested third party agency.
             </p>
           </ChapterCard>
         </ChartStep>
@@ -238,6 +247,79 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
             />
           </ChapterCard>
         </ChartStep>
+
+        {/* ---- Chapter five — the case study (lights up with its data pack) ---- */}
+        {cs && (
+          <>
+            <div data-scene="case-before" data-covered="true">
+              <CaseStudyBand manifest={cs} />
+            </div>
+
+            <ChartStep scene="case-before" tall>
+              <ChapterCard
+                eyebrow="Chapter five — the case study"
+                title={`${cs.location}, before the shell`}
+              >
+                <p>
+                  Lease {cs.lease_number}: {fmtInt(cs.acres)} acres in {cs.county} Parish.
+                  Months of soundings before the work found what a mined coast leaves behind —
+                  bare clay bottom and mud, with almost nothing for a larva to land on.
+                </p>
+                <CardStats
+                  stats={[
+                    { value: cs.before.points, label: "soundings on the lease" },
+                    {
+                      value: cs.before.pct_unproductive,
+                      label: "mud or bare clay bottom",
+                      decimals: 1,
+                      suffix: "%",
+                    },
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+
+            <ChartStep scene="case-work" tall>
+              <ChapterCard eyebrow="Chapter five — the work" title="One month of shell">
+                <p>
+                  {cs.bedding.materials.join(" and ")} went over the side in {fmtInt(cs.bedding.placements)}{" "}
+                  logged placements — replayed here in the order the barge made them.
+                </p>
+                <CardStats
+                  stats={[
+                    { value: cs.bedding.placements, label: "placements, May–Jun 2025" },
+                    // Tonnage joins once the confirmed figure lands in the bake —
+                    // no tile beats a dash on a sales page.
+                    ...(cs.bedding.short_tons != null
+                      ? [{ value: cs.bedding.short_tons, label: "short tons placed" }]
+                      : []),
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+
+            <ChartStep scene="case-after" tall>
+              <ChapterCard eyebrow="Chapter five — the return" title="Resurveyed: solid reef">
+                <p>
+                  Six months on, the survey boat crossed the same bottom at more than twice the
+                  sounding density. Where the chart turns shell-gold, the substrate now rings
+                  hard — a working reef where the mud was.
+                </p>
+                <CardStats
+                  stats={[
+                    { value: cs.after.points, label: "soundings, Dec 2025" },
+                    {
+                      value: cs.after.pct_reef,
+                      label: "of the lease reads solid reef",
+                      decimals: 1,
+                      suffix: "%",
+                    },
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+          </>
+        )}
 
         <div data-scene="close" data-covered="true">
           <TrajectoryBand manifest={data.manifest} />
@@ -357,13 +439,24 @@ function ChapterCard({
 function CardStats({
   stats,
 }: {
-  stats: { value: number | undefined | null; label: string; compact?: boolean }[];
+  stats: {
+    value: number | undefined | null;
+    label: string;
+    compact?: boolean;
+    decimals?: number;
+    suffix?: string;
+  }[];
 }) {
   return (
     <div className="mt-7 flex flex-wrap gap-x-8 gap-y-5 border-t border-white/10 pt-6">
       {stats.map((stat) => (
         <div key={stat.label}>
-          <CountUp value={stat.value} compact={stat.compact} />
+          <CountUp
+            value={stat.value}
+            compact={stat.compact}
+            decimals={stat.decimals}
+            suffix={stat.suffix}
+          />
           <p className="story-chart-note mt-1.5 normal-case tracking-normal">{stat.label}</p>
         </div>
       ))}
@@ -373,7 +466,17 @@ function CardStats({
 
 /** Fraunces numeral that counts up the first time it becomes visible.
     Renders an em dash until the snapshot supplies a value. */
-function CountUp({ value, compact = false }: { value: number | undefined | null; compact?: boolean }) {
+function CountUp({
+  value,
+  compact = false,
+  decimals,
+  suffix,
+}: {
+  value: number | undefined | null;
+  compact?: boolean;
+  decimals?: number;
+  suffix?: string;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   const [progress, setProgress] = useState(0);
 
@@ -408,9 +511,18 @@ function CountUp({ value, compact = false }: { value: number | undefined | null;
   }, [value]);
 
   const shown = value == null ? null : value * progress;
+  const text =
+    shown == null
+      ? "—"
+      : decimals != null
+        ? shown.toFixed(decimals)
+        : compact
+          ? fmtCompact(shown)
+          : fmtInt(shown);
   return (
     <span ref={ref} className="font-display text-3xl text-white">
-      {value == null ? "—" : compact ? fmtCompact(shown) : fmtInt(shown)}
+      {text}
+      {value != null && suffix ? suffix : null}
     </span>
   );
 }

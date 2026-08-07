@@ -27,7 +27,7 @@ export default async function StoryPage({
         <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "2rem" }}>
           <div style={{ maxWidth: "36rem", textAlign: "center" }}>
             <h1 className="font-display" style={{ fontSize: "2rem", color: "#fff" }}>
-              The reef is going back in the water.
+              We are bringing the reef back!
             </h1>
             <p style={{ marginTop: "1rem", color: "#c5d8e3" }}>
               This brief is an interactive chart and needs JavaScript. For the story in person,
