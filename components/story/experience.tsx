@@ -89,6 +89,13 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
   const snapshotDate = data.manifest?.snapshot_date;
   const s = data.manifest?.stats;
   const cs = data.caseManifest;
+  /* Reef acreage created on the lease: the sounding share that flipped
+     to solid reef, applied to the lease's acres and floored — claim
+     down, never up. (106 ac × 73.2% → 77.) */
+  const newReefAcres =
+    cs?.acres != null && cs.after.pct_reef != null && cs.before.pct_reef != null
+      ? Math.floor((cs.acres * (cs.after.pct_reef - cs.before.pct_reef)) / 100)
+      : null;
 
   return (
     <div ref={rootRef} className="story-root relative">
@@ -202,8 +209,8 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         <ChartStep scene="coverage" tall>
           <ChapterCard eyebrow="Chapter three — the proof" title="We sound every acre we claim">
             <p>
-              The glow is our survey record: continuous bottom soundings plus dredge tows and
-              point samples, all geolocated, all repeatable. This is not an artist&rsquo;s
+              Our strength is our data: continuous bottom soundings plus dredge tows and
+              point samples, all geolocated, all repeatable. We have compiled the works largest dataset of ground-truthed substrate data. This is not an artist&rsquo;s
               rendering of a reef — it is the reef&rsquo;s paper trail.
             </p>
             <CardStats
@@ -217,7 +224,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         </ChartStep>
 
         <ChartStep scene="density" tall>
-          <ChapterCard eyebrow="Chapter three — the proof" title="Counted, not modeled, and independently verified">
+          <ChapterCard eyebrow="Chapter three — the proof" title="Hand counted and independently verified, not modeled">
             <p>
               Each column is measured carbon capture and sequestration — oysters are counted by hand on the board, binned at the survey convention of 20, 119, and 244 oysters per square
               meter. Where the columns turn shell-gold, the reef is at maxiumum carbon capture. Results are independently verified by a disinterested third party agency.
@@ -304,10 +311,14 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
                 <p>
                   Six months on, the survey boat crossed the same bottom at more than twice the
                   sounding density. Where the chart turns shell-gold, the substrate now rings
-                  hard — a working reef where the mud was.
+                  hard — {newReefAcres != null ? `${fmtInt(newReefAcres)} acres of ` : ""}new
+                  reef, created in a single season, where before there was none.
                 </p>
                 <CardStats
                   stats={[
+                    ...(newReefAcres != null
+                      ? [{ value: newReefAcres, label: "acres of new reef created" }]
+                      : []),
                     { value: cs.after.points, label: "soundings, Dec 2025" },
                     {
                       value: cs.after.pct_reef,

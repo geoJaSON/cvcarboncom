@@ -32,7 +32,7 @@ const LEGENDS: { key: keyof (typeof SCENES)["hero"]["layers"]; label: string; co
 const TIER_LEGEND = [
   { label: `~6 MT CO2e per Acre`, color: CHART.tiers.low },
   { label: `~12 MT CO2e per Acre`, color: CHART.tiers.med },
-  { label: `19 MT CO2e per Acre`, color: CHART.tiers.high },
+  { label: `~19 MT CO2e per Acre`, color: CHART.tiers.high },
 ];
 
 /* Polling substrate classes, worst bottom first — chapter five's key. */

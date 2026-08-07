@@ -421,7 +421,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
     <BandShell>
       <SectionHeading
         eyebrow="Why this ton and not another"
-        title="The carbon is the receipt. The reef is the point."
+        title="The carbon is the means. The reef is the point."
         intro={
           <p>
             A ton of CO₂e is the same molecule wherever it comes from. What differs is
