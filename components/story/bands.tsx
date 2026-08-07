@@ -42,7 +42,7 @@ const ACRE_M2 = 4046.8564;
 const JOBS_PER_MILLION = 18.55; // Hall & DeAngelis 2022
 const LB_PER_KG = 2.20462;
 
-function BandShell({
+export function BandShell({
   children,
   tone = "pearl",
 }: {
@@ -110,7 +110,7 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
     <BandShell>
       <SectionHeading
         eyebrow="How a reef starts"
-        title="Limestone and shell, spat and season"
+        title="Cultch, spat and season"
         intro={
           <p>
             Cultch is the substrate oyster larvae attach to when they metamorphose — virtually
@@ -130,7 +130,7 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
         <Figure
           src="/images/cultch-pile.jpg"
           alt="Pile of oyster shell cultch staged on shore"
-          caption="Staged shell. Every ton is weighed and logged before it moves."
+          caption=""
         />
         <Figure
           src="/images/cultch-concrete.jpg"
@@ -140,7 +140,7 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
         <Figure
           src="/images/spat-on-cultch.jpg"
           alt="Juvenile oyster spat attached to a piece of cultch"
-          caption="Spat on cultch — the return on investment, at actual size."
+          caption="The return on investment, at actual size."
         />
       </div>
       <PerspectiveTiles manifest={manifest} />

@@ -81,9 +81,16 @@ export type CasePhaseStats = {
   pct_reef: number | null;
 };
 
+/* The field gallery — overflow home for photos that don't fit the
+   curated bands. Maintained by scripts/add_gallery_photos.py; absent
+   file, absent band. */
+export type GalleryPhoto = { src: string; alt: string; caption?: string };
+export type GalleryManifest = { photos: GalleryPhoto[] };
+
 export type StoryData = {
   manifest: StoryManifest | null;
   caseManifest: CaseStudyManifest | null;
+  gallery: GalleryManifest | null;
   layers: {
     bedding: StoryFeatureCollection | null;
     cssTiers: StoryFeatureCollection | null;
@@ -116,6 +123,7 @@ export function useStoryData(): StoryData {
   const [data, setData] = useState<StoryData>({
     manifest: null,
     caseManifest: null,
+    gallery: null,
     layers: {
       bedding: null,
       cssTiers: null,
@@ -144,6 +152,7 @@ export function useStoryData(): StoryData {
         caseBoundary,
         casePolling,
         caseBedding,
+        gallery,
       ] = await Promise.all([
         fetchJson<StoryManifest>("manifest.json"),
         fetchJson<StoryFeatureCollection>("bedding.geojson"),
@@ -155,11 +164,13 @@ export function useStoryData(): StoryData {
         fetchJson<StoryFeatureCollection>("lease_30260_boundary.geojson"),
         fetchJson<StoryFeatureCollection>("lease_30260_polling.geojson"),
         fetchJson<StoryFeatureCollection>("lease_30260_bedding.geojson"),
+        fetchJson<GalleryManifest>("gallery.json"),
       ]);
       if (cancelled) return;
       setData({
         manifest,
         caseManifest,
+        gallery,
         layers: {
           bedding,
           cssTiers,

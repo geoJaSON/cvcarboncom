@@ -13,6 +13,7 @@ import {
   TrajectoryBand,
   WorkBand,
 } from "./bands";
+import { GalleryBand } from "./gallery";
 import { Hud } from "./hud";
 import { MapStage, type ChartView, type StageState } from "./map-stage";
 import { SCENES, type SceneId } from "./scenes";
@@ -179,7 +180,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
 
         {/* ---- Chapter two — the work ---- */}
         <ChartStep scene="bedding" tall>
-          <ChapterCard eyebrow="Chapter two — the work" title="Shell goes back in the water">
+          <ChapterCard eyebrow="Chapter two — the work" title="Shell and other cultch materials go back in the water">
             <p>
               Every gold trace on this chart is a cultch placement, GPS-logged from the barge
               that made it — the hard bottom this coast lost, going back in at working scale.
@@ -325,6 +326,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
           <TrajectoryBand manifest={data.manifest} />
           <CreditsBand manifest={data.manifest} />
           <CoBenefitsBand manifest={data.manifest} />
+          {data.gallery && <GalleryBand gallery={data.gallery} />}
         </div>
 
         {/* ---- Close ---- */}
