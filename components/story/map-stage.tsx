@@ -21,6 +21,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
    which predev/prebuild run automatically). */
 setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 import { useEffect, useRef, useState } from "react";
+import { CHESAPEAKE_OUTLINE } from "./chesapeake-outline";
 import { CHART, FALLBACK_BOUNDS, SCENES, mapTarget, type SceneId } from "./scenes";
 import type { BBox, StoryData, StoryFeatureCollection } from "./use-story-data";
 import { VENTURE_POIS, type VenturePoi } from "./venture-pois";
@@ -154,6 +155,43 @@ export function MapStage({
     if (!map || !ready) return;
 
     ensureGraticule(map, data.manifest?.bounds?.overall ?? FALLBACK_BOUNDS);
+
+    ensureSource(
+      map,
+      "regional-targets",
+      CHESAPEAKE_OUTLINE,
+      "OpenStreetMap contributors, Chesapeake Bay relation 11884052",
+    );
+    ensureLayer(map, {
+      id: "regional-target-fill",
+      type: "fill",
+      source: "regional-targets",
+      layout: { visibility: "none" },
+      paint: { "fill-color": CHART.tiers.med, "fill-opacity": 0.09 },
+    });
+    ensureLayer(map, {
+      id: "regional-target-glow",
+      type: "line",
+      source: "regional-targets",
+      layout: { visibility: "none" },
+      paint: {
+        "line-color": CHART.tiers.med,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 5, 7, 10, 12],
+        "line-opacity": 0.2,
+        "line-blur": 4,
+      },
+    });
+    ensureLayer(map, {
+      id: "regional-target-line",
+      type: "line",
+      source: "regional-targets",
+      layout: { visibility: "none" },
+      paint: {
+        "line-color": CHART.tiers.med,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 5, 1.5, 10, 2.5],
+        "line-opacity": 0.95,
+      },
+    });
 
     if (data.layers.counties) {
       ensureSource(
@@ -377,6 +415,7 @@ export function MapStage({
     const selectedTarget = mapTarget(activeTarget);
     const activeGeoid =
       selectedTarget && "geoid" in selectedTarget ? selectedTarget.geoid : null;
+    const activeRegion = activeTarget === "chesapeake-bay";
     const bounds =
       resolveTargetBounds(data.layers.counties, activeTarget) ?? resolveBounds(scene.view, data);
 
@@ -414,6 +453,9 @@ export function MapStage({
     setVisible(map, "county-target-fill", !!scene.layers.counties && !!activeGeoid);
     setVisible(map, "county-target-glow", !!scene.layers.counties && !!activeGeoid);
     setVisible(map, "county-target-line", !!scene.layers.counties && !!activeGeoid);
+    setVisible(map, "regional-target-fill", !!scene.layers.counties && activeRegion);
+    setVisible(map, "regional-target-glow", !!scene.layers.counties && activeRegion);
+    setVisible(map, "regional-target-line", !!scene.layers.counties && activeRegion);
     setVisible(map, "coverage-glow", !!scene.layers.coverage);
     setVisible(map, "coverage", !!scene.layers.coverage);
     setVisible(map, "density", !!scene.layers.density);
