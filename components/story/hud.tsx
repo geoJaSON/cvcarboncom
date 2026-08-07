@@ -30,9 +30,9 @@ const LEGENDS: { key: keyof (typeof SCENES)["hero"]["layers"]; label: string; co
 ];
 
 const TIER_LEGEND = [
-  { label: `${CHART.densityBins[0]}–${CHART.densityBins[1]} oysters/m²`, color: CHART.tiers.low },
-  { label: `${CHART.densityBins[1]}–${CHART.densityBins[2]} oysters/m²`, color: CHART.tiers.med },
-  { label: `≥ ${CHART.densityBins[2]} oysters/m²`, color: CHART.tiers.high },
+  { label: `~6 MT CO2e per Acre`, color: CHART.tiers.low },
+  { label: `~12 MT CO2e per Acre`, color: CHART.tiers.med },
+  { label: `19 MT CO2e per Acre`, color: CHART.tiers.high },
 ];
 
 /* Polling substrate classes, worst bottom first — chapter five's key. */
@@ -69,9 +69,14 @@ export function Hud({
   const compassBearing = view?.bearing ?? 0;
 
   return (
+    /* pointer-events-none is unconditional: this root spans the whole
+       viewport above the narrative (z-20 > z-10), so with default
+       hit-testing it silently shields every band control and the close
+       CTAs beneath it. The flight deck opts back in via
+       .story-target-panel { pointer-events: auto }. */
     <div
-      className={`fixed inset-0 z-20 transition-opacity duration-700 ${
-        visible ? "story-hud-visible opacity-100" : "pointer-events-none invisible opacity-0"
+      className={`pointer-events-none fixed inset-0 z-20 transition-opacity duration-700 ${
+        visible ? "story-hud-visible opacity-100" : "invisible opacity-0"
       }`}
     >
       {/* A light targeting reticle makes the authored orbit legible without

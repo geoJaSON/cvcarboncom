@@ -130,7 +130,7 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
         <Figure
           src="/images/cultch-pile.jpg"
           alt="Pile of oyster shell cultch staged on shore"
-          caption=""
+          caption="Shells pulled from a dredge sample."
         />
         <Figure
           src="/images/cultch-concrete.jpg"

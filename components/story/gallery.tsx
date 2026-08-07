@@ -24,6 +24,18 @@ export function GalleryBand({ gallery }: { gallery: GalleryManifest }) {
   /* The tile that opened the lightbox — focus goes home to it on close.
      Captured explicitly because Safari doesn't focus buttons on click. */
   const openerRef = useRef<HTMLElement | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  /* Collapsing removes rows above the button while the scroll offset
+     stays put, teleporting the viewport past the gallery — pull the
+     grid back into view after the shrink commits. */
+  const wasExpanded = useRef(false);
+  useEffect(() => {
+    if (wasExpanded.current && !expanded) {
+      gridRef.current?.scrollIntoView({ block: "nearest" });
+    }
+    wasExpanded.current = expanded;
+  }, [expanded]);
 
   if (photos.length === 0) return null;
   const shown = expanded ? photos : photos.slice(0, COLLAPSED_COUNT);
@@ -43,7 +55,10 @@ export function GalleryBand({ gallery }: { gallery: GalleryManifest }) {
         }
       />
 
-      <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+      <div
+        ref={gridRef}
+        className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
+      >
         {shown.map((photo, index) => (
           <Reveal key={photo.src} delay={(index % 4) * 60}>
             <button
@@ -115,18 +130,40 @@ function Lightbox({
   const closeRef = useRef<HTMLButtonElement>(null);
   const photo = photos[index];
 
-  /* Scroll lock + initial focus; hand focus back to the opening tile
-     when the dialog unmounts. */
+  /* Scroll lock + modality. `overflow: hidden` alone doesn't stop iOS
+     Safari touch-scrolling the document, so pin the body at its current
+     offset instead — the layout doesn't shift, so the scene observer
+     stays quiet. `aria-modal` doesn't actually confine focus or
+     screen-reader virtual cursors, so everything outside the portal
+     goes inert while we're open. Focus hands back to the opening tile
+     on unmount, without yanking the restored scroll position around. */
   useEffect(() => {
     const opener = openerRef.current;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    closeRef.current?.focus();
+    const dialog = dialogRef.current;
+    const scrollY = window.scrollY;
+    const { position, top, left, right, width } = document.body.style;
+    Object.assign(document.body.style, {
+      position: "fixed",
+      top: `-${scrollY}px`,
+      left: "0",
+      right: "0",
+      width: "100%",
+    });
+    const inerted: HTMLElement[] = [];
+    for (const child of document.body.children) {
+      if (child instanceof HTMLElement && child !== dialog && !child.contains(dialog) && !child.inert) {
+        child.inert = true;
+        inerted.push(child);
+      }
+    }
+    closeRef.current?.focus({ preventScroll: true });
     return () => {
-      document.body.style.overflow = previousOverflow;
-      opener?.focus();
+      for (const el of inerted) el.inert = false;
+      Object.assign(document.body.style, { position, top, left, right, width });
+      window.scrollTo(0, scrollY);
+      opener?.focus({ preventScroll: true });
     };
-    // openerRef is stable; capture happens once on mount.
+    // openerRef/dialogRef are stable; the lock spans the dialog's lifetime.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -143,14 +180,24 @@ function Lightbox({
         event.preventDefault();
         onIndex((index + 1) % photos.length);
       } else if (event.key === "Tab") {
-        const focusable = dialogRef.current?.querySelectorAll<HTMLElement>("button");
-        if (!focusable || focusable.length === 0) return;
+        /* Belt to the inert braces: recapture focus if it ever lands
+           outside the dialog (e.g. a click on a non-focusable area
+           blurred to <body>), then wrap at the ends. */
+        const dialog = dialogRef.current;
+        const focusable = dialog?.querySelectorAll<HTMLElement>(
+          'button, a[href], [tabindex]:not([tabindex="-1"])',
+        );
+        if (!dialog || !focusable || focusable.length === 0) return;
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
+        const active = document.activeElement;
+        if (!active || !dialog.contains(active)) {
+          event.preventDefault();
+          (event.shiftKey ? last : first).focus();
+        } else if (event.shiftKey && active === first) {
           event.preventDefault();
           last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
+        } else if (!event.shiftKey && active === last) {
           event.preventDefault();
           first.focus();
         }
@@ -170,8 +217,15 @@ function Lightbox({
       aria-modal="true"
       aria-label={`Photo ${index + 1} of ${photos.length}: ${photo.alt}`}
       className="fixed inset-0 z-50 flex flex-col bg-abyss"
-      onClick={onClose}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
     >
+      {/* Ancestor aria-label changes are never announced; this is. */}
+      <span className="sr-only" aria-live="polite">
+        Photo {index + 1} of {photos.length}: {photo.alt}
+      </span>
+
       <div className="flex items-center justify-between px-4 py-3 sm:px-6">
         <span className="story-chart-note">
           {index + 1} / {photos.length}
@@ -179,10 +233,7 @@ function Lightbox({
         <button
           ref={closeRef}
           type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onClose();
-          }}
+          onClick={onClose}
           aria-label="Close gallery"
           className="rounded-full p-2.5 text-mist transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-verdigris"
         >
@@ -190,11 +241,13 @@ function Lightbox({
         </button>
       </div>
 
-      <div className="relative min-h-0 flex-1 px-4 sm:px-20">
-        <div
-          className="relative h-full w-full"
-          onClick={(event) => event.stopPropagation()}
-        >
+      <div
+        className="relative min-h-0 flex-1 px-4 sm:px-20"
+        onClick={(event) => {
+          if (event.target === event.currentTarget) onClose();
+        }}
+      >
+        <div className="relative h-full w-full">
           <Image
             key={photo.src}
             src={photo.src}
@@ -247,10 +300,7 @@ function LightboxNav({
     <button
       type="button"
       aria-label={label}
-      onClick={(event) => {
-        event.stopPropagation();
-        onClick();
-      }}
+      onClick={onClick}
       className={`absolute top-1/2 -translate-y-1/2 rounded-full bg-navy/70 p-3 text-mist transition-colors hover:bg-navy hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-verdigris ${className}`}
     >
       <LightboxIcon path={path} />

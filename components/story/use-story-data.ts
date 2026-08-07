@@ -84,7 +84,13 @@ export type CasePhaseStats = {
 /* The field gallery — overflow home for photos that don't fit the
    curated bands. Maintained by scripts/add_gallery_photos.py; absent
    file, absent band. */
-export type GalleryPhoto = { src: string; alt: string; caption?: string };
+export type GalleryPhoto = {
+  src: string;
+  alt: string;
+  caption?: string;
+  /** Original filename, recorded by add_gallery_photos.py for dedupe. */
+  source?: string;
+};
 export type GalleryManifest = { photos: GalleryPhoto[] };
 
 export type StoryData = {
