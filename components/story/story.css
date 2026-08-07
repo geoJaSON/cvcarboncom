@@ -56,6 +56,67 @@
   opacity: 0.7;
 }
 
+/* URL-gated partner/site points. These remain map annotations rather
+   than controls, so they cannot intercept scrolling or targeting. */
+.story-venture-poi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  filter: drop-shadow(0 0.45rem 0.7rem rgba(1, 8, 14, 0.72));
+}
+
+.story-venture-poi-label {
+  width: max-content;
+  max-width: min(15rem, 42vw);
+  padding: 0.48rem 0.58rem;
+  border: 1px solid color-mix(in srgb, var(--color-sand) 52%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-abyss) 88%, transparent);
+  color: color-mix(in srgb, var(--color-mist) 82%, transparent);
+  font-family: var(--font-chart);
+  font-size: 0.55rem;
+  line-height: 1.35;
+  letter-spacing: 0.045em;
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+
+.story-venture-poi-label strong,
+.story-venture-poi-label span,
+.story-venture-poi-label small {
+  display: block;
+}
+
+.story-venture-poi-label strong {
+  margin-bottom: 0.15rem;
+  color: var(--color-pearl);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.story-venture-poi-label small {
+  margin-top: 0.18rem;
+  color: var(--color-sand);
+  font-size: 0.52rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.story-venture-poi > i {
+  width: 0.72rem;
+  height: 0.72rem;
+  margin-top: 0.3rem;
+  border: 2px solid var(--color-pearl);
+  border-radius: 999px;
+  background: var(--color-sand);
+  box-shadow:
+    0 0 0 0.22rem rgba(214, 197, 170, 0.24),
+    0 0 1rem rgba(214, 197, 170, 0.72);
+}
+
 /* Chart annotations — small caps, tracked out, monospace. */
 .story-chart-note {
   font-family: var(--font-chart);

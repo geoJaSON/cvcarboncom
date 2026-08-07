@@ -33,8 +33,8 @@ export type Scene = {
   bearing: number;
   /** Extra zoom applied after fitBounds, to push in or pull back. */
   zoomBias?: number;
-  /** County-equivalent target used for the scene's authored flight. */
-  targetGeoid?: string;
+  /** Authored area target used for the scene's flight. */
+  targetId?: string;
   /** Flight and on-station camera choreography, in milliseconds/degrees. */
   flightDuration?: number;
   orbitDegrees?: number;
@@ -78,7 +78,7 @@ export const SCENES: Record<SceneId, Scene> = {
     pitch: 48,
     bearing: -16,
     zoomBias: 0.2,
-    targetGeoid: "22075",
+    targetId: "plaquemines",
     flightDuration: 3000,
     orbitDegrees: 18,
     orbitDuration: 4200,
@@ -91,7 +91,7 @@ export const SCENES: Record<SceneId, Scene> = {
     pitch: 38,
     bearing: 12,
     zoomBias: 0.2,
-    targetGeoid: "22109",
+    targetId: "terrebonne",
     flightDuration: 2900,
     orbitDegrees: -14,
     orbitDuration: 4000,
@@ -104,7 +104,7 @@ export const SCENES: Record<SceneId, Scene> = {
     pitch: 52,
     bearing: -24,
     zoomBias: 0.35,
-    targetGeoid: "22087",
+    targetId: "st-bernard",
     flightDuration: 3000,
     orbitDegrees: 24,
     orbitDuration: 4600,
@@ -117,7 +117,7 @@ export const SCENES: Record<SceneId, Scene> = {
     pitch: 42,
     bearing: 18,
     zoomBias: 0.25,
-    targetGeoid: "22109",
+    targetId: "terrebonne",
     flightDuration: 3000,
     orbitDegrees: -18,
     orbitDuration: 4400,
@@ -137,17 +137,47 @@ export const SCENES: Record<SceneId, Scene> = {
 };
 
 /** A short, authored flight deck rather than a directory of every
- * county-equivalent in the snapshot. Each target has substantial
- * survey coverage and gives the briefing a useful geographic jump. */
+ * county-equivalent or coastal region. */
 export const MAP_TARGETS = [
-  { geoid: "22075", name: "Plaquemines", suffix: "Parish", state: "LA" },
-  { geoid: "22109", name: "Terrebonne", suffix: "Parish", state: "LA" },
-  { geoid: "22087", name: "St. Bernard", suffix: "Parish", state: "LA" },
-  { geoid: "48167", name: "Galveston", suffix: "County", state: "TX" },
+  {
+    id: "plaquemines",
+    geoid: "22075",
+    name: "Plaquemines",
+    suffix: "Parish",
+    state: "LA",
+  },
+  {
+    id: "terrebonne",
+    geoid: "22109",
+    name: "Terrebonne",
+    suffix: "Parish",
+    state: "LA",
+  },
+  {
+    id: "st-bernard",
+    geoid: "22087",
+    name: "St. Bernard",
+    suffix: "Parish",
+    state: "LA",
+  },
+  {
+    id: "galveston",
+    geoid: "48167",
+    name: "Galveston",
+    suffix: "County",
+    state: "TX",
+  },
+  {
+    id: "chesapeake-bay",
+    name: "Chesapeake",
+    suffix: "Bay",
+    state: "MD · VA",
+    bounds: [-77.2, 36.75, -75.35, 39.7] as BBox,
+  },
 ] as const;
 
-export function mapTarget(geoid: string | null | undefined) {
-  return MAP_TARGETS.find((target) => target.geoid === geoid) ?? null;
+export function mapTarget(id: string | null | undefined) {
+  return MAP_TARGETS.find((target) => target.id === id) ?? null;
 }
 
 /* Louisiana public oyster grounds — placeholder chart extent used only

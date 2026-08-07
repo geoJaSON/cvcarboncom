@@ -25,7 +25,7 @@ import { fmtCompact, fmtInt, useStoryData } from "./use-story-data";
    NEXT act's scene, so the camera repositions while covered.
    ------------------------------------------------------------------ */
 
-export default function Experience() {
+export default function Experience({ showVenturePois = false }: { showVenturePois?: boolean }) {
   const data = useStoryData();
   const [scene, setScene] = useState<SceneId>("hero");
   const [hudVisible, setHudVisible] = useState(true);
@@ -79,7 +79,7 @@ export default function Experience() {
     setStageState(next);
   }, []);
 
-  const activeTarget = manualTarget ?? SCENES[scene].targetGeoid ?? null;
+  const activeTarget = manualTarget ?? SCENES[scene].targetId ?? null;
 
   const snapshotDate = data.manifest?.snapshot_date;
   const s = data.manifest?.stats;
@@ -89,7 +89,8 @@ export default function Experience() {
       <MapStage
         data={data}
         activeScene={scene}
-        targetGeoid={activeTarget}
+        targetId={activeTarget}
+        showVenturePois={showVenturePois}
         reducedMotion={reducedMotion}
         onView={onView}
         onStageState={onStageState}
@@ -99,7 +100,7 @@ export default function Experience() {
         scene={scene}
         snapshotDate={snapshotDate}
         visible={hudVisible}
-        targetGeoid={activeTarget}
+        targetId={activeTarget}
         stageState={stageState}
         onTarget={setManualTarget}
       />

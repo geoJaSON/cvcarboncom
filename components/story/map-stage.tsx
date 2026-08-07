@@ -4,6 +4,7 @@ import type { Feature } from "geojson";
 import {
   AttributionControl,
   Map as MaplibreMap,
+  Marker,
   setWorkerUrl,
   type ExpressionSpecification,
   type FilterSpecification,
@@ -20,8 +21,9 @@ import "maplibre-gl/dist/maplibre-gl.css";
    which predev/prebuild run automatically). */
 setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 import { useEffect, useRef, useState } from "react";
-import { CHART, FALLBACK_BOUNDS, SCENES, type SceneId } from "./scenes";
+import { CHART, FALLBACK_BOUNDS, SCENES, mapTarget, type SceneId } from "./scenes";
 import type { BBox, StoryData, StoryFeatureCollection } from "./use-story-data";
+import { VENTURE_POIS, type VenturePoi } from "./venture-pois";
 
 export type ChartView = {
   lat: number;
@@ -40,7 +42,8 @@ export type StageState = {
 type MapStageProps = {
   data: StoryData;
   activeScene: SceneId;
-  targetGeoid?: string | null;
+  targetId?: string | null;
+  showVenturePois?: boolean;
   reducedMotion: boolean;
   onView?: (view: ChartView) => void;
   onStageState?: (state: StageState) => void;
@@ -53,7 +56,8 @@ type MapStageProps = {
 export function MapStage({
   data,
   activeScene,
-  targetGeoid,
+  targetId,
+  showVenturePois = false,
   reducedMotion,
   onView,
   onStageState,
@@ -346,6 +350,20 @@ export function MapStage({
     }
   }, [ready, data]);
 
+  /* ---- invitation-only POIs, enabled by the story URL ---- */
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !showVenturePois) return;
+
+    const markers = VENTURE_POIS.map((poi) =>
+      new Marker({ element: ventureMarkerElement(poi), anchor: "bottom" })
+        .setLngLat(poi.coordinates)
+        .addTo(map),
+    );
+
+    return () => markers.forEach((marker) => marker.remove());
+  }, [ready, showVenturePois]);
+
   /* ---- scene changes ---- */
   useEffect(() => {
     const map = mapRef.current;
@@ -355,9 +373,12 @@ export function MapStage({
     clearStoryTimers(sweepTimer, cameraTimer);
     map.stop();
 
-    const activeTarget = targetGeoid ?? scene.targetGeoid ?? null;
+    const activeTarget = targetId ?? scene.targetId ?? null;
+    const selectedTarget = mapTarget(activeTarget);
+    const activeGeoid =
+      selectedTarget && "geoid" in selectedTarget ? selectedTarget.geoid : null;
     const bounds =
-      resolveCountyBounds(data.layers.counties, activeTarget) ?? resolveBounds(scene.view, data);
+      resolveTargetBounds(data.layers.counties, activeTarget) ?? resolveBounds(scene.view, data);
 
     /* camera — retry with minimal padding rather than silently freeze
        when the padded fit doesn't fit (short landscape viewports) */
@@ -390,9 +411,9 @@ export function MapStage({
     setVisible(map, "graticule", !!scene.layers.graticule);
     setVisible(map, "county-fill", !!scene.layers.counties);
     setVisible(map, "county-line", !!scene.layers.counties);
-    setVisible(map, "county-target-fill", !!scene.layers.counties && !!activeTarget);
-    setVisible(map, "county-target-glow", !!scene.layers.counties && !!activeTarget);
-    setVisible(map, "county-target-line", !!scene.layers.counties && !!activeTarget);
+    setVisible(map, "county-target-fill", !!scene.layers.counties && !!activeGeoid);
+    setVisible(map, "county-target-glow", !!scene.layers.counties && !!activeGeoid);
+    setVisible(map, "county-target-line", !!scene.layers.counties && !!activeGeoid);
     setVisible(map, "coverage-glow", !!scene.layers.coverage);
     setVisible(map, "coverage", !!scene.layers.coverage);
     setVisible(map, "density", !!scene.layers.density);
@@ -406,7 +427,7 @@ export function MapStage({
     const targetFilter: FilterSpecification = [
       "==",
       ["get", "GEOID"],
-      activeTarget ?? "__none__",
+      activeGeoid ?? "__none__",
     ];
     for (const id of ["county-target-fill", "county-target-glow", "county-target-line"]) {
       if (map.getLayer(id)) map.setFilter(id, targetFilter);
@@ -561,7 +582,7 @@ export function MapStage({
       clearStoryTimers(sweepTimer, cameraTimer);
       map.stop();
     };
-  }, [activeScene, targetGeoid, ready, data, reducedMotion, onStageState]);
+  }, [activeScene, targetId, ready, data, reducedMotion, onStageState]);
 
   /* MapLibre stamps its own positioning classes onto the element it
      mounts in, so the fixed-position frame must be a separate parent.
@@ -624,6 +645,16 @@ function resolveBounds(view: string, data: StoryData): BBox {
   return FALLBACK_BOUNDS;
 }
 
+function resolveTargetBounds(
+  counties: StoryFeatureCollection | null,
+  targetId: string | null,
+): BBox | null {
+  const target = mapTarget(targetId);
+  if (!target) return null;
+  if ("bounds" in target) return target.bounds;
+  return resolveCountyBounds(counties, target.geoid);
+}
+
 function resolveCountyBounds(
   counties: StoryFeatureCollection | null,
   geoid: string | null,
@@ -670,6 +701,33 @@ function toLngLatBounds(b: BBox): LngLatBoundsLike {
     [b[0], b[1]],
     [b[2], b[3]],
   ];
+}
+
+function ventureMarkerElement(poi: VenturePoi): HTMLDivElement {
+  const root = document.createElement("div");
+  root.className = "story-venture-poi";
+
+  const label = document.createElement("div");
+  label.className = "story-venture-poi-label";
+
+  const name = document.createElement("strong");
+  name.textContent = poi.name;
+  label.append(name);
+
+  const address = document.createElement("span");
+  address.textContent = poi.address;
+  label.append(address);
+
+  if (poi.hours) {
+    const hours = document.createElement("small");
+    hours.textContent = poi.hours;
+    label.append(hours);
+  }
+
+  const pin = document.createElement("i");
+  pin.setAttribute("aria-hidden", "true");
+  root.append(label, pin);
+  return root;
 }
 
 /** Room for the narrative column — cards ride left on wide screens,

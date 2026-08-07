@@ -11,7 +11,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function StoryPage() {
+type StorySearchParams = Record<string, string | string[] | undefined>;
+
+export default async function StoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<StorySearchParams>;
+}) {
+  const params = await searchParams;
+  const showVenturePois = Object.prototype.hasOwnProperty.call(params, "venture");
+
   return (
     <>
       <noscript>
@@ -35,7 +44,7 @@ export default function StoryPage() {
           </div>
         </div>
       </noscript>
-      <StoryClient />
+      <StoryClient showVenturePois={showVenturePois} />
     </>
   );
 }

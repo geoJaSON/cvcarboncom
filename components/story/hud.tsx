@@ -39,7 +39,7 @@ export function Hud({
   scene,
   snapshotDate,
   visible,
-  targetGeoid,
+  targetId,
   stageState,
   onTarget,
 }: {
@@ -47,15 +47,15 @@ export function Hud({
   scene: SceneId;
   snapshotDate?: string;
   visible: boolean;
-  targetGeoid: string | null;
+  targetId: string | null;
   stageState: StageState;
-  onTarget: (geoid: string) => void;
+  onTarget: (id: string) => void;
 }) {
   const layers = SCENES[scene].layers;
   const showTiers = !!layers.density || !!layers.css;
   const showLegend = showTiers || LEGENDS.some((legend) => layers[legend.key]);
   const canTarget = !!layers.counties;
-  const target = mapTarget(targetGeoid);
+  const target = mapTarget(targetId);
   const compassBearing = view?.bearing ?? 0;
 
   return (
@@ -109,7 +109,12 @@ export function Hud({
             <span style={{ width: `${Math.round(stageState.progress * 100)}%` }} />
           </span>
           {stageState.vintage && <span>VINTAGE {stageState.vintage}</span>}
-          {target && <span>{target.state} · GEOID {target.geoid}</span>}
+          {target && (
+            <span>
+              {target.state}
+              {"geoid" in target ? ` · GEOID ${target.geoid}` : " · REGION"}
+            </span>
+          )}
         </div>
         <div className="mt-1.5 text-[10px] opacity-70">
           CV CARBON SURVEY · STATIC SNAPSHOT{snapshotDate ? ` · ${snapshotDate}` : ""} · IMAGERY ©
@@ -131,14 +136,14 @@ export function Hud({
               </div>
               <div className="space-y-1">
                 {MAP_TARGETS.map((candidate, index) => {
-                  const active = candidate.geoid === targetGeoid;
+                  const active = candidate.id === targetId;
                   return (
                     <button
-                      key={candidate.geoid}
+                      key={candidate.id}
                       type="button"
                       aria-pressed={active}
                       className={`story-target-button group w-full ${active ? "is-active" : ""}`}
-                      onClick={() => onTarget(candidate.geoid)}
+                      onClick={() => onTarget(candidate.id)}
                     >
                       <span className="story-target-index">{String(index + 1).padStart(2, "0")}</span>
                       <span className="min-w-0 flex-1 text-left">
