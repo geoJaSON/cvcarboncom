@@ -89,7 +89,7 @@ export function LostBand() {
       </div>
       <div className="mt-16">
         <PullQuote
-          quote="You cannot restore a reef by leaving it alone. Flat mud does not turn back into reef — something hard has to go in the water first."
+          quote="You cannot restore a reef by leaving it alone. Flat mud does not turn back into reef — cultch has to go in the water first."
           cite="The premise of everything that follows"
         />
       </div>
@@ -113,13 +113,15 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
         title="Limestone and shell, spat and season"
         intro={
           <p>
-            Cultch — clean shell and crushed limestone — goes over the side exactly where the
-            chart says it should. Free-swimming oyster larvae need hard substrate within a
-            narrow window; give them that, and the reef does the rest of the work itself.
+            Cultch is the substrate oyster larvae attach to when they metamorphose — virtually
+            any firm, non-toxic surface can serve. Ours is oyster shell, recycled crushed
+            concrete, crushed limestone, and river rock, placed exactly where the chart says it
+            should go. Once a larva cements itself to the cultch it is called spat — and from
+            there, the reef does the rest of the work itself.
           </p>
         }
       />
-      <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         <Figure
           src="/images/cultch-barge.jpg"
           alt="Barge loaded with cultch material for reef planting"
@@ -129,6 +131,11 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
           src="/images/cultch-pile.jpg"
           alt="Pile of oyster shell cultch staged on shore"
           caption="Staged shell. Every ton is weighed and logged before it moves."
+        />
+        <Figure
+          src="/images/cultch-concrete.jpg"
+          alt="Close-up of crushed recycled concrete used as cultch"
+          caption="Recycled crushed concrete — roadbed going back to the reef it was mined from."
         />
         <Figure
           src="/images/spat-on-cultch.jpg"

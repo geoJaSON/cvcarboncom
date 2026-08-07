@@ -51,6 +51,11 @@ MEDIA = [
         "caption": "A density sample comes aboard. Every tow is counted by hand and logged to the field maps on the spot.",
     },
     {
+        "src": "/images/lease-30260/dredge-mature-reef.jpg",
+        "alt": "A dredge tow of live oysters in clusters on the boat's sorting table",
+        "caption": "What a tow off a mature reef looks like on the table — live oysters in clusters, ready for the count.",
+    },
+    {
         "src": "/images/lease-30260/polling-reef-outline.png",
         "alt": "Map of thousands of colored polling points outlining reef across two oyster leases",
         "caption": "Thousands of soundings, plotted — dense enough that the reef outlines itself.",
