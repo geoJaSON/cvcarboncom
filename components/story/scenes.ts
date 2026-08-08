@@ -218,6 +218,16 @@ export const MAP_TARGETS = [
     state: "TX",
   },
   {
+    id: "southwest-la",
+    name: "Southwest",
+    suffix: "Louisiana",
+    state: "LA",
+    /* Calcasieu Lake and Pass west to Marsh Island east; outline in
+       southwest-la-outline.ts. */
+    bounds: [-93.75, 29.2, -91.3, 30.15] as BBox,
+    tag: "REGION",
+  },
+  {
     id: "chesapeake-bay",
     name: "Chesapeake",
     suffix: "Bay",

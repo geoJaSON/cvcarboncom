@@ -83,6 +83,7 @@ export function LostBand() {
         <Figure
           src="/images/historic-shell-roads-map.png"
           alt="Historical map showing roads surfaced with oyster shell"
+          aspect="aspect-[6/7]"
           contain
           caption="Shell roads, mapped. Hundreds of millions of cubic yards of reef left the water one barge at a time."
         />

@@ -1,6 +1,6 @@
 "use client";
 
-import type { Feature } from "geojson";
+import type { Feature, FeatureCollection, Polygon } from "geojson";
 import {
   AttributionControl,
   Map as MaplibreMap,
@@ -22,9 +22,17 @@ import "maplibre-gl/dist/maplibre-gl.css";
 setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 import { useEffect, useRef, useState } from "react";
 import { CHESAPEAKE_OUTLINE } from "./chesapeake-outline";
+import { SOUTHWEST_LA_OUTLINE } from "./southwest-la-outline";
 import { CHART, FALLBACK_BOUNDS, SCENES, mapTarget, type SceneId } from "./scenes";
 import type { BBox, StoryData, StoryFeatureCollection } from "./use-story-data";
 import { VENTURE_POIS, type VenturePoi } from "./venture-pois";
+
+/* Every authored region outline rides in one source; a targetId filter
+   picks which one is lit. */
+const REGIONAL_OUTLINES: FeatureCollection<Polygon> = {
+  type: "FeatureCollection",
+  features: [...CHESAPEAKE_OUTLINE.features, ...SOUTHWEST_LA_OUTLINE.features],
+};
 
 export type ChartView = {
   lat: number;
@@ -159,7 +167,7 @@ export function MapStage({
     ensureSource(
       map,
       "regional-targets",
-      CHESAPEAKE_OUTLINE,
+      REGIONAL_OUTLINES,
       "OpenStreetMap contributors, Chesapeake Bay relation 11884052",
     );
     ensureLayer(map, {
@@ -497,7 +505,8 @@ export function MapStage({
     const selectedTarget = mapTarget(activeTarget);
     const activeGeoid =
       selectedTarget && "geoid" in selectedTarget ? selectedTarget.geoid : null;
-    const activeRegion = activeTarget === "chesapeake-bay";
+    const activeRegion =
+      selectedTarget != null && "tag" in selectedTarget && selectedTarget.tag === "REGION";
     const bounds =
       resolveTargetBounds(data.layers.counties, activeTarget) ?? resolveBounds(scene.view, data);
 
@@ -562,6 +571,15 @@ export function MapStage({
     ];
     for (const id of ["county-target-fill", "county-target-glow", "county-target-line"]) {
       if (map.getLayer(id)) map.setFilter(id, targetFilter);
+    }
+
+    const regionFilter: FilterSpecification = [
+      "==",
+      ["get", "targetId"],
+      activeRegion && activeTarget ? activeTarget : "__none__",
+    ];
+    for (const id of ["regional-target-fill", "regional-target-glow", "regional-target-line"]) {
+      if (map.getLayer(id)) map.setFilter(id, regionFilter);
     }
 
     /* Reset animated layers before a flight begins. */
