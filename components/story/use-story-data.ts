@@ -88,6 +88,9 @@ export type GalleryPhoto = {
   src: string;
   alt: string;
   caption?: string;
+  /** Source dimensions drive the field roll's editorial crop widths. */
+  width?: number;
+  height?: number;
   /** Original filename, recorded by add_gallery_photos.py for dedupe. */
   source?: string;
 };

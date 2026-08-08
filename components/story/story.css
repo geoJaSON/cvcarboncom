@@ -8,6 +8,7 @@
 .story-root {
   --font-chart: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
     "Liberation Mono", monospace;
+  overflow-x: clip;
   background-color: var(--color-abyss);
 }
 
@@ -124,6 +125,290 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--color-mist) 72%, transparent);
+}
+
+/* Field gallery: a full-bleed contact sheet with the density and
+   numbering of a survey roll. It is a single native-scrolling strip
+   on phones and pairs into two rows once there is room for the images
+   to remain legible. */
+.story-gallery-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.story-gallery-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.story-gallery-progress {
+  display: block;
+  width: clamp(4rem, 14vw, 9rem);
+  height: 1px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-mist) 18%, transparent);
+}
+
+.story-gallery-progress > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: left center;
+  background: var(--color-verdigris);
+  box-shadow: 0 0 0.7rem rgba(47, 138, 116, 0.65);
+  transition: transform 120ms linear;
+}
+
+.story-gallery-viewport {
+  position: relative;
+}
+
+.story-gallery-viewport::before,
+.story-gallery-viewport::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 1.25rem;
+  width: clamp(2rem, 5vw, 5rem);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.story-gallery-viewport::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--color-abyss), transparent);
+}
+
+.story-gallery-viewport::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--color-abyss), transparent);
+}
+
+.story-gallery-viewport[data-can-back="true"]::before,
+.story-gallery-viewport[data-can-forward="true"]::after {
+  opacity: 1;
+}
+
+.story-gallery-rail {
+  --story-gallery-gutter: 1.5rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  padding-inline: max(
+    var(--story-gallery-gutter),
+    calc((100vw - 80rem) / 2 + 2.5rem)
+  );
+  padding-bottom: 1.25rem;
+  scroll-padding-inline: max(
+    var(--story-gallery-gutter),
+    calc((100vw - 80rem) / 2 + 2.5rem)
+  );
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y pinch-zoom;
+  user-select: none;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+
+.story-gallery-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.story-gallery-rail[data-dragging="true"] {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.story-gallery-rail:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--color-verdigris) 80%, transparent);
+  outline-offset: -1px;
+}
+
+.story-gallery-track {
+  display: flex;
+  width: max-content;
+  gap: 0.75rem;
+}
+
+.story-gallery-column {
+  display: flex;
+  flex: none;
+  gap: 0.75rem;
+}
+
+.story-gallery-card {
+  position: relative;
+  display: block;
+  flex: none;
+  height: 18rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-mist) 13%, transparent);
+  border-radius: 0.375rem;
+  background: var(--color-navy);
+  scroll-snap-align: start;
+  isolation: isolate;
+}
+
+.story-gallery-card[data-shape="portrait"] {
+  width: min(64vw, 18rem);
+}
+
+.story-gallery-card[data-shape="standard"] {
+  width: min(76vw, 23rem);
+}
+
+.story-gallery-card[data-shape="wide"] {
+  width: min(86vw, 29rem);
+}
+
+.story-gallery-card::after {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  inset: 0.375rem;
+  border: 1px solid transparent;
+  border-radius: 0.125rem;
+  pointer-events: none;
+  transition: border-color 240ms ease;
+}
+
+.story-gallery-card:hover::after,
+.story-gallery-card:focus-visible::after {
+  border-color: color-mix(in srgb, var(--color-pearl) 35%, transparent);
+}
+
+.story-gallery-card:focus-visible {
+  outline: 2px solid var(--color-verdigris);
+  outline-offset: 3px;
+}
+
+.story-gallery-wash {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(2, 10, 18, 0.42), transparent 30%),
+    linear-gradient(0deg, rgba(2, 10, 18, 0.9), transparent 48%);
+  pointer-events: none;
+}
+
+.story-gallery-index {
+  position: absolute;
+  z-index: 2;
+  top: 0.9rem;
+  left: 0.95rem;
+  font-family: var(--font-chart);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  color: var(--color-pearl);
+  text-shadow: 0 1px 0.7rem rgba(1, 8, 14, 0.8);
+}
+
+.story-gallery-index::after {
+  content: "";
+  display: inline-block;
+  width: 1.5rem;
+  height: 1px;
+  margin-left: 0.55rem;
+  vertical-align: middle;
+  background: var(--color-verdigris);
+}
+
+.story-gallery-caption {
+  position: absolute;
+  z-index: 2;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
+  color: color-mix(in srgb, var(--color-pearl) 90%, transparent);
+  text-wrap: balance;
+  text-shadow: 0 1px 0.8rem rgba(1, 8, 14, 0.9);
+}
+
+@media (min-width: 640px) {
+  .story-gallery-column {
+    display: grid;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    width: 21rem;
+    height: 28.5rem;
+    gap: 1rem;
+    scroll-snap-align: start;
+  }
+
+  .story-gallery-column[data-shape="portrait"] {
+    width: 16rem;
+  }
+
+  .story-gallery-column[data-shape="wide"] {
+    width: 27rem;
+  }
+
+  .story-gallery-column.is-solo .story-gallery-card {
+    grid-row: 1 / -1;
+  }
+
+  .story-gallery-card,
+  .story-gallery-card[data-shape] {
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: none;
+  }
+
+  .story-gallery-caption {
+    opacity: 0;
+    transform: translateY(0.4rem);
+    transition:
+      opacity 260ms ease,
+      transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .story-gallery-card:hover .story-gallery-caption,
+  .story-gallery-card:focus-visible .story-gallery-caption {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .story-gallery-toolbar {
+    padding-inline: 2.5rem;
+  }
+
+  .story-gallery-rail {
+    --story-gallery-gutter: 2.5rem;
+  }
+
+  .story-gallery-track {
+    gap: 1rem;
+  }
+
+  .story-gallery-column {
+    width: 23rem;
+    height: 31rem;
+  }
+
+  .story-gallery-column[data-shape="portrait"] {
+    width: 17rem;
+  }
+
+  .story-gallery-column[data-shape="wide"] {
+    width: 30rem;
+  }
 }
 
 /* Hero title block, drawn like the title block of a nautical chart. */
@@ -465,7 +750,11 @@
   }
 
   .story-compass i,
-  .story-status-track > span {
+  .story-status-track > span,
+  .story-gallery-progress > span,
+  .story-gallery-viewport::before,
+  .story-gallery-viewport::after,
+  .story-gallery-caption {
     transition: none;
   }
 }

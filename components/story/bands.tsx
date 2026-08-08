@@ -128,14 +128,14 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
           caption="A cultch barge loaded for planting day."
         />
         <Figure
-          src="/images/cultch-pile.jpg"
-          alt="Pile of oyster shell cultch staged on shore"
-          caption="Shells pulled from a dredge sample."
-        />
-        <Figure
           src="/images/cultch-concrete.jpg"
           alt="Close-up of crushed recycled concrete used as cultch"
           caption="Recycled crushed concrete — roadbed going back to the reef it was mined from."
+        />
+        <Figure
+          src="/images/cultch-pile.jpg"
+          alt="Pile of oyster shell cultch staged on shore"
+          caption="Shells pulled from a dredge sample."
         />
         <Figure
           src="/images/spat-on-cultch.jpg"
@@ -159,7 +159,9 @@ export function TrajectoryBand({ manifest }: { manifest: StoryManifest | null })
           <p>
             Reef at commercial density has grown roughly fivefold across three survey seasons,
             and the credits issued against it have kept pace. These are surveyed acres and
-            serialized credits, not projections.
+            serialized credits, not projections — and the growth is the reinvestment loop at
+            work: each vintage&rsquo;s proceeds put more cultch in the water, and the next
+            survey finds more reef.
           </p>
         }
       />
@@ -183,7 +185,7 @@ export function ProofBand() {
   return (
     <BandShell>
       <SectionHeading
-        eyebrow="Restore · Measure · Verify · Issue"
+        eyebrow="Restore · Measure · Verify · Issue · Reinvest"
         title="The methodology is the product"
         intro={
           <p>
@@ -212,7 +214,14 @@ export function ProofBand() {
         </NumberedCard>
       </div>
 
-      <Reveal className="mx-auto mt-16 max-w-3xl">
+      <Reveal className="mx-auto mt-10 max-w-3xl">
+        <p className="prose-cv">
+          Then the loop closes: thirty percent of gross revenue goes back over the side as next
+          season&rsquo;s cultch, and the next vintage starts on the substrate this one paid for.
+        </p>
+      </Reveal>
+
+      <Reveal className="mx-auto mt-10 max-w-3xl">
         <p className="prose-cv">
           One number worth pausing on: our tonnage is <strong>net of our own operation</strong>.
           The fuel our boats and barges burn is measured and subtracted before anything is
@@ -454,7 +463,8 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           source={jobs != null ? "Hall & DeAngelis, 2022" : "CV Carbon program records"}
         >
           The work is done by commercial oystermen on their own leases, in their own boats.
-          Thirty percent of gross revenue goes back into the water.
+          Thirty percent of gross revenue goes back into the water — and for a crew four
+          generations deep, that is what keeps the next one on the water.
         </BenefitCard>
 
         <BenefitCard
@@ -492,6 +502,14 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
               [
                 "Can I trace one?",
                 "Every credit carries a serial encoding vintage, area, and sequence, resolvable in the public registry.",
+              ],
+              [
+                "How often is it resurveyed?",
+                "Every season. The record behind this chart spans four consecutive survey years — the fourth still under way — and the fleet is on the water nearly every day in between.",
+              ],
+              [
+                "Why this and not an engineered removal?",
+                "No energy plant to build, no land taken from another use — the fleet, the leases, and the docks already exist.",
               ],
               [
                 "What if I want to see it?",

@@ -128,7 +128,14 @@ def main() -> None:
 
         caption = sentence(path.stem)
         photos.append(
-            {"src": src, "alt": caption.rstrip("."), "caption": caption, "source": path.name}
+            {
+                "src": src,
+                "alt": caption.rstrip("."),
+                "caption": caption,
+                "width": width,
+                "height": height,
+                "source": path.name,
+            }
         )
         imported_sources.add(path.name)
         claimed_srcs.add(src)

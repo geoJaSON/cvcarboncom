@@ -210,7 +210,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
           <ChapterCard eyebrow="Chapter three — the proof" title="We sound every acre we claim">
             <p>
               Our strength is our data: continuous bottom soundings plus dredge tows and
-              point samples, all geolocated, all repeatable. We have compiled the works largest dataset of ground-truthed substrate data. This is not an artist&rsquo;s
+              point samples, all geolocated, all repeatable. We have compiled the world&rsquo;s largest dataset of ground-truthed substrate data. This is not an artist&rsquo;s
               rendering of a reef — it is the reef&rsquo;s paper trail.
             </p>
             <CardStats
@@ -227,7 +227,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
           <ChapterCard eyebrow="Chapter three — the proof" title="Hand counted and independently verified, not modeled">
             <p>
               Each column is measured carbon capture and sequestration — oysters are counted by hand on the board, binned at the survey convention of 20, 119, and 244 oysters per square
-              meter. Where the columns turn shell-gold, the reef is at maxiumum carbon capture. Results are independently verified by a disinterested third party agency.
+              meter. Where the columns turn shell-gold, the reef is at maximum carbon capture. Results are independently verified by a disinterested third party agency.
             </p>
           </ChapterCard>
         </ChartStep>
@@ -353,7 +353,15 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
             Credits are available now, by the ton or by the batch, retired in your name with a
             certificate that points back to the water on this chart. And the chart is live
             water we work every week — so before you sign anything, come see it from the boat.
+            What you take home is made to be passed along: a certificate, a serial, and this
+            chart — evidence you can put in front of the people you answer to.
           </p>
+          {showVenturePois && (
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-mist/85">
+              Two of the marked sites — Calcasieu Pass and Port Sulphur — share this working
+              coast with the reefs on this chart.
+            </p>
+          )}
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <a
               href={EMAIL.href}

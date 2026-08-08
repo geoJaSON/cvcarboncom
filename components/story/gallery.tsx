@@ -1,7 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { createPortal } from "react-dom";
 import { SectionHeading } from "@/components/ui";
 import { Reveal } from "@/components/reveal";
@@ -9,37 +15,147 @@ import { BandShell } from "./bands";
 import type { GalleryManifest, GalleryPhoto } from "./use-story-data";
 
 /* ------------------------------------------------------------------
-   The field gallery. The narrative bands stay curated; everything
-   else from the water lives here — a couple of rows by default, the
-   rest behind "show all", any photo full-screen in a lightbox.
+   The field roll. The narrative bands stay curated; everything else
+   from the water lives here in a two-row, horizontally browsable
+   contact sheet. Any photo still opens full-screen in the lightbox.
    Feed it via scripts/add_gallery_photos.py; no gallery.json, no band.
    ------------------------------------------------------------------ */
 
-const COLLAPSED_COUNT = 8;
+type PhotoShape = "portrait" | "standard" | "wide";
+
+type RailState = {
+  canBack: boolean;
+  canForward: boolean;
+  progress: number;
+};
+
+function photoShape(photo: GalleryPhoto): PhotoShape {
+  if (!photo.width || !photo.height) return "standard";
+  const ratio = photo.width / photo.height;
+  if (ratio >= 1.48) return "wide";
+  if (ratio <= 0.82) return "portrait";
+  return "standard";
+}
+
+function columnShape(photos: GalleryPhoto[]): PhotoShape {
+  const shapes = photos.map(photoShape);
+  if (shapes.includes("wide")) return "wide";
+  if (shapes.every((shape) => shape === "portrait")) return "portrait";
+  return "standard";
+}
 
 export function GalleryBand({ gallery }: { gallery: GalleryManifest }) {
   const photos = (gallery.photos ?? []).filter((photo) => photo?.src);
-  const [expanded, setExpanded] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [railState, setRailState] = useState<RailState>({
+    canBack: false,
+    canForward: true,
+    progress: 0,
+  });
   /* The tile that opened the lightbox — focus goes home to it on close.
      Captured explicitly because Safari doesn't focus buttons on click. */
   const openerRef = useRef<HTMLElement | null>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
+  const railRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    scrollLeft: number;
+    moved: boolean;
+  } | null>(null);
+  const suppressClickRef = useRef(false);
 
-  /* Collapsing removes rows above the button while the scroll offset
-     stays put, teleporting the viewport past the gallery — pull the
-     grid back into view after the shrink commits. */
-  const wasExpanded = useRef(false);
+  const updateRailState = useCallback(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const maxScroll = Math.max(0, rail.scrollWidth - rail.clientWidth);
+    const progress = maxScroll > 1 ? Math.min(1, Math.max(0, rail.scrollLeft / maxScroll)) : 1;
+    const next = {
+      canBack: rail.scrollLeft > 2,
+      canForward: rail.scrollLeft < maxScroll - 2,
+      progress,
+    };
+    setRailState((current) =>
+      current.canBack === next.canBack &&
+      current.canForward === next.canForward &&
+      Math.abs(current.progress - next.progress) < 0.002
+        ? current
+        : next,
+    );
+  }, []);
+
   useEffect(() => {
-    if (wasExpanded.current && !expanded) {
-      gridRef.current?.scrollIntoView({ block: "nearest" });
-    }
-    wasExpanded.current = expanded;
-  }, [expanded]);
+    const rail = railRef.current;
+    if (!rail) return;
+    updateRailState();
+    rail.addEventListener("scroll", updateRailState, { passive: true });
+    const resizeObserver =
+      typeof ResizeObserver === "undefined" ? null : new ResizeObserver(updateRailState);
+    resizeObserver?.observe(rail);
+    return () => {
+      rail.removeEventListener("scroll", updateRailState);
+      resizeObserver?.disconnect();
+    };
+  }, [photos.length, updateRailState]);
 
   if (photos.length === 0) return null;
-  const shown = expanded ? photos : photos.slice(0, COLLAPSED_COUNT);
-  const hidden = photos.length - COLLAPSED_COUNT;
+  const columns = Array.from({ length: Math.ceil(photos.length / 2) }, (_, columnIndex) =>
+    photos.slice(columnIndex * 2, columnIndex * 2 + 2).map((photo, rowIndex) => ({
+      photo,
+      index: columnIndex * 2 + rowIndex,
+    })),
+  );
+
+  const moveRail = (direction: -1 | 1) => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    rail.scrollBy({
+      left: direction * Math.max(280, rail.clientWidth * 0.72),
+      behavior: reducedMotion ? "auto" : "smooth",
+    });
+  };
+
+  const beginDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+    suppressClickRef.current = false;
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      scrollLeft: event.currentTarget.scrollLeft,
+      moved: false,
+    };
+  };
+
+  const dragRail = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const distance = event.clientX - drag.startX;
+    if (Math.abs(distance) > 4 && !drag.moved) {
+      drag.moved = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      setDragging(true);
+    }
+    if (!drag.moved) return;
+    event.preventDefault();
+    event.currentTarget.scrollLeft = drag.scrollLeft - distance;
+  };
+
+  const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    suppressClickRef.current = drag.moved;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    dragRef.current = null;
+    setDragging(false);
+    if (suppressClickRef.current) {
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 0);
+    }
+  };
 
   return (
     <BandShell tone="abyss">
@@ -55,46 +171,106 @@ export function GalleryBand({ gallery }: { gallery: GalleryManifest }) {
         }
       />
 
-      <div
-        ref={gridRef}
-        className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
-      >
-        {shown.map((photo, index) => (
-          <Reveal key={photo.src} delay={(index % 4) * 60}>
-            <button
-              type="button"
-              onClick={(event) => {
-                openerRef.current = event.currentTarget;
-                setLightboxIndex(index);
-              }}
-              className="group relative block w-full overflow-hidden rounded-lg bg-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-verdigris"
-              aria-label={`View photo: ${photo.alt}`}
-            >
-              <span className="relative block aspect-[4/3]">
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  fill
-                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-                  className="object-cover transition-transform duration-500 motion-reduce:transition-none group-hover:scale-[1.04]"
-                />
-              </span>
-            </button>
-          </Reveal>
-        ))}
-      </div>
+      <Reveal className="story-gallery-bleed mt-12" delay={80}>
+        <div className="story-gallery-toolbar">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-4" aria-hidden="true">
+            <span className="story-chart-note text-pearl">01</span>
+            <span className="story-gallery-progress">
+              <span style={{ transform: `scaleX(${railState.progress})` }} />
+            </span>
+            <span className="story-chart-note text-pearl">
+              {String(photos.length).padStart(2, "0")}
+            </span>
+          </div>
 
-      {hidden > 0 && (
-        <div className="mt-10 text-center">
-          <button
-            type="button"
-            onClick={() => setExpanded((current) => !current)}
-            className="inline-flex items-center gap-2.5 rounded-full border border-white/30 px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:border-white hover:bg-white/10"
-          >
-            {expanded ? "Show fewer" : `Show all ${photos.length} photos`}
-          </button>
+          <div className="flex items-center gap-2.5 sm:gap-4">
+            <span id="field-gallery-hint" className="sr-only">
+              Swipe, drag, or use the gallery arrow buttons to explore every photo.
+            </span>
+            <span className="story-chart-note hidden sm:inline" aria-hidden="true">
+              Drag or swipe to explore
+            </span>
+            <div className="flex gap-2">
+              <RailButton
+                label="Previous gallery photos"
+                path="M15 5l-7 7 7 7"
+                disabled={!railState.canBack}
+                onClick={() => moveRail(-1)}
+              />
+              <RailButton
+                label="Next gallery photos"
+                path="M9 5l7 7-7 7"
+                disabled={!railState.canForward}
+                onClick={() => moveRail(1)}
+              />
+            </div>
+          </div>
         </div>
-      )}
+
+        <div
+          className="story-gallery-viewport"
+          data-can-back={railState.canBack ? "true" : "false"}
+          data-can-forward={railState.canForward ? "true" : "false"}
+        >
+          <div
+            ref={railRef}
+            role="region"
+            aria-label={`Field gallery, ${photos.length} photos`}
+            aria-describedby="field-gallery-hint"
+            tabIndex={0}
+            className="story-gallery-rail"
+            data-dragging={dragging ? "true" : "false"}
+            onPointerDown={beginDrag}
+            onPointerMove={dragRail}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          >
+            <div className="story-gallery-track">
+              {columns.map((column) => (
+                <div
+                  key={column[0].photo.src}
+                  className={`story-gallery-column${column.length === 1 ? " is-solo" : ""}`}
+                  data-shape={columnShape(column.map(({ photo }) => photo))}
+                  data-gallery-column
+                >
+                  {column.map(({ photo, index }) => (
+                    <button
+                      key={photo.src}
+                      type="button"
+                      data-shape={photoShape(photo)}
+                      onClick={(event) => {
+                        if (suppressClickRef.current) return;
+                        openerRef.current = event.currentTarget;
+                        setLightboxIndex(index);
+                      }}
+                      className="story-gallery-card group"
+                      aria-label={`Open photo ${index + 1} of ${photos.length}: ${photo.alt}`}
+                    >
+                      <Image
+                        src={photo.src}
+                        alt=""
+                        fill
+                        sizes="(min-width: 1024px) 30rem, (min-width: 640px) 27rem, 84vw"
+                        draggable={false}
+                        className="object-cover transition duration-700 ease-out motion-reduce:transition-none group-hover:scale-[1.035] group-hover:saturate-[1.08] group-focus-visible:scale-[1.035]"
+                      />
+                      <span className="story-gallery-wash" aria-hidden="true" />
+                      <span className="story-gallery-index" aria-hidden="true">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      {photo.caption && (
+                        <span className="story-gallery-caption" aria-hidden="true">
+                          {photo.caption}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Reveal>
 
       {lightboxIndex != null && photos[lightboxIndex] && (
         <Lightbox
@@ -106,6 +282,30 @@ export function GalleryBand({ gallery }: { gallery: GalleryManifest }) {
         />
       )}
     </BandShell>
+  );
+}
+
+function RailButton({
+  label,
+  path,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  path: string;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      disabled={disabled}
+      onClick={onClick}
+      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/25 text-mist transition-colors hover:border-verdigris hover:bg-verdigris/15 hover:text-white disabled:cursor-default disabled:opacity-25 disabled:hover:border-white/25 disabled:hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-verdigris"
+    >
+      <LightboxIcon path={path} />
+    </button>
   );
 }
 
@@ -254,7 +454,7 @@ function Lightbox({
             alt={photo.alt}
             fill
             sizes="100vw"
-            priority
+            loading="eager"
             className="object-contain"
           />
         </div>
