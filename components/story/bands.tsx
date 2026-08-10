@@ -767,8 +767,8 @@ export function CreditsBand({ manifest }: { manifest: StoryManifest | null }) {
       <Reveal className="mt-16">
         <p className="eyebrow text-steel-400">Where the number comes from</p>
         <p className="prose-cv mt-4 max-w-2xl !text-mist/80">
-          The net figure is not the gross figure. Everything our boats, barges, and equipment
-          emit doing this work is measured and taken off the top before a credit exists.
+          Everything our boats, barges, and equipment
+          emit doing this work, plus all natural processes that would limit or re-emit carbon are measured and taken off the top before a credit exists.
         </p>
         <div className="mt-8">
           <NetWaterfall manifest={manifest} />

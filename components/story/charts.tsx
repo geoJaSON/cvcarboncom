@@ -385,7 +385,7 @@ export function RunwayBar({ manifest }: { manifest: StoryManifest | null }) {
       value: s?.leases_in_program,
       total: s?.leases_total,
       valueLabel: "leases enrolled in the program",
-      totalLabel: "leases on the coasts we work",
+      totalLabel: "of total leases on the TX, LA, and MD coasts",
     },
   ].filter(
     (r): r is typeof r & { value: number; total: number } =>
