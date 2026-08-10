@@ -53,7 +53,7 @@ export function SiteFooter() {
             </p>
             <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-verdigris/40 bg-verdigris/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-verdigris">
               <span className="h-1.5 w-1.5 rounded-full bg-verdigris" aria-hidden="true" />
-              30% of gross revenue back into the water
+              30% of net revenue back into the water
             </p>
           </div>
 

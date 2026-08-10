@@ -195,7 +195,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
           <ChapterCard eyebrow="Chapter two — the work" title="Shell and other cultch materials go back in the water">
             <p>
               Every gold trace on this chart is a cultch placement, GPS-logged from the barge
-              that made it — the hard bottom this coast lost, going back in at working scale.
+              that delivered material. The oyster reef this coast lost is being restored at working scale.
             </p>
             <CardStats
               stats={[

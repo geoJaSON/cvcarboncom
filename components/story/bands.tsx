@@ -43,6 +43,14 @@ const PROVIDED = {
   bufferPoolPct: null as number | null,
 };
 
+/* The reinvestment guarantee. Also stated on the home page, the contact
+   page and in the site footer — a revenue commitment that reads two
+   different ways in two places is a diligence problem, so move all four
+   together. */
+const REINVESTMENT_PCT = 30;
+/** Restore · Measure · Verify · Issue · Reinvest — this is the fifth. */
+const REINVESTMENT_STEP = 5;
+
 export function BandShell({
   children,
   tone = "pearl",
@@ -137,7 +145,7 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
         <Figure
           src="/images/cultch-pile.jpg"
           alt="Pile of oyster shell cultch staged on shore"
-          caption="Shells pulled from a dredge sample."
+          caption="Oysters pulled from a dredge sample."
         />
         <Figure
           src="/images/spat-on-cultch.jpg"
@@ -227,11 +235,35 @@ export function ProofBand() {
         </NumberedCard>
       </div>
 
-      <Reveal className="mx-auto mt-10 max-w-3xl">
-        <p className="prose-cv">
-          Then the loop closes: thirty percent of gross revenue goes back over the side as next
-          season&rsquo;s cultch, and the next vintage starts on the substrate this one paid for.
-        </p>
+      {/* The eyebrow promises five steps and the cards above show four.
+          This is the fifth, and it is the one that separates the program
+          from a broker, so it gets the weight rather than a paragraph. */}
+      <Reveal className="mt-10">
+        <div className="rounded-lg border border-verdigris/40 bg-navy p-8 sm:p-10">
+          <div className="grid gap-8 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center lg:gap-14">
+            <div>
+              <span className="font-display text-sm text-verdigris">
+                {String(REINVESTMENT_STEP).padStart(2, "0")}
+              </span>
+              <p className="mt-3 font-display text-7xl leading-none text-white sm:text-8xl">
+                {REINVESTMENT_PCT}%
+              </p>
+              <p className="story-chart-note mt-3">of net revenue</p>
+            </div>
+            <div>
+              <h3 className="font-display text-2xl text-white sm:text-3xl">
+                Reinvest: the loop closes over the side of the boat
+              </h3>
+              <p className="prose-cv mt-4 !text-mist/85 [&_strong]:!text-white">
+                {REINVESTMENT_PCT} percent of net revenue is committed back into cultch. Every
+                credit sold buys the shell, limestone and rock for the next season&rsquo;s
+                placements, so the next vintage starts on substrate this one paid for. It is
+                written into our partnership with the commercial oyster industry, not a line in
+                a sustainability report.
+              </p>
+            </div>
+          </div>
+        </div>
       </Reveal>
 
       <Reveal className="mx-auto mt-10 max-w-3xl">
@@ -586,7 +618,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           source={jobs != null ? "Hall & DeAngelis, 2022" : "CV Carbon program records"}
         >
           The work is done by commercial oystermen on their own leases, in their own boats.
-          Thirty percent of gross revenue goes back into the water and for a crew four
+          Thirty percent of net revenue goes back into the water and for a crew four
           generations deep, that is what keeps the next one on the water.
         </BenefitCard>
 

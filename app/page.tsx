@@ -38,7 +38,7 @@ const STATS: Stat[] = [
   {
     value: "30",
     unit: "%",
-    label: "of gross revenue guaranteed back into the water to expand oyster habitat.",
+    label: "of net revenue guaranteed back into the water to expand oyster habitat.",
   },
 ];
 
@@ -222,7 +222,7 @@ export default function HomePage() {
             <div className="rounded-lg border border-verdigris/30 bg-verdigris/10 p-8 backdrop-blur-sm">
               <span className="font-display text-6xl text-white">30%</span>
               <p className="mt-4 leading-relaxed text-mist/85">
-                Our partnership includes a guarantee that 30% of gross revenue from all proceeds is
+                Our partnership includes a guarantee that 30% of net revenue from all proceeds is
                 put back into the water to improve and expand oyster habitat.
               </p>
               <a

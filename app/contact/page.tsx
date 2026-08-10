@@ -72,7 +72,7 @@ export default function ContactPage() {
             <Reveal delay={140}>
               <div className="mt-12 rounded-lg border border-verdigris/30 bg-verdigris/5 p-7">
                 <p className="font-display text-xl text-navy">
-                  30% of gross revenue goes back into the water.
+                  30% of net revenue goes back into the water.
                 </p>
                 <p className="prose-cv mt-3 text-[0.9375rem]">
                   Every offset purchased directly funds the cultch placement that expands oyster
