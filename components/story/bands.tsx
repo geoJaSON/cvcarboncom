@@ -124,7 +124,7 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
       />
       <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         <Figure
-          src="/images/cultch-barge.jpg"
+          src="/images/cultch-barge-planting.gif"
           alt="Barge loaded with cultch material for reef planting"
           caption="A cultch barge loaded for planting day."
         />

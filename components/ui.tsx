@@ -190,6 +190,7 @@ export function Figure({
           src={src}
           alt={alt}
           fill
+          unoptimized={src.toLowerCase().endsWith(".gif")}
           priority={priority}
           sizes="(min-width: 1024px) 50vw, 100vw"
           className={contain ? "object-contain p-4" : "object-cover"}
