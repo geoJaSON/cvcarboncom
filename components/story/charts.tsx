@@ -378,7 +378,7 @@ export function RunwayBar({ manifest }: { manifest: StoryManifest | null }) {
       value: s?.css_acres?.total,
       total: s?.signed_acres,
       valueLabel: "acres of surveyed reef at density",
-      totalLabel: "acres current within the CV Carbon program",
+      totalLabel: "acres currently within the CV Carbon program",
     },
     {
       key: "leases",

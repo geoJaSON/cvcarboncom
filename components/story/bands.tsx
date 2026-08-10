@@ -68,7 +68,7 @@ export function LostBand() {
         intro={
           <p>
             For most of a century, dredges pulled ancient shell from the bottom faster than any
-            reef could rebuild it — crushed for roadbed, concrete, and lime. What the industry
+            reef could rebuild it, crushed for roadbed, concrete, and lime. What the industry
             lost wasn&rsquo;t this year&rsquo;s harvest; it was the foundation the next hundred
             harvests needed to settle on.
           </p>
@@ -79,7 +79,7 @@ export function LostBand() {
           src="/images/historic-shell-dredge-1968.jpg"
           alt="Two oystermen hold live oysters taken from a dredge basket, a giant shell dredge working the bay behind them"
           aspect="aspect-[6/7]"
-          caption="East Galveston Bay, 1968. Oystermen hold live oysters picked up twenty feet from the cutter blade of the shell dredge behind them — a dredge destroying a 25–30 acre working reef. Houston Post, via Houston Public Library."
+          caption="East Galveston Bay, 1968. Oystermen hold live oysters picked up twenty feet from the cutter blade of the shell dredge behind them- a dredge destroying a 25–30 acre working reef. Houston Post, via Houston Public Library."
         />
         <Figure
           src="/images/historic-shell-roads-map.png"
@@ -91,7 +91,7 @@ export function LostBand() {
       </div>
       <div className="mt-16">
         <PullQuote
-          quote="You cannot restore a reef by leaving it alone. Flat mud does not turn back into reef — cultch has to go in the water first."
+          quote="You cannot restore a reef by leaving it alone. Flat mud does not turn back into reef. Cultch has to go in the water first."
           cite="The premise of everything that follows"
         />
       </div>
@@ -115,10 +115,10 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
         title="Cultch, spat and season"
         intro={
           <p>
-            Cultch is the substrate oyster larvae attach to when they metamorphose — virtually
+            Cultch is the substrate oyster larvae attach to when they metamorphose, virtually
             any firm, non-toxic surface can serve. Ours is oyster shell, recycled crushed
             concrete, crushed limestone, and river rock, placed exactly where the chart says it
-            should go. Once a larva cements itself to the cultch it is called spat — and from
+            should go. Once a larva cements itself to the cultch it is called spat, and from
             there, the reef does the rest of the work itself.
           </p>
         }
@@ -132,7 +132,7 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
         <Figure
           src="/images/cultch-concrete.jpg"
           alt="Close-up of crushed recycled concrete used as cultch"
-          caption="Recycled crushed concrete — roadbed going back to the reef it was mined from."
+          caption="Recycled crushed concrete. Roadbed going back to the reef it was mined from."
         />
         <Figure
           src="/images/cultch-pile.jpg"
@@ -161,7 +161,7 @@ export function TrajectoryBand({ manifest }: { manifest: StoryManifest | null })
           <p>
             Reef at commercial density has grown roughly fivefold across three survey seasons,
             and the credits issued against it have kept pace. These are surveyed acres and
-            serialized credits, not projections — and the growth is the reinvestment loop at
+            serialized credits, not projections, and the growth is the reinvestment loop at
             work: each vintage&rsquo;s proceeds put more cultch in the water, and the next
             survey finds more reef.
           </p>
@@ -180,7 +180,7 @@ export function TrajectoryBand({ manifest }: { manifest: StoryManifest | null })
         <RunwayBar manifest={manifest} />
         <p className="prose-cv mt-6 max-w-2xl">
           The reef on this chart sits inside water already current within the program. Not every
-          acre of a lease becomes reef — bottom, depth and salinity all get a vote — but the room
+          acre of a lease becomes reef, bottom, depth and salinity all get a vote, but the room
           to keep growing is measured in ground we already hold, not ground we hope to sign.
         </p>
       </Reveal>
@@ -292,7 +292,7 @@ export function PermanenceBand() {
             Reef carbon is stored two ways: organic carbon in the sediment, and inorganic
             carbon locked in shell. As the reef grows, both are buried underneath it. Cores
             taken from historic reefs found carbon buried thousands of years ago still securely
-            in the sediment — including under grounds where the living reef above had long
+            in the sediment, including under grounds where the living reef above had long
             since been destroyed.
           </DurabilityCard>
         </Reveal>
@@ -304,7 +304,7 @@ export function PermanenceBand() {
             source="Reef breakwater monitoring"
           >
             A reef is not exposed to storms the way a plantation is exposed to fire. It
-            attenuates wave energy — that is why states build them as living breakwaters — and
+            attenuates wave energy, that is why states build them as living breakwaters, and
             unlike rock or bulkhead it accretes upward instead of settling. The oystermen who
             hold these leases have managed grounds through hurricanes for four generations, and
             still hold them.
@@ -330,7 +330,7 @@ export function PermanenceBand() {
             >
               Credits are issued against reef we measured, not reef we projected, and the same
               bottom is resurveyed season after season. If a year took reef off this coast, it
-              would appear as a smaller number in the next survey — the record is built so a bad
+              would appear as a smaller number in the next survey. The record is built so a bad
               year cannot hide in it.
             </DurabilityCard>
           )}
@@ -439,7 +439,7 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
   return (
     <BandShell>
       <SectionHeading
-        eyebrow="Chapter five — the case study"
+        eyebrow="Chapter five: the case study"
         title="One lease, start to finish"
         intro={
           <p>
@@ -460,7 +460,7 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
             figure={fmtPct(before.pct_unproductive)}
             unit="unproductive bottom"
           >
-            {fmtInt(before.points)} soundings found mud and bare clay bottom — clean, hard,
+            {fmtInt(before.points)} soundings found mud and bare clay bottom, clean, hard,
             and empty. Nothing for an oyster larva to hold.
           </CasePanel>
         </Reveal>
@@ -486,8 +486,8 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
             figure={fmtPct(after.pct_reef)}
             unit="solid reef"
           >
-            {fmtInt(after.points)} soundings on the resurvey — more than twice the density of
-            the first pass — and the bottom now rings hard.
+            {fmtInt(after.points)} soundings on the resurvey more than twice the density of
+            the first pass and the bottom now rings hard.
           </CasePanel>
         </Reveal>
       </div>
@@ -558,7 +558,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           <p>
             A ton of CO₂e is the same molecule wherever it comes from. What differs is
             everything it drags along with it. This one buys hard bottom on the American Gulf
-            Coast — and the fishery, the shoreline, and the working fleet that come with it.
+            Coast and the fishery, the shoreline, and the working fleet that come with it.
           </p>
         }
       />
@@ -570,7 +570,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           title="A fishery, not just a habitat"
           source="Peterson et al., 2003"
         >
-          Added fish and crustacean production on restored reef — shrimp, blue crab, speckled
+          Added fish and crustacean production on restored reef, shrimp, blue crab, speckled
           trout, red drum, flounder. It recurs annually for as long as the reef lives.
         </BenefitCard>
 
@@ -586,7 +586,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           source={jobs != null ? "Hall & DeAngelis, 2022" : "CV Carbon program records"}
         >
           The work is done by commercial oystermen on their own leases, in their own boats.
-          Thirty percent of gross revenue goes back into the water — and for a crew four
+          Thirty percent of gross revenue goes back into the water and for a crew four
           generations deep, that is what keeps the next one on the water.
         </BenefitCard>
 
@@ -597,7 +597,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           source="CV Carbon survey record"
         >
           Flat mud does not spontaneously become reef. Without the cultch there is no substrate,
-          no settlement, and no carbon — the counterfactual is visible on the seafloor.
+          no settlement, and no carbon the counterfactual is visible on the seafloor.
         </BenefitCard>
       </div>
 
@@ -606,21 +606,18 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           <p className="eyebrow">The due-diligence answers</p>
           <dl className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              [
-                "Where is it?",
-                "US public water on the Gulf Coast. No jurisdictional risk, no overseas intermediary — you can stand on the boat above it.",
-              ],
+
               [
                 "How is it measured?",
                 "Hand-counted oyster density on a geolocated survey grid, not remote-sensed estimation or a growth model.",
               ],
               [
                 "Who checks it?",
-                "Independent verifiers resample our leases. Their numbers gate ours; disagreement means no credit issues.",
+                "Independent third-party verifiers resample our leases. Their numbers gate ours; disagreement means no credit issues.",
               ],
               [
                 "Is it net?",
-                "Yes. Our own fuel and equipment emissions are measured and subtracted before a credit exists.",
+                "Yes. Our own fuel, equipment emissions, and natural processes are measured and subtracted before a credit exists.",
               ],
               [
                 "Can I trace one?",
@@ -632,15 +629,15 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
               ],
               [
                 "What about a hurricane?",
-                "Reefs are built as breakwaters — they absorb storm energy and accrete upward rather than settling. And every season's resurvey would show a loss rather than assume it away.",
+                "Reefs are built as breakwaters. They absorb storm energy and accrete upward rather than settling. And every season's resurvey would show a loss rather than assume it away.",
               ],
               [
                 "How often is it resurveyed?",
-                "Every season. The record behind this chart spans four consecutive survey years — the fourth still under way — and the fleet is on the water nearly every day in between.",
+                "Every season. The record behind this chart spans four consecutive survey years and the fleet is on the water nearly every day in between.",
               ],
               [
                 "Why this and not an engineered removal?",
-                "No energy plant to build, no land taken from another use — the fleet, the leases, and the docks already exist.",
+                "No energy plant to build, no land taken from another use. The fleet, the leases, and the docks already exist.",
               ],
               [
                 "What if I want to see it?",
@@ -717,7 +714,7 @@ export function CreditsBand({ manifest }: { manifest: StoryManifest | null }) {
             {
               value: fmtInt(s?.net_mt_total),
               unit: "MT CO₂e",
-              label: "Net carbon stored — after subtracting our own operational emissions",
+              label: "Net carbon stored after subtracting our own operational emissions",
             },
             {
               value: fmtInt(s?.credits?.total ?? s?.credits?.issued),
@@ -756,7 +753,7 @@ export function CreditsBand({ manifest }: { manifest: StoryManifest | null }) {
             <strong className="text-white">
               ${fmtCompact(PROVIDED.leaseholderPaybackUsd)}
             </strong>{" "}
-            has gone back to leaseholders for restoration work on their own grounds — the
+            has gone back to leaseholders for restoration work on their own grounds. The
             economics of the program run through the working fleet, not around it.
           </p>
         </Reveal>
