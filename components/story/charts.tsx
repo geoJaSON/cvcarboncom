@@ -2,7 +2,8 @@
 
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
-import { fmtCompact, fmtInt, type StoryManifest } from "./use-story-data";
+import { EPA } from "./factors";
+import { fmtCompact, fmtInt, latestSeason, type StoryManifest } from "./use-story-data";
 
 /* ------------------------------------------------------------------
    Perspective graphics. All values flow from the snapshot manifest —
@@ -19,17 +20,6 @@ import { fmtCompact, fmtInt, type StoryManifest } from "./use-story-data";
 /* Sequential ramp, low → high density (light → dark). */
 const RAMP = { low: "#8fc2b2", med: "#3f9680", high: "#1d5f4e" } as const;
 const BAR = "#23705d"; // verdigris-600 — single-series marks on pearl
-
-/* EPA Greenhouse Gas Equivalencies Calculator factors, per t CO2e —
-   kept byte-identical to the registry's EQUIVALENT_FACTORS
-   (web_app_v2 PublicCreditDemoPage.tsx, eGRID2022, reviewed 2026-06)
-   so the two public surfaces can never disagree. */
-const EPA = {
-  passenger_cars_year: 0.233,
-  homes_electricity_year: 0.208,
-  tree_seedlings_10yr: 16.67,
-  gasoline_gallons: 112.5,
-} as const;
 
 /* Physical yardsticks for the perspective tiles. */
 const EMPIRE_STATE_SHORT_TONS = 365_000; // commonly cited total weight
@@ -375,6 +365,129 @@ export function ManhattanTile({ manifest }: { manifest: StoryManifest | null }) 
     <PerspectiveTile
       figure={`${ratio >= 2 ? ratio.toFixed(1) : ratio.toFixed(2)}×`}
       text="the land area of Manhattan, now surveyed reef at commercial oyster density"
+    />
+  );
+}
+
+/* ---- Supply runway: reef restored against water already under lease ---- */
+export function RunwayBar({ manifest }: { manifest: StoryManifest | null }) {
+  const s = manifest?.stats;
+  const rows = [
+    {
+      key: "acres",
+      value: s?.css_acres?.total,
+      total: s?.signed_acres,
+      valueLabel: "acres of surveyed reef at density",
+      totalLabel: "acres under signed lease agreement",
+    },
+    {
+      key: "leases",
+      value: s?.leases_in_program,
+      total: s?.leases_total,
+      valueLabel: "leases enrolled in the program",
+      totalLabel: "leases on the coasts we work",
+    },
+  ].filter(
+    (r): r is typeof r & { value: number; total: number } =>
+      r.value != null && r.total != null && r.total > 0 && r.value <= r.total,
+  );
+  if (rows.length === 0) return null;
+
+  const W = 640;
+  const ROW_H = 96;
+  const BAR_H = 18;
+  const H = rows.length * ROW_H;
+
+  return (
+    <figure>
+      <figcaption className="eyebrow">The runway</figcaption>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="mt-6 h-auto w-full"
+        role="img"
+        aria-label={rows
+          .map(
+            (r) =>
+              `${fmtInt(r.value)} of ${fmtInt(r.total)} ${r.valueLabel} (${Math.round((r.value / r.total) * 100)} percent)`,
+          )
+          .join("; ")}
+      >
+        {rows.map((r, i) => {
+          const top = i * ROW_H;
+          const pct = r.value / r.total;
+          const fillW = Math.max(3, W * pct);
+          /* A 9% fill leaves no room for a label inside it, so the
+             percentage rides just past the fill until the bar is nearly
+             full and it has to move back inside. */
+          const inside = fillW > W - 70;
+          return (
+            <g key={r.key}>
+              <text x="0" y={top + 20} className="fill-ink font-display" fontSize="23">
+                {fmtInt(r.value)}
+              </text>
+              <text x="0" y={top + 40} fontSize="11.5" className="fill-ink/55">
+                {r.valueLabel}
+              </text>
+              <text
+                x={W}
+                y={top + 20}
+                textAnchor="end"
+                className="fill-ink/45 font-display"
+                fontSize="23"
+              >
+                {fmtInt(r.total)}
+              </text>
+              <text x={W} y={top + 40} textAnchor="end" fontSize="11.5" className="fill-ink/45">
+                {r.totalLabel}
+              </text>
+              <rect x="0" y={top + 58} width={W} height={BAR_H} rx={4} className="fill-navy/10" />
+              <rect x="0" y={top + 58} width={fillW} height={BAR_H} rx={4} fill={BAR}>
+                <title>{`${fmtInt(r.value)} of ${fmtInt(r.total)}`}</title>
+              </rect>
+              <text
+                x={inside ? fillW - 10 : fillW + 10}
+                y={top + 58 + BAR_H / 2 + 4}
+                textAnchor={inside ? "end" : "start"}
+                fontSize="12"
+                fontWeight="600"
+                fill={inside ? "#f8f6f2" : BAR}
+                style={{ fontFamily: "var(--font-chart)" }}
+              >
+                {`${(pct * 100).toFixed(pct < 0.1 ? 1 : 0)}%`}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+      <ChartTable
+        caption="Restored reef and enrolled leases against the water already under signed agreement"
+        head={["Measure", "Today", "Under agreement"]}
+        rows={rows.map((r) => [r.valueLabel, r.value, r.total])}
+      />
+    </figure>
+  );
+}
+
+/* ---- The season the snapshot caught mid-flight ---- */
+export function SeasonTile({ manifest }: { manifest: StoryManifest | null }) {
+  const season = latestSeason(manifest);
+  if (!season || season.polling <= 0) return null;
+  return (
+    <PerspectiveTile
+      figure={fmtInt(season.polling)}
+      text={
+        season.inProgress ? (
+          <>
+            soundings already logged in the {season.year} season — the chart above is a survey
+            still running, not a finished report
+          </>
+        ) : (
+          <>
+            soundings logged in the {season.year} season, the most recent completed pass over
+            this water
+          </>
+        )
+      }
     />
   );
 }

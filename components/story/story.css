@@ -723,6 +723,140 @@
   animation: story-blink 1.1s steps(1) infinite;
 }
 
+/* ------------------------------------------------------------------
+   Worksheet controls — the reef scrubber and the purchase sizer. Both
+   ride the pearl bands rather than the chart, so they wear ink and
+   verdigris instead of the console palette.
+   ------------------------------------------------------------------ */
+.story-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1.5rem;
+  background: transparent;
+  cursor: pointer;
+}
+
+.story-range::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-navy) 16%, transparent);
+}
+
+.story-range::-moz-range-track {
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-navy) 16%, transparent);
+}
+
+.story-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  /* Half the thumb, less half the 3px track, centres it on the rail. */
+  margin-top: -0.52rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 2px solid var(--color-pearl);
+  border-radius: 999px;
+  background: var(--color-verdigris-600);
+  box-shadow: 0 1px 6px rgba(10, 29, 43, 0.35);
+  transition: transform 140ms ease;
+}
+
+.story-range::-moz-range-thumb {
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 2px solid var(--color-pearl);
+  border-radius: 999px;
+  background: var(--color-verdigris-600);
+  box-shadow: 0 1px 6px rgba(10, 29, 43, 0.35);
+  transition: transform 140ms ease;
+}
+
+.story-range:hover::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+
+.story-range:hover::-moz-range-thumb {
+  transform: scale(1.12);
+}
+
+.story-range:focus-visible {
+  outline: none;
+}
+
+.story-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 0.28rem color-mix(in srgb, var(--color-verdigris) 38%, transparent);
+}
+
+.story-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 0.28rem color-mix(in srgb, var(--color-verdigris) 38%, transparent);
+}
+
+.story-range-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-chart);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--color-ink) 42%, transparent);
+}
+
+.story-range-ticks > span[data-active="true"] {
+  color: var(--color-verdigris-600);
+  font-weight: 600;
+}
+
+.story-preset {
+  padding: 0.4rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--color-navy) 18%, transparent);
+  border-radius: 999px;
+  font-family: var(--font-chart);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-ink) 62%, transparent);
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.story-preset:hover {
+  border-color: color-mix(in srgb, var(--color-verdigris) 60%, transparent);
+  color: var(--color-verdigris-600);
+}
+
+.story-preset.is-active {
+  border-color: var(--color-verdigris);
+  background: color-mix(in srgb, var(--color-verdigris) 10%, transparent);
+  color: var(--color-verdigris-600);
+}
+
+.story-tons-input {
+  width: 7ch;
+  padding: 0 0.15rem 0.15rem;
+  border: none;
+  border-bottom: 2px solid color-mix(in srgb, var(--color-verdigris) 45%, transparent);
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  line-height: 1.1;
+  color: var(--color-navy);
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.story-tons-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-verdigris);
+}
+
+.story-tons-input::-webkit-outer-spin-button,
+.story-tons-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 /* Slow drift for the scroll cue. */
 @keyframes story-sink {
   0%,
@@ -754,7 +888,16 @@
   .story-gallery-progress > span,
   .story-gallery-viewport::before,
   .story-gallery-viewport::after,
-  .story-gallery-caption {
+  .story-gallery-caption,
+  .story-preset {
+    transition: none;
+  }
+
+  .story-range::-webkit-slider-thumb {
+    transition: none;
+  }
+
+  .story-range::-moz-range-thumb {
     transition: none;
   }
 }

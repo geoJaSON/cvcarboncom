@@ -203,6 +203,36 @@ export function useStoryData(): StoryData {
 }
 
 /* ------------------------------------------------------------------
+   Derived reads over the snapshot.
+   ------------------------------------------------------------------ */
+
+export type StorySeason = {
+  year: number;
+  polling: number;
+  dredges: number;
+  points: number;
+  /** The bake caught this season mid-flight — the boats are still out. */
+  inProgress: boolean;
+};
+
+/** The most recent survey season in the snapshot, and whether it had
+    closed when the snapshot was baked. A season whose year reaches the
+    snapshot's own year is by definition still being worked. */
+export function latestSeason(manifest: StoryManifest | null): StorySeason | null {
+  const rows = manifest?.stats?.samples_by_year;
+  if (!rows || rows.length === 0) return null;
+  const latest = rows.reduce((a, b) => (b.year > a.year ? b : a));
+  const snapshotYear = Number(manifest?.snapshot_date?.slice(0, 4));
+  return {
+    year: latest.year,
+    polling: latest.polling,
+    dredges: latest.dredges,
+    points: latest.points,
+    inProgress: Number.isFinite(snapshotYear) && latest.year >= snapshotYear,
+  };
+}
+
+/* ------------------------------------------------------------------
    Formatting helpers — stats render as an em dash until the snapshot
    provides them, so a missing bake never shows a wrong number.
    ------------------------------------------------------------------ */

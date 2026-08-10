@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import type { ReactNode } from "react";
 import { Figure, NumberedCard, PullQuote, SectionHeading, StatBand, TideRule } from "@/components/ui";
 import { Reveal } from "@/components/reveal";
@@ -9,9 +8,13 @@ import {
   ManhattanTile,
   NetWaterfall,
   PerspectiveTiles,
+  RunwayBar,
   SeasonStack,
+  SeasonTile,
   VintageBars,
 } from "./charts";
+import { FISH_LB_PER_ACRE_YEAR, JOBS_PER_MILLION } from "./factors";
+import { ReefScrubber } from "./reef-scrubber";
 import {
   fmtCompact,
   fmtInt,
@@ -33,14 +36,12 @@ const PROVIDED = {
   leaseholderPaybackUsd: null as number | null,
   /** Total restoration spend, USD. Drives the jobs-supported figure. */
   restorationSpendUsd: null as number | null,
+  /** Share of every issuance held back against reversal, as a percent.
+      The permanence band's third card stays dark until this is a real
+      number from the methodology — a buffer is a promise, and we do not
+      make one the page cannot back. */
+  bufferPoolPct: null as number | null,
 };
-
-/* Peer-reviewed per-unit factors. Peterson and Grabowski are already
-   cited on /beyond-carbon; keep the two pages in agreement. */
-const FISH_G_PER_M2_YR = 260; // Peterson et al. 2003
-const ACRE_M2 = 4046.8564;
-const JOBS_PER_MILLION = 18.55; // Hall & DeAngelis 2022
-const LB_PER_KG = 2.20462;
 
 export function BandShell({
   children,
@@ -174,8 +175,19 @@ export function TrajectoryBand({ manifest }: { manifest: StoryManifest | null })
           <VintageBars manifest={manifest} />
         </Reveal>
       </div>
-      <div className="mt-10 max-w-sm">
+
+      <Reveal className="mt-16">
+        <RunwayBar manifest={manifest} />
+        <p className="prose-cv mt-6 max-w-2xl">
+          The reef on this chart sits inside water we already hold. Not every acre of a lease
+          becomes reef — bottom, depth and salinity all get a vote — but the room to keep
+          growing is measured in agreements already signed, not in agreements we hope to sign.
+        </p>
+      </Reveal>
+
+      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:max-w-3xl">
         <ManhattanTile manifest={manifest} />
+        <SeasonTile manifest={manifest} />
       </div>
     </BandShell>
   );
@@ -230,25 +242,125 @@ export function ProofBand() {
         </p>
       </Reveal>
 
-      <div className="mt-16">
+      <Reveal className="mt-16">
         <p className="eyebrow mb-6">One reef site, season over season</p>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Reveal key={i} delay={i * 80}>
-              <div className="relative aspect-square overflow-hidden rounded-lg bg-navy">
-                <Image
-                  src={`/images/reef-growth-${i}.png`}
-                  alt={`Reef growth sequence, stage ${i} of 5`}
-                  fill
-                  sizes="(min-width: 640px) 20vw, 50vw"
-                  className="object-cover"
-                />
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
+        <ReefScrubber />
+      </Reveal>
     </BandShell>
+  );
+}
+
+/* ---- The durability question, answered before it is asked ---- */
+export function PermanenceBand() {
+  return (
+    <BandShell>
+      <SectionHeading
+        eyebrow="Permanence"
+        title="The carbon stays where we put it"
+        intro={
+          <p>
+            Every biological carbon credit has to answer two questions before a serious buyer
+            will touch it: how long does the carbon stay, and what happens when something goes
+            wrong. On the Gulf Coast the second question has a name, and it is hurricanes. Both
+            answers are better here than they are for most of what is on the market.
+          </p>
+        }
+      />
+
+      <div className="mt-14 grid gap-6 lg:grid-cols-3">
+        <Reveal>
+          <DurabilityCard
+            figure="Millennia"
+            unit="not decades"
+            title="Shell is a mineral, and it gets buried"
+            source="Carbon-dated reef cores"
+          >
+            Reef carbon is stored two ways: organic carbon in the sediment, and inorganic
+            carbon locked in shell. As the reef grows, both are buried underneath it. Cores
+            taken from historic reefs found carbon buried thousands of years ago still securely
+            in the sediment — including under grounds where the living reef above had long
+            since been destroyed.
+          </DurabilityCard>
+        </Reveal>
+        <Reveal delay={90}>
+          <DurabilityCard
+            figure="A storm"
+            unit="is the use case"
+            title="Reef is what you build against weather"
+            source="Reef breakwater monitoring"
+          >
+            A reef is not exposed to storms the way a plantation is exposed to fire. It
+            attenuates wave energy — that is why states build them as living breakwaters — and
+            unlike rock or bulkhead it accretes upward instead of settling. The oystermen who
+            hold these leases have managed grounds through hurricanes for four generations, and
+            still hold them.
+          </DurabilityCard>
+        </Reveal>
+        <Reveal delay={180}>
+          {PROVIDED.bufferPoolPct != null ? (
+            <DurabilityCard
+              figure={`${PROVIDED.bufferPoolPct}%`}
+              unit="held in reserve"
+              title="A buffer against reversal"
+              source="CV Carbon methodology"
+            >
+              Held back from every issuance and retired against any measured loss, so a reversal
+              is covered by the program rather than by the buyer.
+            </DurabilityCard>
+          ) : (
+            <DurabilityCard
+              figure="Every season"
+              unit="we look again"
+              title="A loss would show up in the record"
+              source="CV Carbon survey record"
+            >
+              Credits are issued against reef we measured, not reef we projected, and the same
+              bottom is resurveyed season after season. If a year took reef off this coast, it
+              would appear as a smaller number in the next survey — the record is built so a bad
+              year cannot hide in it.
+            </DurabilityCard>
+          )}
+        </Reveal>
+      </div>
+
+      <p className="mt-8 text-xs leading-relaxed text-ink/45">
+        Carbon-dating and sediment-core evidence summarised on{" "}
+        <a href="/science" className="underline underline-offset-2">
+          The Science
+        </a>
+        ; wave attenuation and storm-impact evidence on{" "}
+        <a href="/beyond-carbon" className="underline underline-offset-2">
+          Beyond Carbon
+        </a>
+        , with the full literature cited on both.
+      </p>
+    </BandShell>
+  );
+}
+
+function DurabilityCard({
+  figure,
+  unit,
+  title,
+  source,
+  children,
+}: {
+  figure: string;
+  unit: string;
+  title: string;
+  source: string;
+  children: ReactNode;
+}) {
+  return (
+    <article className="h-full rounded-lg border border-navy/10 bg-white p-7">
+      <p>
+        <span className="font-display text-3xl text-verdigris-600">{figure}</span>
+        <span className="ml-2 font-display text-base text-steel">{unit}</span>
+      </p>
+      <h3 className="mt-5 font-display text-lg text-navy">{title}</h3>
+      <div className="prose-cv mt-3 text-[0.9375rem]">{children}</div>
+      <p className="mt-4 text-[0.6875rem] uppercase tracking-[0.12em] text-ink/40">{source}</p>
+    </article>
   );
 }
 
@@ -407,10 +519,6 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
 export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null }) {
   const s = manifest?.stats;
 
-  /* Fish and crustacean production added per restored acre, per year —
-     Peterson's 260 g/m²/yr, expressed at a scale a person can hold. */
-  const fishLbPerAcreYear = (FISH_G_PER_M2_YR * ACRE_M2) / 1000 * LB_PER_KG;
-
   /* Reef gained across the surveyed seasons. Deliberately the INCREASE,
      not the standing total — we only claim what the program added. */
   const byYear = s?.css_by_year ?? [];
@@ -443,7 +551,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
 
       <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <BenefitCard
-          figure={`${fmtInt(Math.round(fishLbPerAcreYear))} lb`}
+          figure={`${fmtInt(Math.round(FISH_LB_PER_ACRE_YEAR))} lb`}
           unit="per acre, every year"
           title="A fishery, not just a habitat"
           source="Peterson et al., 2003"
@@ -503,6 +611,14 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
               [
                 "Can I trace one?",
                 "Every credit carries a serial encoding vintage, area, and sequence, resolvable in the public registry.",
+              ],
+              [
+                "How long does it stay?",
+                "Shell is a mineral and the sediment under a reef keeps burying it. Cores from historic reefs date the buried carbon in millennia, not decades.",
+              ],
+              [
+                "What about a hurricane?",
+                "Reefs are built as breakwaters — they absorb storm energy and accrete upward rather than settling. And every season's resurvey would show a loss rather than assume it away.",
               ],
               [
                 "How often is it resurveyed?",

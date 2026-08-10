@@ -1,6 +1,7 @@
 "use client";
 
 import { CHART, MAP_TARGETS, SCENES, mapTarget, type SceneId } from "./scenes";
+import { fmtInt, type StorySeason } from "./use-story-data";
 import type { ChartView, StageState } from "./map-stage";
 
 /* ------------------------------------------------------------------
@@ -47,6 +48,7 @@ export function Hud({
   view,
   scene,
   snapshotDate,
+  season,
   visible,
   targetId,
   stageState,
@@ -55,6 +57,7 @@ export function Hud({
   view: ChartView | null;
   scene: SceneId;
   snapshotDate?: string;
+  season: StorySeason | null;
   visible: boolean;
   targetId: string | null;
   stageState: StageState;
@@ -133,9 +136,22 @@ export function Hud({
             </span>
           )}
         </div>
+        {/* The chart is baked, but the fleet is not — say so, or a dated
+            snapshot reads as an archive instead of an operation. */}
         <div className="mt-1.5 text-[10px] opacity-70">
-          CV CARBON SURVEY · STATIC SNAPSHOT{snapshotDate ? ` · ${snapshotDate}` : ""} · IMAGERY ©
-          ESRI/MAXAR · BOUNDARIES US CENSUS/TIGER 2025
+          CV CARBON SURVEY ·{" "}
+          {season ? (
+            <>
+              {season.year} SEASON {season.inProgress ? "IN PROGRESS" : "COMPLETE"} ·{" "}
+              <span className="story-hud-value">{fmtInt(season.polling)}</span> SOUNDINGS LOGGED
+            </>
+          ) : (
+            "STATIC SNAPSHOT"
+          )}
+        </div>
+        <div className="text-[10px] opacity-70">
+          IMAGERY © ESRI/MAXAR · BOUNDARIES US CENSUS/TIGER 2025
+          {snapshotDate ? ` · SNAPSHOT ${snapshotDate}` : ""}
         </div>
       </div>
 

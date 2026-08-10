@@ -9,6 +9,7 @@ import {
   CoBenefitsBand,
   CreditsBand,
   LostBand,
+  PermanenceBand,
   ProofBand,
   TrajectoryBand,
   WorkBand,
@@ -17,7 +18,8 @@ import { GalleryBand } from "./gallery";
 import { Hud } from "./hud";
 import { MapStage, type ChartView, type StageState } from "./map-stage";
 import { SCENES, type SceneId } from "./scenes";
-import { fmtCompact, fmtInt, useStoryData } from "./use-story-data";
+import { SizerBand } from "./sizer";
+import { fmtCompact, fmtInt, latestSeason, useStoryData } from "./use-story-data";
 
 /* ------------------------------------------------------------------
    The brief itself. One fixed chart behind everything; the narrative
@@ -87,6 +89,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
   const activeTarget = manualTarget ?? SCENES[scene].targetId ?? null;
 
   const snapshotDate = data.manifest?.snapshot_date;
+  const season = latestSeason(data.manifest);
   const s = data.manifest?.stats;
   const cs = data.caseManifest;
   /* Reef acreage created on the lease: the sounding share that flipped
@@ -112,6 +115,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         view={view}
         scene={scene}
         snapshotDate={snapshotDate}
+        season={season}
         visible={hudVisible}
         targetId={activeTarget}
         stageState={stageState}
@@ -336,8 +340,15 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         <div data-scene="close" data-covered="true">
           <TrajectoryBand manifest={data.manifest} />
           <CreditsBand manifest={data.manifest} />
+          <PermanenceBand />
           <CoBenefitsBand manifest={data.manifest} />
           {data.gallery && <GalleryBand gallery={data.gallery} />}
+          {/* Last thing before the ask: the visitor's own number. */}
+          <SizerBand
+            manifest={data.manifest}
+            caseManifest={data.caseManifest}
+            caseBoundary={data.layers.caseBoundary}
+          />
         </div>
 
         {/* ---- Close ---- */}
