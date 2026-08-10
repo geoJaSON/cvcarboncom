@@ -378,7 +378,7 @@ export function RunwayBar({ manifest }: { manifest: StoryManifest | null }) {
       value: s?.css_acres?.total,
       total: s?.signed_acres,
       valueLabel: "acres of surveyed reef at density",
-      totalLabel: "acres under signed lease agreement",
+      totalLabel: "acres current within the CV Carbon program",
     },
     {
       key: "leases",
@@ -460,8 +460,8 @@ export function RunwayBar({ manifest }: { manifest: StoryManifest | null }) {
         })}
       </svg>
       <ChartTable
-        caption="Restored reef and enrolled leases against the water already under signed agreement"
-        head={["Measure", "Today", "Under agreement"]}
+        caption="Restored reef and enrolled leases against the water already current within the CV Carbon program"
+        head={["Measure", "Today", "Current in program"]}
         rows={rows.map((r) => [r.valueLabel, r.value, r.total])}
       />
     </figure>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { Figure, NumberedCard, PullQuote, SectionHeading, StatBand, TideRule } from "@/components/ui";
 import { Reveal } from "@/components/reveal";
@@ -14,7 +15,6 @@ import {
   VintageBars,
 } from "./charts";
 import { FISH_LB_PER_ACRE_YEAR, JOBS_PER_MILLION } from "./factors";
-import { ReefScrubber } from "./reef-scrubber";
 import {
   fmtCompact,
   fmtInt,
@@ -179,9 +179,9 @@ export function TrajectoryBand({ manifest }: { manifest: StoryManifest | null })
       <Reveal className="mt-16">
         <RunwayBar manifest={manifest} />
         <p className="prose-cv mt-6 max-w-2xl">
-          The reef on this chart sits inside water we already hold. Not every acre of a lease
-          becomes reef — bottom, depth and salinity all get a vote — but the room to keep
-          growing is measured in agreements already signed, not in agreements we hope to sign.
+          The reef on this chart sits inside water already current within the program. Not every
+          acre of a lease becomes reef — bottom, depth and salinity all get a vote — but the room
+          to keep growing is measured in ground we already hold, not ground we hope to sign.
         </p>
       </Reveal>
 
@@ -236,16 +236,30 @@ export function ProofBand() {
 
       <Reveal className="mx-auto mt-10 max-w-3xl">
         <p className="prose-cv">
-          One number worth pausing on: our tonnage is <strong>net of our own operation</strong>.
+          Our tonnage is <strong>net of our own operation</strong>.
           The fuel our boats and barges burn is measured and subtracted before anything is
           credited. If the program didn&rsquo;t come out ahead, the ledger would say so.
         </p>
       </Reveal>
 
-      <Reveal className="mt-16">
+      <div className="mt-16">
         <p className="eyebrow mb-6">One reef site, season over season</p>
-        <ReefScrubber />
-      </Reveal>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Reveal key={i} delay={i * 80}>
+              <div className="relative aspect-square overflow-hidden rounded-lg bg-navy">
+                <Image
+                  src={`/images/reef-growth-${i}.png`}
+                  alt={`Reef growth sequence, stage ${i} of 5`}
+                  fill
+                  sizes="(min-width: 640px) 20vw, 50vw"
+                  className="object-cover"
+                />
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
     </BandShell>
   );
 }
@@ -672,7 +686,7 @@ function BenefitCard({
     <Reveal>
       <article className="h-full rounded-lg border border-navy/10 bg-white p-7">
         <span className="font-display text-3xl text-verdigris-600">{figure}</span>
-        <p className="story-chart-note mt-1 normal-case tracking-normal text-ink/50">{unit}</p>
+        <p className="story-note-ink mt-1">{unit}</p>
         <h3 className="mt-5 font-display text-lg text-navy">{title}</h3>
         <div className="prose-cv mt-3 text-[0.9375rem]">{children}</div>
         <p className="mt-4 text-[0.6875rem] uppercase tracking-[0.12em] text-ink/40">{source}</p>

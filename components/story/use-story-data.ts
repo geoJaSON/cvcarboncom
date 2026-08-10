@@ -96,10 +96,32 @@ export type GalleryPhoto = {
 };
 export type GalleryManifest = { photos: GalleryPhoto[] };
 
+/* A scrubbable photo sequence — the same place on different days. Both
+   the frames and the band's own copy live in the file, so aiming this
+   at a new set of photographs never touches the components. */
+export type SequenceFrame = {
+  src: string;
+  alt: string;
+  /** Short tick label under the scrubber: "May 2025", "Before", "Day 1". */
+  label?: string;
+  /** Shown beneath the frame and swapped as the reader scrubs. */
+  caption?: string;
+};
+
+export type SequenceManifest = {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+  /** Shape of the frame box; every photo is cropped to it. */
+  aspect?: "portrait" | "landscape" | "square";
+  frames: SequenceFrame[];
+};
+
 export type StoryData = {
   manifest: StoryManifest | null;
   caseManifest: CaseStudyManifest | null;
   gallery: GalleryManifest | null;
+  sequence: SequenceManifest | null;
   layers: {
     bedding: StoryFeatureCollection | null;
     cssTiers: StoryFeatureCollection | null;
@@ -133,6 +155,7 @@ export function useStoryData(): StoryData {
     manifest: null,
     caseManifest: null,
     gallery: null,
+    sequence: null,
     layers: {
       bedding: null,
       cssTiers: null,
@@ -162,6 +185,7 @@ export function useStoryData(): StoryData {
         casePolling,
         caseBedding,
         gallery,
+        sequence,
       ] = await Promise.all([
         fetchJson<StoryManifest>("manifest.json"),
         fetchJson<StoryFeatureCollection>("bedding.geojson"),
@@ -174,12 +198,14 @@ export function useStoryData(): StoryData {
         fetchJson<StoryFeatureCollection>("lease_30260_polling.geojson"),
         fetchJson<StoryFeatureCollection>("lease_30260_bedding.geojson"),
         fetchJson<GalleryManifest>("gallery.json"),
+        fetchJson<SequenceManifest>("sequence.json"),
       ]);
       if (cancelled) return;
       setData({
         manifest,
         caseManifest,
         gallery,
+        sequence,
         layers: {
           bedding,
           cssTiers,

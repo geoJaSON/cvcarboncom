@@ -1,0 +1,33 @@
+{
+  "_comment": "Template for the scrubbable photo sequence. Copy to sequence.json, drop the photos in public/images/sequence/, and the band appears on /story between chapter five and the trajectory band. Delete sequence.json and the band disappears — nothing else needs touching. `aspect` is portrait | landscape | square and crops every frame to the same box, so shoot or pick frames from a consistent vantage. `label` is the short tick under the scrubber; `caption` swaps as the reader drags.",
+  "eyebrow": "The same water, over time",
+  "title": "One spot on the lease, four visits",
+  "intro": "Same coordinates, same heading, four trips across a year. Nothing between these frames but the reef doing its own work.",
+  "aspect": "landscape",
+  "frames": [
+    {
+      "src": "/images/sequence/2025-04-bare-bottom.jpg",
+      "alt": "Bare mud bottom on the lease before any cultch was placed",
+      "label": "Apr 2025",
+      "caption": "Before the work: bare bottom, nothing for a larva to hold."
+    },
+    {
+      "src": "/images/sequence/2025-06-fresh-rock.jpg",
+      "alt": "Freshly placed limestone and river rock on the lease bottom",
+      "label": "Jun 2025",
+      "caption": "Days after bedding — clean rock, no growth on it yet."
+    },
+    {
+      "src": "/images/sequence/2025-09-first-spat.jpg",
+      "alt": "Young oyster spat cemented onto placed rock",
+      "label": "Sep 2025",
+      "caption": "First set. Spat cemented to the rock and starting to build shell."
+    },
+    {
+      "src": "/images/sequence/2025-12-solid-reef.jpg",
+      "alt": "Clustered live oysters covering the placed cultch",
+      "label": "Dec 2025",
+      "caption": "Six months on: clusters closed over the rock. This is what the resurvey read as solid reef."
+    }
+  ]
+}

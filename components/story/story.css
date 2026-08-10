@@ -127,6 +127,18 @@
   color: color-mix(in srgb, var(--color-mist) 72%, transparent);
 }
 
+/* The same voice on the light editorial bands. This has to be its own
+   rule rather than `story-chart-note text-ink/50 normal-case`: Tailwind's
+   colour and text-transform utilities sit in @layer utilities and this
+   file is unlayered, so .story-chart-note beats them every time. */
+.story-note-ink {
+  font-family: var(--font-chart);
+  font-size: 0.6875rem;
+  letter-spacing: normal;
+  text-transform: none;
+  color: color-mix(in srgb, var(--color-ink) 55%, transparent);
+}
+
 /* Field gallery: a full-bleed contact sheet with the density and
    numbering of a survey roll. It is a single native-scrolling strip
    on phones and pairs into two rows once there is room for the images
@@ -795,10 +807,21 @@
 .story-range-ticks {
   display: flex;
   justify-content: space-between;
+  gap: 0.5rem;
   font-family: var(--font-chart);
   font-size: 0.625rem;
   letter-spacing: 0.12em;
   color: color-mix(in srgb, var(--color-ink) 42%, transparent);
+}
+
+/* Date labels ("Dec 2025") have to survive a narrow phone without
+   wrapping the row; the active label is repeated on the frame itself,
+   so an ellipsis here costs nothing. */
+.story-range-ticks > span {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .story-range-ticks > span[data-active="true"] {

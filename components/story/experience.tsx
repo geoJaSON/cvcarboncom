@@ -18,6 +18,7 @@ import { GalleryBand } from "./gallery";
 import { Hud } from "./hud";
 import { MapStage, type ChartView, type StageState } from "./map-stage";
 import { SCENES, type SceneId } from "./scenes";
+import { SequenceBand } from "./sequence";
 import { SizerBand } from "./sizer";
 import { fmtCompact, fmtInt, latestSeason, useStoryData } from "./use-story-data";
 
@@ -338,6 +339,8 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         )}
 
         <div data-scene="close" data-covered="true">
+          {/* Same water, different day — mounts only once its photos exist. */}
+          {data.sequence && <SequenceBand sequence={data.sequence} />}
           <TrajectoryBand manifest={data.manifest} />
           <CreditsBand manifest={data.manifest} />
           <PermanenceBand />

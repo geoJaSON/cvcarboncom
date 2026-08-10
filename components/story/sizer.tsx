@@ -105,7 +105,7 @@ export function SizerBand({
                 <div>
                   <label
                     htmlFor="sizer-tons"
-                    className="story-chart-note normal-case tracking-normal text-ink/50"
+                    className="story-note-ink"
                   >
                     Metric tons CO₂e
                   </label>
@@ -185,7 +185,12 @@ export function SizerBand({
                 />
                 {leaseCount != null && caseManifest && (
                   <Figure
-                    value={leaseCount >= 10 ? fmtInt(Math.round(leaseCount)) : leaseCount.toFixed(1)}
+                    value={
+                      /* Two decimals under 1×, or a 100 t buy reads "0.0". */
+                      leaseCount >= 10
+                        ? fmtInt(Math.round(leaseCount))
+                        : leaseCount.toFixed(leaseCount < 1 ? 2 : 1)
+                    }
                     unit="×"
                     label={`leases the size of ${caseManifest.lease_number}, the one in chapter five`}
                   />
@@ -203,9 +208,7 @@ export function SizerBand({
 
             {/* ---- the footprint, drawn against real water ---- */}
             <div>
-              <p className="story-chart-note normal-case tracking-normal text-ink/50">
-                Your footprint, to scale
-              </p>
+              <p className="story-note-ink">Your footprint, to scale</p>
               <FootprintPlot acres={acres} lease={leaseRings} />
               <div className="mt-4 space-y-2 text-xs text-ink/60">
                 <span className="flex items-center gap-2">
@@ -366,7 +369,7 @@ function FootprintPlot({ acres, lease }: { acres: number; lease: Ring[] }) {
           style={{ width: `${(scaleBar / (half * 2)) * 100}%`, height: "0.3rem" }}
           aria-hidden="true"
         />
-        <span className="story-chart-note normal-case tracking-normal text-ink/45">
+        <span className="story-note-ink">
           {scaleBar >= 1_000 ? `${scaleBar / 1_000} km` : `${scaleBar} m`}
         </span>
       </div>
