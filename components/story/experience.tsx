@@ -145,9 +145,8 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
               We are bringing the reefs back!
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-mist/85 sm:text-lg">
-              Plotted below, from our own survey database: the cultch (shells, recycled
-              concrete, crushed limestone) we placed, the acres we measured, and the carbon the
-              reefs are holding, right on the water where it happened.
+              Plotted below, from our own survey database: the cultch (shells, recycled concrete, crushed limestone) we placed, the acres we restored, the measured carbon captured and stored, right where it happened.
+
             </p>
             <p className="story-chart-note mt-9">
               Chart № {snapshotDate ?? "PRE-RELEASE"} · Soundings in oysters per square meter

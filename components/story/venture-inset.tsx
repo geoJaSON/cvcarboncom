@@ -16,25 +16,29 @@ import { fmtInt, type BBox, type StoryFeatureCollection } from "./use-story-data
 
 /* ------------------------------------------------------------------
    The pull-back. Opens on the plant site at aerial resolution, then
-   flies out until the water around it fills with our cultch tracks and
-   surveyed reef. The argument the venture band makes in prose, made
-   once without any prose: their site and our work are the same coast.
+   flies out until the water around it fills with our leases and the
+   reef surveyed inside them. The argument the venture band makes in
+   prose, made once without any prose: their site and our work are the
+   same coast.
 
    It is a second, self-contained MapLibre canvas rather than a borrowed
    scene on the main chart, because the main chart is pinned behind the
    scroll and this band is opaque — a scene change underneath it would
-   play to a covered stage. Everything it draws is clipped to the frame
-   first, so the second map carries a fraction of the coast-wide pack.
+   play to a covered stage.
+
+   The frame is the whole lease layer, since that file is already scoped
+   to the water worth showing, squared off around the site so the site
+   lands dead center. The coast-wide reef pack is then clipped to that
+   frame, which is what keeps a second map affordable.
    ------------------------------------------------------------------ */
 
-/** Degrees of padding around the site that the pull-back settles on.
-    The dial for how much coast the climb reveals: 0.25° puts ~1,800
-    leases and ~50 km in frame with the site still near its center.
-    Widening to 0.35° more than doubles the lease count but pushes the
-    frame past 80 km, where an average 67-acre lease is a few pixels. */
+/** Fallback half-width, in degrees, used only when there is no lease
+    layer to size the frame from and the climb settles on reef alone. */
 const CLIP_RADIUS = 0.25;
 const START_ZOOM = 15.4;
-const FLIGHT_MS = 5200;
+/** The climb is roughly six zoom levels, so it gets a little longer than
+    a scene flight on the main chart. */
+const FLIGHT_MS = 6000;
 
 export function VentureInset({
   center,
@@ -57,21 +61,15 @@ export function VentureInset({
   const [ready, setReady] = useState(false);
   const [flown, setFlown] = useState(false);
 
-  const clip = useMemo<BBox>(
-    () => [
-      center[0] - CLIP_RADIUS,
-      center[1] - CLIP_RADIUS,
-      center[0] + CLIP_RADIUS,
-      center[1] + CLIP_RADIUS,
-    ],
-    [center],
+  /* The lease export is already clipped to the water worth showing, so
+     it is drawn whole — re-clipping it here is what cut the layer off.
+     It sizes the frame instead. */
+  const frame = useMemo(() => frameFor(leases, center), [leases, center]);
+  const localReef = useMemo(
+    () => clipToBBox(cssTiers, frame, latestYear(cssTiers)),
+    [cssTiers, frame],
   );
-
-  /* Clipping is what makes a second map affordable: the coast-wide
-     packs run to megabytes and almost none of it is near this site. */
-  const localLeases = useMemo(() => clipToBBox(leases, clip), [leases, clip]);
-  const localReef = useMemo(() => clipToBBox(cssTiers, clip, latestYear(cssTiers)), [cssTiers, clip]);
-  const leaseCount = localLeases?.features.length ?? 0;
+  const leaseCount = leases?.features.length ?? 0;
 
   /* ---- boot ---- */
   useEffect(() => {
@@ -148,13 +146,15 @@ export function VentureInset({
     }
 
     /* Leases ride above the reef: the boundaries are the point, the reef
-       inside them is the evidence. Thin mist outlines against verdigris
-       shading keeps thousands of parcels legible at 60 km across. */
-    if (localLeases) {
+       inside them is the evidence. At the settled frame an average lease
+       is under two pixels wide, so the outline alone would sparkle into
+       noise — the fill is what carries the mass at that distance, and
+       the outline resolves the parcels on the way out. */
+    if (leases) {
       if (map.getSource("inset-leases")) {
-        (map.getSource("inset-leases") as GeoJSONSource).setData(localLeases);
+        (map.getSource("inset-leases") as GeoJSONSource).setData(leases);
       } else {
-        map.addSource("inset-leases", { type: "geojson", data: localLeases });
+        map.addSource("inset-leases", { type: "geojson", data: leases });
         map.addLayer({
           id: "inset-lease-fill",
           type: "fill",
@@ -168,7 +168,7 @@ export function VentureInset({
           paint: {
             "line-color": CHART.coverage,
             "line-opacity": 0,
-            "line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.6, 14, 1.8],
+            "line-width": ["interpolate", ["linear"], ["zoom"], 7, 0.4, 10, 0.7, 14, 1.8],
           },
         });
       }
@@ -180,17 +180,16 @@ export function VentureInset({
     return () => {
       marker.remove();
     };
-  }, [ready, localLeases, localReef, center, siteLabel]);
+  }, [ready, leases, localReef, center, siteLabel]);
 
   /* ---- the flight ---- */
   const pullBack = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    const bounds = boundsOf([localLeases, localReef], clip, center);
     const camera =
-      map.cameraForBounds(toLngLatBounds(bounds), { padding: 28 }) ??
-      map.cameraForBounds(toLngLatBounds(bounds), { padding: 8 });
+      map.cameraForBounds(toLngLatBounds(frame), { padding: 28 }) ??
+      map.cameraForBounds(toLngLatBounds(frame), { padding: 8 });
 
     const paint = (progress: number) => {
       const t = Math.max(0, Math.min(1, progress));
@@ -199,7 +198,7 @@ export function VentureInset({
       }
       if (map.getLayer("inset-lease-line")) {
         map.setPaintProperty("inset-lease-line", "line-opacity", 0.9 * t);
-        map.setPaintProperty("inset-lease-fill", "fill-opacity", 0.07 * t);
+        map.setPaintProperty("inset-lease-fill", "fill-opacity", 0.12 * t);
       }
     };
 
@@ -235,7 +234,7 @@ export function VentureInset({
         setFlown(true);
       }
     }, 70);
-  }, [center, clip, localLeases, localReef, reducedMotion]);
+  }, [frame, reducedMotion]);
 
   /* Runs itself the first time it is actually looked at. */
   useEffect(() => {
@@ -280,15 +279,14 @@ export function VentureInset({
         </button>
       </div>
       <figcaption className="prose-cv mt-4 text-[0.9375rem]">
-        {siteLabel} at the center of the frame, and the water around it.{" "}
+        {siteLabel}{" "}
         {leaseCount > 0 ? (
           <>
             <strong>{fmtInt(leaseCount)} oyster leases</strong>
           </>
         ) : (
           <>
-            The shaded water is surveyed reef at commercial density, bottom we have poled,
-            counted, and had checked.
+
           </>
         )}{" "}
 
@@ -392,33 +390,41 @@ function clipToBBox(
   return { type: "FeatureCollection", features };
 }
 
-/** Frame everything we kept, and always the site itself. */
-function boundsOf(
-  collections: (StoryFeatureCollection | null)[],
-  fallback: BBox,
-  site: [number, number],
-): BBox {
-  let w = site[0];
-  let s = site[1];
-  let e = site[0];
-  let n = site[1];
-  let found = false;
+/** The frame the climb settles on: every lease in the layer, squared off
+    around the site.
 
-  for (const fc of collections) {
-    if (!fc) continue;
-    for (const feature of fc.features) {
-      if (!("coordinates" in feature.geometry)) continue;
-      const [fw, fs, fe, fn] = coordsBBox(feature.geometry.coordinates);
-      if (!Number.isFinite(fw)) continue;
-      found = true;
-      w = Math.min(w, fw);
-      s = Math.min(s, fs);
-      e = Math.max(e, fe);
-      n = Math.max(n, fn);
-    }
+    Fitting the raw lease extent would leave the site wherever it happens
+    to fall — 61% across, for the Port Sulphur export — which reads as a
+    camera that drifted. Taking the larger half-width on each axis and
+    mirroring it keeps the site dead center and still contains every
+    lease, at the cost of some empty water on the shorter side. */
+function frameFor(leases: StoryFeatureCollection | null, site: [number, number]): BBox {
+  const fallback: BBox = [
+    site[0] - CLIP_RADIUS,
+    site[1] - CLIP_RADIUS,
+    site[0] + CLIP_RADIUS,
+    site[1] + CLIP_RADIUS,
+  ];
+  if (!leases || leases.features.length === 0) return fallback;
+
+  let w = Infinity;
+  let s = Infinity;
+  let e = -Infinity;
+  let n = -Infinity;
+  for (const feature of leases.features) {
+    if (!("coordinates" in feature.geometry)) continue;
+    const [fw, fs, fe, fn] = coordsBBox(feature.geometry.coordinates);
+    if (!Number.isFinite(fw)) continue;
+    w = Math.min(w, fw);
+    s = Math.min(s, fs);
+    e = Math.max(e, fe);
+    n = Math.max(n, fn);
   }
+  if (!Number.isFinite(w)) return fallback;
 
-  return found ? [w, s, e, n] : fallback;
+  const halfX = Math.max(site[0] - w, e - site[0]);
+  const halfY = Math.max(site[1] - s, n - site[1]);
+  return [site[0] - halfX, site[1] - halfY, site[0] + halfX, site[1] + halfY];
 }
 
 function toLngLatBounds(b: BBox): LngLatBoundsLike {

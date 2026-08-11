@@ -80,14 +80,14 @@ export function VentureBriefBand({
     <BandShell>
       <SectionHeading
         eyebrow={`Prepared for ${PROSPECT.name}`}
-        title="Your coast is already on this chart"
+        title="We are a nature-based carbon capture and storage project build with local commercial fishermen."
       />
 
       <div className="mt-14 space-y-6">
         <AlignmentCard
           index={1}
-          heading="The capture goal, and the tense of it"
-          theirs={`${fmtInt(PROSPECT.ccsGoalTonsPerYear)} tons of carbon per year — the CCS goal published on your environment page.`}
+          heading="The capture goal"
+          theirs={`${fmtInt(PROSPECT.ccsGoalTonsPerYear)} tons of carbon per year`}
           ours={
             <>
               {fmtInt(s?.net_mt_total)} MT CO₂e net of our own operation, already measured on
@@ -273,7 +273,7 @@ function AlignmentCard({
 
         <div className="mt-7 grid gap-6 lg:grid-cols-2">
           <div className="border-l border-navy/15 pl-5">
-            <p className="story-note-ink">You publish</p>
+            <p className="story-note-ink">Your website posts</p>
             <p className="mt-2 font-display text-lg leading-snug text-steel">{theirs}</p>
           </div>
           <div className="border-l border-verdigris/50 pl-5">
