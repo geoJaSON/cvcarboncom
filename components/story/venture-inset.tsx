@@ -283,8 +283,7 @@ export function VentureInset({
         {siteLabel} at the center of the frame, and the water around it.{" "}
         {leaseCount > 0 ? (
           <>
-            <strong>{fmtInt(leaseCount)} oyster leases</strong> sit in this view, with the reef
-            surveyed inside them shaded.
+            <strong>{fmtInt(leaseCount)} oyster leases</strong>
           </>
         ) : (
           <>
@@ -292,7 +291,7 @@ export function VentureInset({
             counted, and had checked.
           </>
         )}{" "}
-        Imagery © Esri/Maxar. Everything drawn over it is our own survey record.
+
       </figcaption>
     </figure>
   );
