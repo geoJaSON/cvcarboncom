@@ -47,7 +47,7 @@ const PROVIDED = {
    page and in the site footer — a revenue commitment that reads two
    different ways in two places is a diligence problem, so move all four
    together. */
-const REINVESTMENT_PCT = 30;
+export const REINVESTMENT_PCT = 30;
 /** Restore · Measure · Verify · Issue · Reinvest — this is the fifth. */
 const REINVESTMENT_STEP = 5;
 

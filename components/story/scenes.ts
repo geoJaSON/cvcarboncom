@@ -20,6 +20,7 @@ export type LayerKey =
 
 export type SceneId =
   | "hero"
+  | "venture"
   | "lost"
   | "bedding"
   | "coverage"
@@ -73,6 +74,23 @@ export const SCENES: Record<SceneId, Scene> = {
     orbitDegrees: 4,
     orbitDuration: 3200,
     layers: { graticule: true },
+  },
+  /* Invitation-only opener. The reef extent is the one baked view that
+     holds both of the prospect's Louisiana sites at once — Calcasieu
+     Pass at the western edge, Plaquemines at the eastern — so their
+     pins stand on shaded survey rather than on empty water. No
+     targetId: the reticle stays off their facilities. */
+  venture: {
+    id: "venture",
+    view: "css",
+    pitch: 26,
+    bearing: -6,
+    zoomBias: -0.25,
+    flightDuration: 3200,
+    orbitDegrees: 8,
+    orbitDuration: 4800,
+    layers: { graticule: true, counties: true, css: true },
+    cssTiers: ["low", "med", "high"],
   },
   lost: {
     id: "lost",
