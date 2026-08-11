@@ -20,7 +20,8 @@ import { MapStage, type ChartView, type StageState } from "./map-stage";
 import { SCENES, type SceneId } from "./scenes";
 import { SequenceBand } from "./sequence";
 import { SizerBand } from "./sizer";
-import { fmtCompact, fmtInt, latestSeason, useStoryData } from "./use-story-data";
+import { fmtCompact, fmtInt, latestSeason, newReefAcres, useStoryData } from "./use-story-data";
+import { VentureBriefBand } from "./venture";
 
 /* ------------------------------------------------------------------
    The brief itself. One fixed chart behind everything; the narrative
@@ -93,13 +94,10 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
   const season = latestSeason(data.manifest);
   const s = data.manifest?.stats;
   const cs = data.caseManifest;
-  /* Reef acreage created on the lease: the sounding share that flipped
-     to solid reef, applied to the lease's acres and floored — claim
-     down, never up. (106 ac × 73.2% → 77.) */
-  const newReefAcres =
-    cs?.acres != null && cs.after.pct_reef != null && cs.before.pct_reef != null
-      ? Math.floor((cs.acres * (cs.after.pct_reef - cs.before.pct_reef)) / 100)
-      : null;
+  /* Reef acreage created on the lease. (106 ac × 73.2% → 77.) The
+     invitation-only opener quotes the same figure, so the arithmetic
+     lives beside the snapshot types rather than in this file. */
+  const createdAcres = newReefAcres(cs);
 
   return (
     <div ref={rootRef} className="story-root relative">
@@ -147,7 +145,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-mist/85 sm:text-lg">
               Plotted below, from our own survey database: the cultch (shells, recycled
               concrete, crushed limestone) we placed, the acres we measured, and the carbon the
-              reef is holding — on the water where it happened.
+              reef is holding, right on the water where it happened.
             </p>
             <p className="story-chart-note mt-9">
               Chart № {snapshotDate ?? "PRE-RELEASE"} · Soundings in oysters per square meter
@@ -167,6 +165,37 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
           </div>
         </section>
 
+        {/* ---- Invitation-only opener, front-loaded ahead of chapter one.
+                 Additive: without the URL flag the brief runs exactly as
+                 it always has, hero straight into what was lost. ---- */}
+        {showVenturePois && (
+          <>
+            <div data-scene="venture" data-covered="true">
+              <VentureBriefBand manifest={data.manifest} caseManifest={data.caseManifest} />
+            </div>
+
+            <ChartStep scene="venture">
+              <ChapterCard
+                eyebrow="The water in question"
+                title="Cameron Parish to Plaquemines Parish"
+              >
+                <p>
+                  Both of your Louisiana sites are marked. The shading between them is surveyed
+                  reef at commercial density. The bottom we have poled, counted, and had checked.
+                  It is roughly a hundred and eighty miles of working coast, and the brief that
+                  follows is how every acre of it got onto the chart.
+                </p>
+                <CardStats
+                  stats={[
+                    { value: s?.css_acres?.total, label: "acres at density" },
+                    { value: s?.parishes, label: "parishes surveyed" },
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+          </>
+        )}
+
         {/* ---- Chapter one — what was lost ---- */}
         <ChartStep scene="lost">
           <ChapterCard
@@ -175,7 +204,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
           >
             <p>
               An estimated 85 percent of the Atlantic and Gulf Coasts&rsquo; oyster reef is
-              gone — the most degraded marine habitat on Earth. A major cause of the collapse
+              gone, the most degraded marine habitat on Earth. A major cause of the collapse
               of our oyster reefs was <strong>shell mining</strong>. For more than 100 years,
               shells were mined from our bays, leaving a muddy landscape incapable of
               regenerating the lost reef on its own.
@@ -231,7 +260,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         <ChartStep scene="density" tall>
           <ChapterCard eyebrow="Chapter three — the proof" title="Hand counted and independently verified, not modeled">
             <p>
-              Each column is measured carbon capture and sequestration — oysters are counted by hand on the board, binned at the survey convention of 20, 119, and 244 oysters per square
+              Each column is measured carbon capture and sequestration. Oysters are counted by hand on the board, binned at the survey convention of 20, 119, and 244 oysters per square
               meter. Where the columns turn shell-gold, the reef is at maximum carbon capture. Results are independently verified by a disinterested third party agency.
             </p>
           </ChapterCard>
@@ -248,7 +277,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
             title="Acres back at commercial density"
           >
             <p>
-              The shaded areas are surveyed reef at or above 20 oysters per square meter —
+              The shaded areas are surveyed reef at or above 20 oysters per square meter,
               habitat doing everything a reef does: feeding a fishery, buffering a shoreline,
               and holding carbon in shell and sediment.
             </p>
@@ -296,7 +325,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
               <ChapterCard eyebrow="Chapter five — the work" title="One month of shell">
                 <p>
                   {cs.bedding.materials.join(" and ")} went over the side in {fmtInt(cs.bedding.placements)}{" "}
-                  logged placements — replayed here in the order the barge made them.
+                  logged placements, replayed here in the order the barge made them.
                 </p>
                 <CardStats
                   stats={[
@@ -316,13 +345,13 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
                 <p>
                   Six months on, the survey boat crossed the same bottom at more than twice the
                   sounding density. Where the chart turns shell-gold, the substrate now rings
-                  hard — {newReefAcres != null ? `${fmtInt(newReefAcres)} acres of ` : ""}new
+                  hard — {createdAcres != null ? `${fmtInt(createdAcres)} acres of ` : ""}new
                   reef, created in a single season, where before there was none.
                 </p>
                 <CardStats
                   stats={[
-                    ...(newReefAcres != null
-                      ? [{ value: newReefAcres, label: "acres of new reef created" }]
+                    ...(createdAcres != null
+                      ? [{ value: createdAcres, label: "acres of new reef created" }]
                       : []),
                     { value: cs.after.points, label: "soundings, Dec 2025" },
                     {
@@ -366,7 +395,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
           <p className="mt-6 max-w-xl text-base leading-relaxed text-mist/85">
             Credits are available now, by the ton or by the batch, retired in your name with a
             certificate that points back to the water on this chart. And the chart is live
-            water we work every week — so before you sign anything, come see it from the boat.
+            water we work every week, so before you sign anything, come see it from the boat.
             What you take home is made to be passed along: a certificate, a serial, and this
             chart — evidence you can put in front of the people you answer to.
           </p>

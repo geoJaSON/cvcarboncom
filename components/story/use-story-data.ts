@@ -258,6 +258,16 @@ export function latestSeason(manifest: StoryManifest | null): StorySeason | null
   };
 }
 
+/** Reef acreage a case-study lease gained between its two survey
+    passes: the sounding share that flipped to solid reef, applied to
+    the lease's acres and floored — claim down, never up. Quoted by both
+    the case-study chapter and the invitation-only opener, so it lives
+    here rather than in whichever one happened to need it first. */
+export function newReefAcres(cs: CaseStudyManifest | null): number | null {
+  if (cs?.acres == null || cs.after.pct_reef == null || cs.before.pct_reef == null) return null;
+  return Math.floor((cs.acres * (cs.after.pct_reef - cs.before.pct_reef)) / 100);
+}
+
 /* ------------------------------------------------------------------
    Formatting helpers — stats render as an em dash until the snapshot
    provides them, so a missing bake never shows a wrong number.
