@@ -108,19 +108,16 @@ export function VentureBriefBand({
 
         <AlignmentCard
           index={3}
-          heading="The same water, worked by people already on it"
-          theirs="Calcasieu Pass in Cameron Parish, and the export facility at mile marker 55 of the Mississippi in Plaquemines Parish."
+          heading="Venture Global and CV Carbon share the same footprint"
+          theirs="Calcasieu Pass in Cameron Parish, and the export facility in Plaquemines Parish."
           ours={
             <>
-              Plaquemines is one of the camera targets on this chart. {fmtInt(s?.leases_in_program)}{" "}
-              leases across {fmtInt(s?.parishes)} parishes, worked by{" "}
-              {fmtInt(s?.entities_enrolled)} family oyster businesses.
+              From Calcasieu Pass to Plaguemines Parish, we have 462,653 acres of oyster leases run by 405 commercial oyster businesses.
             </>
           }
         >
-          The pins standing on the chart are your sites. Everything shaded around them is
-          survey. The fleet that would place the cultch against your tonnage already runs that
-          coast every week, out of the same parishes your facilities report in.
+          The pins on the chart are your sites. Everything shaded around them is
+          our survey data. Our project is already in the shadow of your facilities.
         </AlignmentCard>
       </div>
 
@@ -162,7 +159,7 @@ export function VentureBriefBand({
             </div>
             <div>
               <h3 className="font-display text-2xl text-white sm:text-3xl">
-                An environmental dollar that lands on the dock in the parish it came from
+                Revenue from our offsets lands on the dock of the parish it was captured in.
               </h3>
               <div className="prose-cv mt-5 !text-mist/85 [&_strong]:!text-white">
                 <p>
