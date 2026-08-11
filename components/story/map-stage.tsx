@@ -5,7 +5,6 @@ import {
   AttributionControl,
   Map as MaplibreMap,
   Marker,
-  setWorkerUrl,
   type ExpressionSpecification,
   type FilterSpecification,
   type GeoJSONSource,
@@ -13,13 +12,7 @@ import {
   type LngLatBoundsLike,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-
-/* MapLibre's default worker is spawned from a bundler-transformed
-   module, which Turbopack breaks silently — every GeoJSON source then
-   hangs forever unloaded. Serve the library's own pristine worker
-   (copied into public/maplibre/ by the sync-maplibre-worker script,
-   which predev/prebuild run automatically). */
-setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
+import "./maplibre-worker";
 import { useEffect, useRef, useState } from "react";
 import { CHESAPEAKE_OUTLINE } from "./chesapeake-outline";
 import { SOUTHWEST_LA_OUTLINE } from "./southwest-la-outline";

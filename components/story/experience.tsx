@@ -171,7 +171,13 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         {showVenturePois && (
           <>
             <div data-scene="venture" data-covered="true">
-              <VentureBriefBand manifest={data.manifest} caseManifest={data.caseManifest} />
+              <VentureBriefBand
+                manifest={data.manifest}
+                caseManifest={data.caseManifest}
+                bedding={data.layers.bedding}
+                cssTiers={data.layers.cssTiers}
+                reducedMotion={reducedMotion}
+              />
             </div>
 
             <ChartStep scene="venture">

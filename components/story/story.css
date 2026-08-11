@@ -736,6 +736,133 @@
 }
 
 /* ------------------------------------------------------------------
+   The venture band's pull-back inset. A second, self-contained chart
+   sitting inside an opaque editorial band, so it keeps the console
+   chrome of the main stage but at panel scale.
+   ------------------------------------------------------------------ */
+.story-inset-frame {
+  position: relative;
+  height: clamp(20rem, 52vh, 34rem);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-navy) 22%, transparent);
+  border-radius: 0.5rem;
+  background: var(--color-abyss);
+  isolation: isolate;
+}
+
+.story-inset-frame .maplibregl-ctrl-attrib {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-abyss) 85%, transparent) !important;
+  color: color-mix(in srgb, var(--color-mist) 60%, transparent) !important;
+  font-family: var(--font-chart);
+  font-size: 8px;
+}
+
+.story-inset-frame .maplibregl-ctrl-attrib a {
+  color: color-mix(in srgb, var(--color-mist) 75%, transparent) !important;
+}
+
+.story-inset-frame .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
+  opacity: 0.7;
+}
+
+.story-inset-legend {
+  position: absolute;
+  z-index: 2;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--color-mist) 20%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-abyss) 72%, transparent);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-chart);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-mist) 80%, transparent);
+  pointer-events: none;
+}
+
+.story-inset-legend span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.story-inset-legend i {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.story-inset-replay {
+  position: absolute;
+  z-index: 2;
+  right: 0.75rem;
+  top: 0.75rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--color-mist) 22%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-abyss) 72%, transparent);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-chart);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-mist) 82%, transparent);
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.story-inset-replay:hover,
+.story-inset-replay:focus-visible {
+  color: var(--color-pearl);
+  border-color: color-mix(in srgb, var(--color-verdigris) 70%, transparent);
+}
+
+/* The site pin. Reads as an annotation on a chart, not a map pin. */
+.story-inset-poi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  filter: drop-shadow(0 0.4rem 0.65rem rgba(1, 8, 14, 0.75));
+}
+
+.story-inset-poi span {
+  padding: 0.32rem 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--color-sand) 55%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--color-abyss) 86%, transparent);
+  font-family: var(--font-chart);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-pearl);
+}
+
+.story-inset-poi > i {
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-top: 0.28rem;
+  border: 2px solid var(--color-pearl);
+  border-radius: 999px;
+  background: var(--color-sand);
+  box-shadow:
+    0 0 0 0.2rem rgba(214, 197, 170, 0.22),
+    0 0 0.9rem rgba(214, 197, 170, 0.7);
+}
+
+/* ------------------------------------------------------------------
    Worksheet controls — the reef scrubber and the purchase sizer. Both
    ride the pearl bands rather than the chart, so they wear ink and
    verdigris instead of the console palette.

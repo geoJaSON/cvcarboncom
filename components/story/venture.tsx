@@ -4,10 +4,13 @@ import type { ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/ui";
 import { BandShell, REINVESTMENT_PCT } from "./bands";
+import { VENTURE_POIS } from "./venture-pois";
+import { VentureInset } from "./venture-inset";
 import {
   fmtInt,
   newReefAcres,
   type CaseStudyManifest,
+  type StoryFeatureCollection,
   type StoryManifest,
 } from "./use-story-data";
 
@@ -59,12 +62,19 @@ const AHEAD: [string, string][] = [
 export function VentureBriefBand({
   manifest,
   caseManifest,
+  bedding,
+  cssTiers,
+  reducedMotion,
 }: {
   manifest: StoryManifest | null;
   caseManifest: CaseStudyManifest | null;
+  bedding: StoryFeatureCollection | null;
+  cssTiers: StoryFeatureCollection | null;
+  reducedMotion: boolean;
 }) {
   const s = manifest?.stats;
   const gained = newReefAcres(caseManifest);
+  const plant = VENTURE_POIS.find((poi) => poi.id === "new-gas-plant-site");
 
   return (
     <BandShell>
@@ -119,6 +129,23 @@ export function VentureBriefBand({
           coast every week, out of the same parishes your facilities report in.
         </AlignmentCard>
       </div>
+
+      {/* Card three says their sites and our survey share a coast. This
+          is that sentence with the imagery behind it: open on the plant
+          at aerial resolution, then climb until our record fills the
+          water around it. Nothing is drawn until the frame is wide
+          enough to be honest about the distance. */}
+      {plant && (
+        <Reveal className="mt-10">
+          <VentureInset
+            center={plant.coordinates}
+            siteLabel={plant.name}
+            bedding={bedding}
+            cssTiers={cssTiers}
+            reducedMotion={reducedMotion}
+          />
+        </Reveal>
+      )}
 
       {/* The local-benefit case, which is the one argument on this band
           that a ton bought anywhere else cannot answer. Built entirely
