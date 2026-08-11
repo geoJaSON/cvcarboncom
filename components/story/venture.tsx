@@ -87,27 +87,21 @@ export function VentureBriefBand({
         <AlignmentCard
           index={1}
           heading="The capture goal"
-          theirs={`${fmtInt(PROSPECT.ccsGoalTonsPerYear)} tons of carbon per year`}
+          theirs={` On your website you commit to invest in carbon capture and storage at each of your projects with a CCS goal of 1 million tons of carbon per year.`}
           ours={
             <>
-              {fmtInt(s?.net_mt_total)} MT CO₂e net of our own operation, already measured on
-              the water, and {fmtInt(s?.credits?.total ?? s?.credits?.issued)} credits already
-              serialized to a public registry.
+              {fmtInt(s?.net_mt_total)} MT CO₂e net of our own operation and already measured, verified, and serialized to a public registry.
             </>
           }
         />
 
         <AlignmentCard
           index={2}
-          heading="Coastal habitat is already a line item for you"
+          heading="Coastal habitat is a shared priority for you and the community"
           theirs={`${fmtInt(PROSPECT.marshAcres)} acres of marsh creation and restoration to date, and $${PROSPECT.wetlandCreditsUsdMillions} million in wetland mitigation credits.`}
           ours={
             <>
-              {fmtInt(s?.css_acres?.total)} acres of surveyed reef at commercial density
-              {gained != null && caseManifest
-                ? `, ${fmtInt(gained)} of them created on a single ${fmtInt(caseManifest.acres)}-acre lease in one season`
-                : ""}
-              .
+              {fmtInt(s?.css_acres?.total)} acres of surveyed high density reef
             </>
           }
         />
@@ -277,7 +271,7 @@ function AlignmentCard({
             <p className="mt-2 font-display text-lg leading-snug text-steel">{theirs}</p>
           </div>
           <div className="border-l border-verdigris/50 pl-5">
-            <p className="story-note-ink">This chart holds</p>
+            <p className="story-note-ink">Currently available</p>
             <p className="mt-2 font-display text-lg leading-snug text-navy">{ours}</p>
           </div>
         </div>
