@@ -142,12 +142,12 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
               CV Carbon · Field operations brief · Shared by invitation
             </p>
             <h1 className="mt-7 font-display text-4xl leading-[1.05] text-white sm:text-6xl">
-              We are bringing the reef back!
+              We are bringing the reefs back!
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-mist/85 sm:text-lg">
               Plotted below, from our own survey database: the cultch (shells, recycled
               concrete, crushed limestone) we placed, the acres we measured, and the carbon the
-              reef is holding — on the water where it happened.
+              reefs are holding, on the water where it happened.
             </p>
             <p className="story-chart-note mt-9">
               Chart № {snapshotDate ?? "PRE-RELEASE"} · Soundings in oysters per square meter
@@ -293,7 +293,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
             </ChartStep>
 
             <ChartStep scene="case-work" tall>
-              <ChapterCard eyebrow="Chapter five — the work" title="One month of shell">
+              <ChapterCard eyebrow="Chapter five — the work" title="One month of cultch">
                 <p>
                   {cs.bedding.materials.join(" and ")} went over the side in {fmtInt(cs.bedding.placements)}{" "}
                   logged placements — replayed here in the order the barge made them.
