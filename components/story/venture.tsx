@@ -62,13 +62,13 @@ const AHEAD: [string, string][] = [
 export function VentureBriefBand({
   manifest,
   caseManifest,
-  bedding,
+  leases,
   cssTiers,
   reducedMotion,
 }: {
   manifest: StoryManifest | null;
   caseManifest: CaseStudyManifest | null;
-  bedding: StoryFeatureCollection | null;
+  leases: StoryFeatureCollection | null;
   cssTiers: StoryFeatureCollection | null;
   reducedMotion: boolean;
 }) {
@@ -140,7 +140,7 @@ export function VentureBriefBand({
           <VentureInset
             center={plant.coordinates}
             siteLabel={plant.name}
-            bedding={bedding}
+            leases={leases}
             cssTiers={cssTiers}
             reducedMotion={reducedMotion}
           />

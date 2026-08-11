@@ -32,7 +32,9 @@ import { VentureBriefBand } from "./venture";
    ------------------------------------------------------------------ */
 
 export default function Experience({ showVenturePois = false }: { showVenturePois?: boolean }) {
-  const data = useStoryData();
+  /* Lease boundaries are only ever drawn by the venture inset, so they
+     are fetched only when that opener is switched on. */
+  const data = useStoryData({ leases: showVenturePois });
   const [scene, setScene] = useState<SceneId>("hero");
   const [hudVisible, setHudVisible] = useState(true);
   const [view, setView] = useState<ChartView | null>(null);
@@ -174,7 +176,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
               <VentureBriefBand
                 manifest={data.manifest}
                 caseManifest={data.caseManifest}
-                bedding={data.layers.bedding}
+                leases={data.layers.leases}
                 cssTiers={data.layers.cssTiers}
                 reducedMotion={reducedMotion}
               />

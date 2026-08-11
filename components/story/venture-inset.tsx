@@ -27,21 +27,27 @@ import { fmtInt, type BBox, type StoryFeatureCollection } from "./use-story-data
    first, so the second map carries a fraction of the coast-wide pack.
    ------------------------------------------------------------------ */
 
-/** Degrees of padding around the site that the pull-back settles on. */
-const CLIP_RADIUS = 0.35;
+/** Degrees of padding around the site that the pull-back settles on.
+    The dial for how much coast the climb reveals: 0.25° puts ~1,800
+    leases and ~50 km in frame with the site still near its center.
+    Widening to 0.35° more than doubles the lease count but pushes the
+    frame past 80 km, where an average 67-acre lease is a few pixels. */
+const CLIP_RADIUS = 0.25;
 const START_ZOOM = 15.4;
 const FLIGHT_MS = 5200;
 
 export function VentureInset({
   center,
   siteLabel,
-  bedding,
+  leases,
   cssTiers,
   reducedMotion,
 }: {
   center: [number, number];
   siteLabel: string;
-  bedding: StoryFeatureCollection | null;
+  /** Enrolled lease boundaries. Optional: no leases.geojson in the
+      snapshot pack and the inset falls back to surveyed reef alone. */
+  leases: StoryFeatureCollection | null;
   cssTiers: StoryFeatureCollection | null;
   reducedMotion: boolean;
 }) {
@@ -62,10 +68,10 @@ export function VentureInset({
   );
 
   /* Clipping is what makes a second map affordable: the coast-wide
-     bedding pack is 4 MB and almost none of it is near this site. */
-  const localBedding = useMemo(() => clipToBBox(bedding, clip), [bedding, clip]);
+     packs run to megabytes and almost none of it is near this site. */
+  const localLeases = useMemo(() => clipToBBox(leases, clip), [leases, clip]);
   const localReef = useMemo(() => clipToBBox(cssTiers, clip, latestYear(cssTiers)), [cssTiers, clip]);
-  const placements = localBedding?.features.length ?? 0;
+  const leaseCount = localLeases?.features.length ?? 0;
 
   /* ---- boot ---- */
   useEffect(() => {
@@ -141,32 +147,28 @@ export function VentureInset({
       }
     }
 
-    if (localBedding) {
-      if (map.getSource("inset-bedding")) {
-        (map.getSource("inset-bedding") as GeoJSONSource).setData(localBedding);
+    /* Leases ride above the reef: the boundaries are the point, the reef
+       inside them is the evidence. Thin mist outlines against verdigris
+       shading keeps thousands of parcels legible at 60 km across. */
+    if (localLeases) {
+      if (map.getSource("inset-leases")) {
+        (map.getSource("inset-leases") as GeoJSONSource).setData(localLeases);
       } else {
-        map.addSource("inset-bedding", { type: "geojson", data: localBedding });
+        map.addSource("inset-leases", { type: "geojson", data: localLeases });
         map.addLayer({
-          id: "inset-bedding-glow",
-          type: "line",
-          source: "inset-bedding",
-          layout: { "line-cap": "round" },
-          paint: {
-            "line-color": CHART.cultch,
-            "line-opacity": 0,
-            "line-width": ["interpolate", ["linear"], ["zoom"], 9, 5, 14, 12],
-            "line-blur": 3,
-          },
+          id: "inset-lease-fill",
+          type: "fill",
+          source: "inset-leases",
+          paint: { "fill-color": CHART.coverage, "fill-opacity": 0 },
         });
         map.addLayer({
-          id: "inset-bedding",
+          id: "inset-lease-line",
           type: "line",
-          source: "inset-bedding",
-          layout: { "line-cap": "round" },
+          source: "inset-leases",
           paint: {
-            "line-color": CHART.cultch,
+            "line-color": CHART.coverage,
             "line-opacity": 0,
-            "line-width": ["interpolate", ["linear"], ["zoom"], 9, 1.6, 14, 4],
+            "line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.6, 14, 1.8],
           },
         });
       }
@@ -178,14 +180,14 @@ export function VentureInset({
     return () => {
       marker.remove();
     };
-  }, [ready, localBedding, localReef, center, siteLabel]);
+  }, [ready, localLeases, localReef, center, siteLabel]);
 
   /* ---- the flight ---- */
   const pullBack = useCallback(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    const bounds = boundsOf([localBedding, localReef], clip, center);
+    const bounds = boundsOf([localLeases, localReef], clip, center);
     const camera =
       map.cameraForBounds(toLngLatBounds(bounds), { padding: 28 }) ??
       map.cameraForBounds(toLngLatBounds(bounds), { padding: 8 });
@@ -195,9 +197,9 @@ export function VentureInset({
       if (map.getLayer("inset-reef-fill")) {
         map.setPaintProperty("inset-reef-fill", "fill-opacity", 0.45 * t);
       }
-      if (map.getLayer("inset-bedding")) {
-        map.setPaintProperty("inset-bedding", "line-opacity", 0.95 * t);
-        map.setPaintProperty("inset-bedding-glow", "line-opacity", 0.16 * t);
+      if (map.getLayer("inset-lease-line")) {
+        map.setPaintProperty("inset-lease-line", "line-opacity", 0.9 * t);
+        map.setPaintProperty("inset-lease-fill", "fill-opacity", 0.07 * t);
       }
     };
 
@@ -233,7 +235,7 @@ export function VentureInset({
         setFlown(true);
       }
     }, 70);
-  }, [center, clip, localBedding, localReef, reducedMotion]);
+  }, [center, clip, localLeases, localReef, reducedMotion]);
 
   /* Runs itself the first time it is actually looked at. */
   useEffect(() => {
@@ -264,9 +266,11 @@ export function VentureInset({
       <div className="story-inset-frame">
         <div ref={containerRef} className="h-full w-full" />
         <div className="story-inset-legend" aria-hidden="true">
-          <span>
-            <i style={{ background: CHART.cultch }} /> Cultch placed
-          </span>
+          {leaseCount > 0 && (
+            <span>
+              <i style={{ background: CHART.coverage }} /> Oyster leases
+            </span>
+          )}
           <span>
             <i style={{ background: CHART.tiers.med }} /> Surveyed reef
           </span>
@@ -277,13 +281,16 @@ export function VentureInset({
       </div>
       <figcaption className="prose-cv mt-4 text-[0.9375rem]">
         {siteLabel} at the center of the frame, and the water around it.{" "}
-        {placements > 0 ? (
+        {leaseCount > 0 ? (
           <>
-            <strong>{fmtInt(placements)} logged cultch placements</strong> and the surveyed reef
-            they built are already in this view.
+            <strong>{fmtInt(leaseCount)} oyster leases</strong> sit in this view, with the reef
+            surveyed inside them shaded.
           </>
         ) : (
-          <>The shaded water is surveyed reef at commercial density.</>
+          <>
+            The shaded water is surveyed reef at commercial density, bottom we have poled,
+            counted, and had checked.
+          </>
         )}{" "}
         Imagery © Esri/Maxar. Everything drawn over it is our own survey record.
       </figcaption>
