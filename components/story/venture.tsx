@@ -73,10 +73,7 @@ export function VentureBriefBand({
         title="Your coast is already on this chart"
         intro={
           <p>
-            This brief usually opens on the whole Gulf. For your team it opens here, because
-            three of the commitments on your own environment page are things a survey database
-            can put a number against — in the same two Louisiana parishes your plants sit in.
-            What follows is our record, and you are welcome to check it against yours.
+
           </p>
         }
       />
@@ -94,10 +91,7 @@ export function VentureBriefBand({
             </>
           }
         >
-          Ours is a cumulative total across the survey seasons on this chart, not an annual
-          rate — so the comparison worth making is not size, it is tense. One figure describes
-          capacity being built. The other describes carbon that has been counted by hand,
-          checked by an independent verifier, and issued with a serial number on it.
+
         </AlignmentCard>
 
         <AlignmentCard
@@ -114,10 +108,7 @@ export function VentureBriefBand({
             </>
           }
         >
-          These are not competing programs. Reef is the wave break that keeps created marsh
-          from washing back out — measured erosion behind restored Louisiana reef runs roughly
-          half. You already buy Gulf Coast habitat by the credit; this one arrives with a
-          carbon ton, a serial, and a repeatable survey attached to it.
+
         </AlignmentCard>
 
         <AlignmentCard
