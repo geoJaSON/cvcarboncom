@@ -71,11 +71,6 @@ export function VentureBriefBand({
       <SectionHeading
         eyebrow={`Prepared for ${PROSPECT.name}`}
         title="Your coast is already on this chart"
-        intro={
-          <p>
-
-          </p>
-        }
       />
 
       <div className="mt-14 space-y-6">
@@ -90,9 +85,7 @@ export function VentureBriefBand({
               serialized to a public registry.
             </>
           }
-        >
-
-        </AlignmentCard>
+        />
 
         <AlignmentCard
           index={2}
@@ -107,9 +100,7 @@ export function VentureBriefBand({
               .
             </>
           }
-        >
-
-        </AlignmentCard>
+        />
 
         <AlignmentCard
           index={3}
@@ -238,7 +229,10 @@ function AlignmentCard({
   heading: string;
   theirs: ReactNode;
   ours: ReactNode;
-  children: ReactNode;
+  /** Optional closing line under the two columns. A card that lets the
+      quoted figures speak for themselves omits it and loses the rule
+      along with it, rather than carrying an empty divider. */
+  children?: ReactNode;
 }) {
   return (
     <Reveal delay={(index - 1) * 90}>
@@ -261,9 +255,11 @@ function AlignmentCard({
           </div>
         </div>
 
-        <div className="prose-cv mt-7 border-t border-navy/10 pt-6 text-[0.9375rem]">
-          {children}
-        </div>
+        {children ? (
+          <div className="prose-cv mt-7 border-t border-navy/10 pt-6 text-[0.9375rem]">
+            {children}
+          </div>
+        ) : null}
       </article>
     </Reveal>
   );
