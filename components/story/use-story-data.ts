@@ -149,6 +149,10 @@ export type StoryData = {
     caseBoundary: StoryFeatureCollection | null;
     casePolling: StoryFeatureCollection | null;
     caseBedding: StoryFeatureCollection | null;
+    /* Enrolled lease boundaries. Not produced by the bake yet; the
+       venture inset draws them when the file appears and falls back to
+       surveyed reef alone until then. */
+    leases: StoryFeatureCollection | null;
   };
   /** True once every fetch has settled, hit or miss. */
   ready: boolean;
@@ -168,7 +172,12 @@ async function fetchJson<T>(path: string): Promise<T | null> {
   }
 }
 
-export function useStoryData(): StoryData {
+/* The lease layer is the one heavy file that most visitors never see:
+   it is drawn only by the venture band's inset, which is URL-gated. Its
+   fetch shares the Promise.all barrier with everything else, so pulling
+   it unconditionally would delay the whole chart for every reader to
+   serve a page they did not open. Callers opt in. */
+export function useStoryData({ leases: wantLeases = false }: { leases?: boolean } = {}): StoryData {
   const [data, setData] = useState<StoryData>({
     manifest: null,
     caseManifest: null,
@@ -184,6 +193,7 @@ export function useStoryData(): StoryData {
       caseBoundary: null,
       casePolling: null,
       caseBedding: null,
+      leases: null,
     },
     ready: false,
   });
@@ -206,6 +216,7 @@ export function useStoryData(): StoryData {
         gallery,
         sequence,
         construction,
+        leases,
       ] = await Promise.all([
         fetchJson<StoryManifest>("manifest.json"),
         fetchJson<StoryFeatureCollection>("bedding.geojson"),
@@ -220,6 +231,9 @@ export function useStoryData(): StoryData {
         fetchJson<GalleryManifest>("gallery.json"),
         fetchJson<SequenceManifest>("sequence.json"),
         fetchJson<ConstructionManifest>("construction.json"),
+        wantLeases
+          ? fetchJson<StoryFeatureCollection>("leases.geojson")
+          : Promise.resolve(null),
       ]);
       if (cancelled) return;
       setData({
@@ -237,6 +251,7 @@ export function useStoryData(): StoryData {
           caseBoundary,
           casePolling,
           caseBedding,
+          leases,
         },
         ready: true,
       });
@@ -245,7 +260,7 @@ export function useStoryData(): StoryData {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [wantLeases]);
 
   return data;
 }

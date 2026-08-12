@@ -4,10 +4,13 @@ import type { ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/ui";
 import { BandShell, REINVESTMENT_PCT } from "./bands";
+import { VENTURE_POIS } from "./venture-pois";
+import { VentureInset } from "./venture-inset";
 import {
   fmtInt,
   newReefAcres,
   type CaseStudyManifest,
+  type StoryFeatureCollection,
   type StoryManifest,
 } from "./use-story-data";
 
@@ -59,84 +62,81 @@ const AHEAD: [string, string][] = [
 export function VentureBriefBand({
   manifest,
   caseManifest,
+  leases,
+  cssTiers,
+  reducedMotion,
 }: {
   manifest: StoryManifest | null;
   caseManifest: CaseStudyManifest | null;
+  leases: StoryFeatureCollection | null;
+  cssTiers: StoryFeatureCollection | null;
+  reducedMotion: boolean;
 }) {
   const s = manifest?.stats;
   const gained = newReefAcres(caseManifest);
+  const plant = VENTURE_POIS.find((poi) => poi.id === "new-gas-plant-site");
 
   return (
     <BandShell>
       <SectionHeading
         eyebrow={`Prepared for ${PROSPECT.name}`}
-        title="Your coast is already on this chart"
-        intro={
-          <p>
-            This brief usually opens on the whole Gulf. For your team it opens here, because
-            three of the commitments on your own environment page are things a survey database
-            can put a number against — in the same two Louisiana parishes your plants sit in.
-            What follows is our record, and you are welcome to check it against yours.
-          </p>
-        }
+        title="We are a nature-based carbon capture and storage project build with local commercial fishermen."
       />
 
       <div className="mt-14 space-y-6">
         <AlignmentCard
           index={1}
-          heading="The capture goal, and the tense of it"
-          theirs={`${fmtInt(PROSPECT.ccsGoalTonsPerYear)} tons of carbon per year — the CCS goal published on your environment page.`}
+          heading="The capture goal"
+          theirs={` On your website you commit to invest in carbon capture and storage at each of your projects with a CCS goal of 1 million tons of carbon per year.`}
           ours={
             <>
-              {fmtInt(s?.net_mt_total)} MT CO₂e net of our own operation, already measured on
-              the water, and {fmtInt(s?.credits?.total ?? s?.credits?.issued)} credits already
-              serialized to a public registry.
+              {fmtInt(s?.net_mt_total)} MT CO₂e net of our own operation and already measured, verified, and serialized to a public registry.
             </>
           }
-        >
-          Ours is a cumulative total across the survey seasons on this chart, not an annual
-          rate — so the comparison worth making is not size, it is tense. One figure describes
-          capacity being built. The other describes carbon that has been counted by hand,
-          checked by an independent verifier, and issued with a serial number on it.
-        </AlignmentCard>
+        />
 
         <AlignmentCard
           index={2}
-          heading="Coastal habitat is already a line item for you"
+          heading="Coastal habitat is a shared priority for you and the community"
           theirs={`${fmtInt(PROSPECT.marshAcres)} acres of marsh creation and restoration to date, and $${PROSPECT.wetlandCreditsUsdMillions} million in wetland mitigation credits.`}
           ours={
             <>
-              {fmtInt(s?.css_acres?.total)} acres of surveyed reef at commercial density
-              {gained != null && caseManifest
-                ? `, ${fmtInt(gained)} of them created on a single ${fmtInt(caseManifest.acres)}-acre lease in one season`
-                : ""}
-              .
+              {fmtInt(s?.css_acres?.total)} acres of surveyed high density reef
             </>
           }
-        >
-          These are not competing programs. Reef is the wave break that keeps created marsh
-          from washing back out — measured erosion behind restored Louisiana reef runs roughly
-          half. You already buy Gulf Coast habitat by the credit; this one arrives with a
-          carbon ton, a serial, and a repeatable survey attached to it.
-        </AlignmentCard>
+        />
 
         <AlignmentCard
           index={3}
-          heading="The same water, worked by people already on it"
-          theirs="Calcasieu Pass in Cameron Parish, and the export facility at mile marker 55 of the Mississippi in Plaquemines Parish."
+          heading="Venture Global and CV Carbon share the same footprint"
+          theirs="Calcasieu Pass in Cameron Parish, and the export facility in Plaquemines Parish."
           ours={
             <>
-              Plaquemines is one of the camera targets on this chart. {fmtInt(s?.leases_in_program)}{" "}
-              leases across {fmtInt(s?.parishes)} parishes, worked by{" "}
-              {fmtInt(s?.entities_enrolled)} family oyster businesses.
+              From Calcasieu Pass to Plaguemines Parish, we have 462,653 acres of oyster leases run by 405 commercial oyster businesses.
             </>
           }
         >
-          The pins standing on the chart are your sites. Everything shaded around them is
-          survey. The fleet that would place the cultch against your tonnage already runs that
-          coast every week, out of the same parishes your facilities report in.
+          The pins on the chart are your sites. Everything shaded around them is
+          our survey data. Our project is already in the shadow of your facilities.
         </AlignmentCard>
       </div>
+
+      {/* Card three says their sites and our survey share a coast. This
+          is that sentence with the imagery behind it: open on the plant
+          at aerial resolution, then climb until our record fills the
+          water around it. Nothing is drawn until the frame is wide
+          enough to be honest about the distance. */}
+      {plant && (
+        <Reveal className="mt-10">
+          <VentureInset
+            center={plant.coordinates}
+            siteLabel={plant.name}
+            leases={leases}
+            cssTiers={cssTiers}
+            reducedMotion={reducedMotion}
+          />
+        </Reveal>
+      )}
 
       {/* The local-benefit case, which is the one argument on this band
           that a ton bought anywhere else cannot answer. Built entirely
@@ -159,7 +159,7 @@ export function VentureBriefBand({
             </div>
             <div>
               <h3 className="font-display text-2xl text-white sm:text-3xl">
-                An environmental dollar that lands on the dock in the parish it came from
+                Revenue from our offsets lands on the dock of the parish it was captured in.
               </h3>
               <div className="prose-cv mt-5 !text-mist/85 [&_strong]:!text-white">
                 <p>
@@ -247,7 +247,10 @@ function AlignmentCard({
   heading: string;
   theirs: ReactNode;
   ours: ReactNode;
-  children: ReactNode;
+  /** Optional closing line under the two columns. A card that lets the
+      quoted figures speak for themselves omits it and loses the rule
+      along with it, rather than carrying an empty divider. */
+  children?: ReactNode;
 }) {
   return (
     <Reveal delay={(index - 1) * 90}>
@@ -261,18 +264,20 @@ function AlignmentCard({
 
         <div className="mt-7 grid gap-6 lg:grid-cols-2">
           <div className="border-l border-navy/15 pl-5">
-            <p className="story-note-ink">You publish</p>
+            <p className="story-note-ink">Your website posts</p>
             <p className="mt-2 font-display text-lg leading-snug text-steel">{theirs}</p>
           </div>
           <div className="border-l border-verdigris/50 pl-5">
-            <p className="story-note-ink">This chart holds</p>
+            <p className="story-note-ink">Currently available</p>
             <p className="mt-2 font-display text-lg leading-snug text-navy">{ours}</p>
           </div>
         </div>
 
-        <div className="prose-cv mt-7 border-t border-navy/10 pt-6 text-[0.9375rem]">
-          {children}
-        </div>
+        {children ? (
+          <div className="prose-cv mt-7 border-t border-navy/10 pt-6 text-[0.9375rem]">
+            {children}
+          </div>
+        ) : null}
       </article>
     </Reveal>
   );

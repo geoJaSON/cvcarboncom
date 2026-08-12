@@ -224,8 +224,7 @@ export function SizerBand({
                       className="story-swatch"
                       style={{ background: "rgba(13,42,68,0.08)", borderColor: "#0d2a44" }}
                     />
-                    Lease {caseManifest.lease_number}, {fmtInt(caseManifest.acres)} acres — the
-                    real outline
+                    Lease {caseManifest.lease_number}, {fmtInt(caseManifest.acres)} acres
                   </span>
                 )}
               </div>
