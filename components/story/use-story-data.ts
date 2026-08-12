@@ -46,6 +46,23 @@ export type StoryManifest = {
 
 export type StoryFeatureCollection = FeatureCollection;
 
+/* The construction ledger — how much reef each year's bedding built new
+   and how much it re-shelled. Baked from Jason's per-year bedding layers
+   by scripts/bake_reef_construction.py; absent file, absent chart. */
+export type ConstructionManifest = {
+  generated?: string;
+  method?: string;
+  /** Buffer half-width applied to raw placement tracks, in feet. */
+  buffer_ft?: number | null;
+  by_year: {
+    year: number;
+    constructed_acres: number;
+    restored_acres: number;
+    /** The year's whole dissolved bedding footprint, before splitting. */
+    bedded_acres?: number;
+  }[];
+};
+
 /** Substrate codes shipped by scripts/bake_lease_case.py. */
 export type SubstrateCode = "mud" | "firm" | "scat" | "buried" | "reef";
 
@@ -122,6 +139,7 @@ export type StoryData = {
   caseManifest: CaseStudyManifest | null;
   gallery: GalleryManifest | null;
   sequence: SequenceManifest | null;
+  construction: ConstructionManifest | null;
   layers: {
     bedding: StoryFeatureCollection | null;
     cssTiers: StoryFeatureCollection | null;
@@ -156,6 +174,7 @@ export function useStoryData(): StoryData {
     caseManifest: null,
     gallery: null,
     sequence: null,
+    construction: null,
     layers: {
       bedding: null,
       cssTiers: null,
@@ -186,6 +205,7 @@ export function useStoryData(): StoryData {
         caseBedding,
         gallery,
         sequence,
+        construction,
       ] = await Promise.all([
         fetchJson<StoryManifest>("manifest.json"),
         fetchJson<StoryFeatureCollection>("bedding.geojson"),
@@ -199,6 +219,7 @@ export function useStoryData(): StoryData {
         fetchJson<StoryFeatureCollection>("lease_30260_bedding.geojson"),
         fetchJson<GalleryManifest>("gallery.json"),
         fetchJson<SequenceManifest>("sequence.json"),
+        fetchJson<ConstructionManifest>("construction.json"),
       ]);
       if (cancelled) return;
       setData({
@@ -206,6 +227,7 @@ export function useStoryData(): StoryData {
         caseManifest,
         gallery,
         sequence,
+        construction,
         layers: {
           bedding,
           cssTiers,

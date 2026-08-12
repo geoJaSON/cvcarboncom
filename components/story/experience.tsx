@@ -371,7 +371,12 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
           {/* Same water, different day — mounts only once its photos exist. */}
           {data.sequence && <SequenceBand sequence={data.sequence} />}
           <TrajectoryBand manifest={data.manifest} />
-          <CreditsBand manifest={data.manifest} />
+          <CreditsBand
+            manifest={data.manifest}
+            cssTiers={data.layers.cssTiers}
+            counties={data.layers.counties}
+            construction={data.construction}
+          />
           <PermanenceBand />
           <CoBenefitsBand manifest={data.manifest} />
           {data.gallery && <GalleryBand gallery={data.gallery} />}

@@ -5,7 +5,9 @@ import type { ReactNode } from "react";
 import { Figure, NumberedCard, PullQuote, SectionHeading, StatBand, TideRule } from "@/components/ui";
 import { Reveal } from "@/components/reveal";
 import {
+  ConstructionBars,
   EquivalentsStrip,
+  GrowthBars,
   ManhattanTile,
   NetWaterfall,
   PerspectiveTiles,
@@ -14,11 +16,14 @@ import {
   SeasonTile,
   VintageBars,
 } from "./charts";
+import { YearBoard } from "./year-board";
 import { FISH_LB_PER_ACRE_YEAR, JOBS_PER_MILLION } from "./factors";
 import {
   fmtCompact,
   fmtInt,
   type CaseStudyManifest,
+  type ConstructionManifest,
+  type StoryFeatureCollection,
   type StoryManifest,
 } from "./use-story-data";
 
@@ -725,7 +730,17 @@ function BenefitCard({
 }
 
 /* ---- The accounting band, dark ---- */
-export function CreditsBand({ manifest }: { manifest: StoryManifest | null }) {
+export function CreditsBand({
+  manifest,
+  cssTiers = null,
+  counties = null,
+  construction = null,
+}: {
+  manifest: StoryManifest | null;
+  cssTiers?: StoryFeatureCollection | null;
+  counties?: StoryFeatureCollection | null;
+  construction?: ConstructionManifest | null;
+}) {
   const s = manifest?.stats;
   return (
     <BandShell tone="abyss">
@@ -763,6 +778,51 @@ export function CreditsBand({ manifest }: { manifest: StoryManifest | null }) {
           ]}
         />
       </div>
+
+      {cssTiers?.features?.length ? (
+        <Reveal className="mt-16">
+          <p className="eyebrow text-steel-400">The ledger, year by year</p>
+          <p className="prose-cv mt-4 max-w-2xl !text-mist/80">
+            Every vintage on the books, both coasts, one scale. The lit water is the reef
+            that season&rsquo;s survey found at commercial density; the count beside it is
+            the credits serialized against that water. Set any year against the next and the
+            growth is simply the chart filling in.
+          </p>
+          <div className="mt-8">
+            <YearBoard manifest={manifest} cssTiers={cssTiers} counties={counties} />
+          </div>
+        </Reveal>
+      ) : null}
+
+      {s?.css_by_year?.length ? (
+        <Reveal className="mt-16">
+          <p className="eyebrow text-steel-400">How the footprint grew</p>
+          <p className="prose-cv mt-4 max-w-2xl !text-mist/80">
+            The program&rsquo;s whole surveyed footprint, season over season — every acre on
+            the books at commercial density, whatever its tier, with the net new water called
+            out. This is what each survey added to the ledger, counted separately from
+            anything the barges built.
+          </p>
+          <div className="mt-8 max-w-xl">
+            <GrowthBars manifest={manifest} />
+          </div>
+        </Reveal>
+      ) : null}
+
+      {construction?.by_year?.length ? (
+        <Reveal className="mt-16">
+          <p className="eyebrow text-steel-400">Built and rebuilt</p>
+          <p className="prose-cv mt-4 max-w-2xl !text-mist/80">
+            The construction ledger. Every bedding run is GPS-logged from the barge; buffer
+            the tracks to the spread of the cultch and the year&rsquo;s work becomes an
+            acreage — new reef where the bottom was bare, restored reef where old bottom got
+            fresh shell.
+          </p>
+          <div className="mt-8 max-w-xl">
+            <ConstructionBars construction={construction} />
+          </div>
+        </Reveal>
+      ) : null}
 
       <Reveal className="mt-16">
         <p className="eyebrow text-steel-400">Where the number comes from</p>

@@ -3,7 +3,13 @@
 import type { ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
 import { EPA } from "./factors";
-import { fmtCompact, fmtInt, latestSeason, type StoryManifest } from "./use-story-data";
+import {
+  fmtCompact,
+  fmtInt,
+  latestSeason,
+  type ConstructionManifest,
+  type StoryManifest,
+} from "./use-story-data";
 
 /* ------------------------------------------------------------------
    Perspective graphics. All values flow from the snapshot manifest —
@@ -296,6 +302,293 @@ export function NetWaterfall({ manifest }: { manifest: StoryManifest | null }) {
   );
 }
 
+/* ---- The footprint's growth, no tiers (dark ledger band) ----
+   The whole surveyed footprint per season, with the net-new portion
+   solid and the carried portion a ghost outline — growth is encoded by
+   fill presence, not hue, so it survives any color vision. */
+export function GrowthBars({ manifest }: { manifest: StoryManifest | null }) {
+  const raw = manifest?.stats?.css_by_year;
+  if (!raw || raw.length === 0) return null;
+  const rows = [...raw]
+    .sort((a, b) => a.year - b.year)
+    .map((r) => ({ year: r.year, total: r.low_acres + r.med_acres + r.high_acres }));
+  const max = Math.max(...rows.map((r) => r.total));
+  if (!(max > 0)) return null;
+
+  const W = 440;
+  const H = 258;
+  const plotTop = 56;
+  const plotBottom = H - 26;
+  const span = plotBottom - plotTop;
+  const barW = 64;
+  const step = W / rows.length;
+  const scale = (v: number) => (v / max) * span;
+
+  return (
+    <figure>
+      <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-mist/70">
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            className="story-swatch"
+            style={{ background: "#2f8a74", borderColor: "rgba(197,216,227,0.25)" }}
+          />
+          net new that season
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            className="story-swatch"
+            style={{ background: "transparent", borderColor: "rgba(197,216,227,0.45)" }}
+          />
+          already on the books
+        </span>
+      </div>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="mt-4 h-auto w-full"
+        role="img"
+        aria-label={`Surveyed reef acreage by season, all tiers together: ${rows
+          .map(
+            (r, i) =>
+              `${r.year}: ${fmtInt(r.total)} acres${
+                i > 0
+                  ? ` (${r.total >= rows[i - 1].total ? "up" : "down"} ${fmtInt(Math.abs(r.total - rows[i - 1].total))})`
+                  : " (baseline survey)"
+              }`,
+          )
+          .join("; ")}`}
+      >
+        {rows.map((r, i) => {
+          /* The first survey is a baseline, not a season's addition —
+             its standing stock draws as the ghost, never as net new. */
+          const prev = i > 0 ? rows[i - 1].total : null;
+          const carried = prev === null ? r.total : Math.min(prev, r.total);
+          const added = prev === null ? 0 : r.total - carried;
+          const x = i * step + (step - barW) / 2;
+          const yTop = plotBottom - scale(r.total);
+          const carriedH = scale(carried);
+          const addedH = scale(added);
+          return (
+            <g key={r.year}>
+              {carried > 0 && (
+                <rect
+                  x={x + 0.5}
+                  y={plotBottom - carriedH + 0.5}
+                  width={barW - 1}
+                  height={Math.max(0, carriedH - 3)}
+                  fill="none"
+                  stroke="#c5d8e3"
+                  strokeOpacity="0.35"
+                >
+                  <title>
+                    {prev === null
+                      ? `${r.year} · first survey, standing reef: ${fmtInt(carried)} acres`
+                      : `${r.year} · carried from the season before: ${fmtInt(carried)} acres`}
+                  </title>
+                </rect>
+              )}
+              {added > 0 && (
+                <rect
+                  x={x}
+                  y={yTop}
+                  width={barW}
+                  height={Math.max(1.5, addedH - 2)}
+                  rx={4}
+                  fill="#2f8a74"
+                >
+                  <title>{`${r.year} · net new: ${fmtInt(added)} acres`}</title>
+                </rect>
+              )}
+              <text
+                x={x + barW / 2}
+                y={yTop - 10}
+                textAnchor="middle"
+                className="fill-pearl font-display"
+                fontSize="17"
+              >
+                {fmtCompact(r.total)}
+              </text>
+              {i > 0 && added > 0 && (
+                <text
+                  x={x + barW / 2}
+                  y={yTop - 28}
+                  textAnchor="middle"
+                  fontSize="10.5"
+                  fill="#c5d8e3"
+                  fillOpacity="0.6"
+                  style={{ fontFamily: "var(--font-chart)" }}
+                >
+                  {`+${fmtInt(added)}`}
+                </text>
+              )}
+              <text
+                x={x + barW / 2}
+                y={plotBottom + 18}
+                textAnchor="middle"
+                fontSize="11"
+                letterSpacing="0.1em"
+                fill="#c5d8e3"
+                fillOpacity="0.75"
+                style={{ fontFamily: "var(--font-chart)" }}
+              >
+                {r.year}
+              </text>
+            </g>
+          );
+        })}
+        <line x1="0" y1={plotBottom} x2={W} y2={plotBottom} stroke="#c5d8e3" strokeOpacity="0.25" />
+      </svg>
+      <p className="mt-3 text-[10px] uppercase tracking-[0.14em] text-mist/40">
+        Whole-footprint totals, every tier together · the first season is the surveyed
+        baseline · growth is net season over season
+      </p>
+      <ChartTable
+        caption="Surveyed reef acreage in the program by season, with net change"
+        head={["Season", "Acres at density", "Net change"]}
+        rows={rows.map((r, i) => [
+          r.year,
+          Math.round(r.total),
+          i > 0 ? Math.round(r.total - rows[i - 1].total) : "—",
+        ])}
+      />
+    </figure>
+  );
+}
+
+/* ---- Built vs restored, from the construction bake (dark band) ----
+   Grouped pairs per year. New work is solid cultch sand and restored
+   reef is a mist ghost outline, matching GrowthBars one section up:
+   across the whole ledger band, solid ink means new and an outline
+   means reef that was already there — never the same hue meaning both.
+   Data arrives via construction.json
+   (scripts/bake_reef_construction.py); no bake, no chart. */
+const CONSTRUCTION_KINDS = [
+  { key: "constructed_acres", label: "built on bare bottom", ghost: false },
+  { key: "restored_acres", label: "existing reef restored", ghost: true },
+] as const;
+const CONSTRUCTED = "#d6c5aa"; // sand — the cultch token
+
+export function ConstructionBars({
+  construction,
+}: {
+  construction: ConstructionManifest | null;
+}) {
+  const raw = construction?.by_year;
+  if (!raw || raw.length === 0) return null;
+  const rows = [...raw].sort((a, b) => a.year - b.year);
+  const max = Math.max(...rows.flatMap((r) => [r.constructed_acres, r.restored_acres]));
+  if (!(max > 0)) return null;
+
+  const W = 440;
+  const H = 258;
+  const plotTop = 46;
+  const plotBottom = H - 26;
+  const span = plotBottom - plotTop;
+  const barW = 30;
+  const gap = 6;
+  const step = W / rows.length;
+  const scale = (v: number) => (v / max) * span;
+
+  return (
+    <figure>
+      <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-mist/70">
+        {CONSTRUCTION_KINDS.map((k) => (
+          <span key={k.key} className="inline-flex items-center gap-1.5">
+            <span
+              className="story-swatch"
+              style={
+                k.ghost
+                  ? { background: "transparent", borderColor: "rgba(197,216,227,0.45)" }
+                  : { background: CONSTRUCTED, borderColor: "rgba(197,216,227,0.25)" }
+              }
+            />
+            {k.label}
+          </span>
+        ))}
+      </div>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="mt-4 h-auto w-full"
+        role="img"
+        aria-label={`Reef acreage constructed and restored per year: ${rows
+          .map(
+            (r) =>
+              `${r.year}: ${fmtInt(r.constructed_acres)} acres built, ${fmtInt(r.restored_acres)} restored`,
+          )
+          .join("; ")}`}
+      >
+        {rows.map((r, i) => {
+          const groupW = CONSTRUCTION_KINDS.length * barW + gap;
+          const x0 = i * step + (step - groupW) / 2;
+          return (
+            <g key={r.year}>
+              {CONSTRUCTION_KINDS.map((k, j) => {
+                const v = r[k.key];
+                const h = scale(v);
+                const x = x0 + j * (barW + gap);
+                return (
+                  <g key={k.key}>
+                    {v > 0 &&
+                      (k.ghost ? (
+                        <rect
+                          x={x + 0.5}
+                          y={plotBottom - h + 0.5}
+                          width={barW - 1}
+                          height={Math.max(1.5, h - 1)}
+                          rx={4}
+                          fill="none"
+                          stroke="#c5d8e3"
+                          strokeOpacity="0.4"
+                        >
+                          <title>{`${r.year} · ${k.label}: ${fmtInt(v)} acres`}</title>
+                        </rect>
+                      ) : (
+                        <rect x={x} y={plotBottom - h} width={barW} height={Math.max(1.5, h)} rx={4} fill={CONSTRUCTED}>
+                          <title>{`${r.year} · ${k.label}: ${fmtInt(v)} acres`}</title>
+                        </rect>
+                      ))}
+                    {v > 0 && (
+                      <text
+                        x={x + barW / 2}
+                        y={plotBottom - h - 8}
+                        textAnchor="middle"
+                        className="fill-pearl font-display"
+                        fontSize="13"
+                      >
+                        {fmtCompact(v)}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
+              <text
+                x={x0 + groupW / 2}
+                y={plotBottom + 18}
+                textAnchor="middle"
+                fontSize="11"
+                letterSpacing="0.1em"
+                fill="#c5d8e3"
+                fillOpacity="0.75"
+                style={{ fontFamily: "var(--font-chart)" }}
+              >
+                {r.year}
+              </text>
+            </g>
+          );
+        })}
+        <line x1="0" y1={plotBottom} x2={W} y2={plotBottom} stroke="#c5d8e3" strokeOpacity="0.25" />
+      </svg>
+      <p className="mt-3 text-[10px] uppercase tracking-[0.14em] text-mist/40">
+        From GPS-logged bedding tracks, buffered and clipped against prior reef
+      </p>
+      <ChartTable
+        caption="Reef acreage constructed and restored, per year"
+        head={["Year", "Built on bare bottom (acres)", "Existing reef restored (acres)"]}
+        rows={rows.map((r) => [r.year, Math.round(r.constructed_acres), Math.round(r.restored_acres)])}
+      />
+    </figure>
+  );
+}
+
 /* ---- EPA equivalents strip (dark band) ---- */
 export function EquivalentsStrip({ manifest }: { manifest: StoryManifest | null }) {
   const net = manifest?.stats?.net_mt_total;
@@ -503,8 +796,8 @@ function PerspectiveTile({ figure, text }: { figure: string; text: ReactNode }) 
   );
 }
 
-/* Screen-reader table twin for each chart. */
-function ChartTable({
+/* Screen-reader table twin for each chart. Shared with year-board.tsx. */
+export function ChartTable({
   caption,
   head,
   rows,

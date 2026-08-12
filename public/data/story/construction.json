@@ -1,0 +1,31 @@
+{
+  "generated": "2026-08-12",
+  "method": "per-year bedding placements buffered and dissolved, then clipped against prior years' bedded area plus prior vintages' surveyed result areas",
+  "buffer_ft": 50.0,
+  "by_year": [
+    {
+      "year": 2023,
+      "bedded_acres": 29.5,
+      "constructed_acres": 29.5,
+      "restored_acres": 0.0
+    },
+    {
+      "year": 2024,
+      "bedded_acres": 50.8,
+      "constructed_acres": 34.7,
+      "restored_acres": 16.1
+    },
+    {
+      "year": 2025,
+      "bedded_acres": 2110.5,
+      "constructed_acres": 1396.6,
+      "restored_acres": 713.9
+    },
+    {
+      "year": 2026,
+      "bedded_acres": 1595.9,
+      "constructed_acres": 813.0,
+      "restored_acres": 782.9
+    }
+  ]
+}
