@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { EMAIL } from "@/lib/site";
 import "./story.css";
 import {
@@ -92,6 +92,17 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
 
   const activeTarget = manualTarget ?? SCENES[scene].targetId ?? null;
 
+  /* The carbon legend lists the vintages actually baked into the
+     columns, oldest first — a new season needs no code change. */
+  const carbonYears = useMemo(() => {
+    const years = new Set<number>();
+    for (const f of data.layers.carbon?.features ?? []) {
+      const year = Number((f.properties as { year?: unknown } | null)?.year);
+      if (Number.isFinite(year)) years.add(year);
+    }
+    return Array.from(years).sort((a, b) => a - b);
+  }, [data.layers.carbon]);
+
   const snapshotDate = data.manifest?.snapshot_date;
   const season = latestSeason(data.manifest);
   const s = data.manifest?.stats;
@@ -120,6 +131,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         visible={hudVisible}
         targetId={activeTarget}
         stageState={stageState}
+        carbonYears={carbonYears}
         onTarget={setManualTarget}
       />
 
@@ -264,12 +276,18 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
           </ChapterCard>
         </ChartStep>
 
-        <ChartStep scene="density" tall>
-          <ChapterCard eyebrow="Chapter three — the proof" title="Hand counted and independently verified, not modeled">
+        <ChartStep scene="carbon" tall>
+          <ChapterCard eyebrow="Chapter three — the proof" title="Counted by hand, banked by the ton">
             <p>
-              Each column is measured carbon capture and sequestration. Oysters are counted by hand on the board, binned at the survey convention of 20, 119, and 244 oysters per square
-              meter. Where the columns turn shell-gold, the reef is at maximum carbon capture. Results are independently verified by a disinterested third party agency.
+              Each column is the net carbon on the books for that patch of water, stacked by
+              vintage — the oldest season at the seabed, the newest on top. Heights are metric
+              tons CO₂e from the accepted results ledger, already net of our own operational
+              emissions, and none of it is booked until a disinterested third party has
+              verified the hand counts beneath it.
             </p>
+            <CardStats
+              stats={[{ value: s?.net_mt_total, label: "net MT CO₂e banked", compact: true }]}
+            />
           </ChapterCard>
         </ChartStep>
 

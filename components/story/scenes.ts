@@ -13,7 +13,7 @@ export type LayerKey =
   | "counties"
   | "bedding"
   | "coverage"
-  | "density"
+  | "carbon"
   | "css"
   | "case"
   | "caseBedding";
@@ -24,7 +24,7 @@ export type SceneId =
   | "lost"
   | "bedding"
   | "coverage"
-  | "density"
+  | "carbon"
   | "return"
   | "case-before"
   | "case-work"
@@ -50,8 +50,8 @@ export type Scene = {
   beddingSweep?: boolean;
   /** Sweep the aggregated survey footprint across the target area. */
   coverageSweep?: boolean;
-  /** Grow density prisms from the chart floor. */
-  densityGrow?: boolean;
+  /** Grow the banked-carbon columns from the chart floor. */
+  carbonGrow?: boolean;
   /** Replay the available surveyed-reef vintages. */
   cssPlayback?: boolean;
   /** Which density tiers of reef polygons to show. */
@@ -127,9 +127,11 @@ export const SCENES: Record<SceneId, Scene> = {
     layers: { graticule: true, counties: true, coverage: true },
     coverageSweep: true,
   },
-  density: {
-    id: "density",
-    view: "density",
+  carbon: {
+    id: "carbon",
+    /* carbon_columns.geojson ships no baked bounds entry; the css view
+       frames the same water the results stand on. */
+    view: "css",
     pitch: 52,
     bearing: -24,
     zoomBias: 0.35,
@@ -137,8 +139,8 @@ export const SCENES: Record<SceneId, Scene> = {
     flightDuration: 3000,
     orbitDegrees: 24,
     orbitDuration: 4600,
-    layers: { graticule: true, counties: true, density: true },
-    densityGrow: true,
+    layers: { graticule: true, counties: true, carbon: true },
+    carbonGrow: true,
   },
   return: {
     id: "return",

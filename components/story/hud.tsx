@@ -2,7 +2,7 @@
 
 import { CHART, MAP_TARGETS, SCENES, mapTarget, type SceneId } from "./scenes";
 import { fmtInt, type StorySeason } from "./use-story-data";
-import type { ChartView, StageState } from "./map-stage";
+import { vintageColor, type ChartView, type StageState } from "./map-stage";
 
 /* ------------------------------------------------------------------
    Mission instrumentation. The chart still owns the spectacle; this
@@ -52,6 +52,7 @@ export function Hud({
   visible,
   targetId,
   stageState,
+  carbonYears,
   onTarget,
 }: {
   view: ChartView | null;
@@ -61,12 +62,17 @@ export function Hud({
   visible: boolean;
   targetId: string | null;
   stageState: StageState;
+  /** Vintages in carbon_columns.geojson, oldest first — the carbon
+      scene's legend follows the data like the columns do. */
+  carbonYears?: number[];
   onTarget: (id: string) => void;
 }) {
   const layers = SCENES[scene].layers;
-  const showTiers = !!layers.density || !!layers.css;
+  const showTiers = !!layers.css;
+  const showCarbon = !!layers.carbon && !!carbonYears?.length;
   const showSubstrate = !!layers.case;
-  const showLegend = showTiers || showSubstrate || LEGENDS.some((legend) => layers[legend.key]);
+  const showLegend =
+    showTiers || showCarbon || showSubstrate || LEGENDS.some((legend) => layers[legend.key]);
   const canTarget = !!layers.counties;
   const target = mapTarget(targetId);
   const compassBearing = view?.bearing ?? 0;
@@ -210,6 +216,13 @@ export function Hud({
                     <div key={tier.label} className="flex items-center gap-2.5">
                       <span className="story-swatch" style={{ background: tier.color }} />
                       <span>{tier.label}</span>
+                    </div>
+                  ))}
+                {showCarbon &&
+                  carbonYears?.map((year, i) => (
+                    <div key={year} className="flex items-center gap-2.5">
+                      <span className="story-swatch" style={{ background: vintageColor(i) }} />
+                      <span>{year} vintage · net MT CO2e</span>
                     </div>
                   ))}
                 {showSubstrate &&

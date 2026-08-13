@@ -143,7 +143,10 @@ export type StoryData = {
   layers: {
     bedding: StoryFeatureCollection | null;
     cssTiers: StoryFeatureCollection | null;
-    density: StoryFeatureCollection | null;
+    /* Banked-carbon columns per grid cell and vintage ({year, mt, base,
+       top} points), baked by py_tools/bake_carbon_columns.py in the app
+       repo. Replaced the raw sample-density grid in chapter three. */
+    carbon: StoryFeatureCollection | null;
     coverage: StoryFeatureCollection | null;
     counties: StoryFeatureCollection | null;
     caseBoundary: StoryFeatureCollection | null;
@@ -187,7 +190,7 @@ export function useStoryData({ leases: wantLeases = false }: { leases?: boolean 
     layers: {
       bedding: null,
       cssTiers: null,
-      density: null,
+      carbon: null,
       coverage: null,
       counties: null,
       caseBoundary: null,
@@ -206,7 +209,7 @@ export function useStoryData({ leases: wantLeases = false }: { leases?: boolean 
         manifest,
         bedding,
         cssTiers,
-        density,
+        carbon,
         coverage,
         counties,
         caseManifest,
@@ -221,7 +224,7 @@ export function useStoryData({ leases: wantLeases = false }: { leases?: boolean 
         fetchJson<StoryManifest>("manifest.json"),
         fetchJson<StoryFeatureCollection>("bedding.geojson"),
         fetchJson<StoryFeatureCollection>("css_tiers.geojson"),
-        fetchJson<StoryFeatureCollection>("density.geojson"),
+        fetchJson<StoryFeatureCollection>("carbon_columns.geojson"),
         fetchJson<StoryFeatureCollection>("coverage.geojson"),
         fetchJson<StoryFeatureCollection>("counties.geojson"),
         fetchJson<CaseStudyManifest>("lease_30260.json"),
@@ -245,7 +248,7 @@ export function useStoryData({ leases: wantLeases = false }: { leases?: boolean 
         layers: {
           bedding,
           cssTiers,
-          density,
+          carbon,
           coverage,
           counties,
           caseBoundary,

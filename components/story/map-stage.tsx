@@ -302,34 +302,17 @@ export function MapStage({
       });
     }
 
-    if (data.layers.density) {
-      ensureSource(map, "density", hexify(data.layers.density));
+    if (data.layers.carbon) {
+      ensureSource(map, "carbon", hexify(prepareCarbon(data.layers.carbon)));
       ensureLayer(map, {
-        id: "density",
+        id: "carbon",
         type: "fill-extrusion",
-        source: "density",
+        source: "carbon",
         layout: { visibility: "none" },
         paint: {
-          "fill-extrusion-color": [
-            "step",
-            ["get", "v"],
-            CHART.densityRamp[0],
-            CHART.densityBins[0],
-            CHART.tiers.low,
-            CHART.densityBins[1],
-            CHART.tiers.med,
-            CHART.densityBins[2],
-            CHART.tiers.high,
-          ],
-          "fill-extrusion-height": [
-            "interpolate",
-            ["linear"],
-            ["get", "v"],
-            0,
-            40,
-            600,
-            9000,
-          ],
+          "fill-extrusion-color": carbonYearColor(data.layers.carbon),
+          "fill-extrusion-base": carbonHeight("_base01", 1),
+          "fill-extrusion-height": carbonHeight("_top01", 1),
           "fill-extrusion-opacity": 0.82,
           "fill-extrusion-vertical-gradient": true,
         },
@@ -542,7 +525,7 @@ export function MapStage({
     setVisible(map, "regional-target-line", !!scene.layers.counties && activeRegion);
     setVisible(map, "coverage-glow", !!scene.layers.coverage);
     setVisible(map, "coverage", !!scene.layers.coverage);
-    setVisible(map, "density", !!scene.layers.density);
+    setVisible(map, "carbon", !!scene.layers.carbon);
     setVisible(map, "css-fill", !!scene.layers.css);
     setVisible(map, "css-line", !!scene.layers.css);
     setVisible(map, "bedding", !!scene.layers.bedding);
@@ -584,8 +567,9 @@ export function MapStage({
       map.setFilter("coverage", null);
       map.setFilter("coverage-glow", null);
     }
-    if (map.getLayer("density")) {
-      map.setPaintProperty("density", "fill-extrusion-height", densityHeight(1));
+    if (map.getLayer("carbon")) {
+      map.setPaintProperty("carbon", "fill-extrusion-base", carbonHeight("_base01", 1));
+      map.setPaintProperty("carbon", "fill-extrusion-height", carbonHeight("_top01", 1));
     }
     if (map.getLayer("case-polling-before")) {
       /* Wipe scenes fly in still showing the old survey; the wipe itself
@@ -692,16 +676,20 @@ export function MapStage({
         return;
       }
 
-      if (scene.densityGrow && map.getLayer("density") && data.layers.density) {
+      if (scene.carbonGrow && map.getLayer("carbon") && data.layers.carbon) {
         animateLayer(
           sweepTimer,
           2600,
           (progress) => {
-            map.setPaintProperty("density", "fill-extrusion-height", densityHeight(progress));
+            /* Base and top scale together so the vintage slabs rise as
+               one column instead of detaching. */
+            map.setPaintProperty("carbon", "fill-extrusion-base", carbonHeight("_base01", progress));
+            map.setPaintProperty("carbon", "fill-extrusion-height", carbonHeight("_top01", progress));
             onStageState?.({ status: "ACQUIRING", progress });
           },
           () => {
-            map.setPaintProperty("density", "fill-extrusion-height", densityHeight(1));
+            map.setPaintProperty("carbon", "fill-extrusion-base", carbonHeight("_base01", 1));
+            map.setPaintProperty("carbon", "fill-extrusion-height", carbonHeight("_top01", 1));
             finish();
           },
         );
@@ -1007,18 +995,79 @@ function setCssFilter(
   map.setFilter("css-line", filter);
 }
 
-const DENSITY_HEIGHT: ExpressionSpecification = [
-  "interpolate",
-  ["linear"],
-  ["get", "v"],
-  0,
-  40,
-  600,
-  9000,
-];
+/* Banked carbon extrudes to a shared ceiling: _base01/_top01 are a
+   cell's cumulative tonnage normalized against the tallest column
+   (stamped by prepareCarbon), so vintage slabs stack without gaps at
+   any animation progress. */
+const CARBON_MAX_HEIGHT = 9000;
 
-function densityHeight(progress: number): ExpressionSpecification {
-  return ["*", DENSITY_HEIGHT, Math.max(0, Math.min(1, progress))];
+function carbonHeight(prop: "_base01" | "_top01", progress: number): ExpressionSpecification {
+  return ["*", ["get", prop], CARBON_MAX_HEIGHT * Math.max(0, Math.min(1, progress))];
+}
+
+/* Vintages oldest → newest wear steel, verdigris, then shell-gold —
+   the newest season catches the light at the top of the stack. Ramp
+   picks stay legible on the dark satellite; the navy steps would sink.
+   Built from the data, so a new season needs no code change. */
+const VINTAGE_RAMP_PICKS = [1, 2, 4, 3, 0] as const;
+
+function carbonYearColor(fc: StoryFeatureCollection): ExpressionSpecification {
+  const years = Array.from(
+    new Set(
+      fc.features.map((f) => Number((f.properties as { year?: unknown } | null)?.year)),
+    ),
+  )
+    .filter((y) => Number.isFinite(y))
+    .sort((a, b) => a - b);
+  const expr: unknown[] = ["match", ["get", "year"]];
+  years.forEach((year, i) => {
+    expr.push(year, vintageColor(i));
+  });
+  expr.push(vintageColor(years.length));
+  return expr as ExpressionSpecification;
+}
+
+export function vintageColor(index: number): string {
+  const pick = VINTAGE_RAMP_PICKS[Math.min(index, VINTAGE_RAMP_PICKS.length - 1)];
+  return CHART.densityRamp[pick];
+}
+
+/* Stamp each (cell, vintage) slab with its cumulative base/top as a
+   share of the 95th-percentile column, clamped at 1 — tonnage is
+   heavily skewed (a few cells hold whole leases), and normalizing
+   against the raw maximum flattens the median column into a tile.
+   The handful of clamped outliers max out honestly at the ceiling.
+   Cached per collection like the other prepare passes. */
+const carbonCache = new WeakMap<StoryFeatureCollection, StoryFeatureCollection>();
+
+function prepareCarbon(fc: StoryFeatureCollection): StoryFeatureCollection {
+  const cached = carbonCache.get(fc);
+  if (cached) return cached;
+  const cellTop = new Map<string, number>();
+  for (const f of fc.features) {
+    if (f.geometry.type !== "Point") continue;
+    const key = f.geometry.coordinates.join(",");
+    const top = Number((f.properties as { top?: unknown } | null)?.top ?? 0);
+    cellTop.set(key, Math.max(cellTop.get(key) ?? 0, top));
+  }
+  const tops = Array.from(cellTop.values()).sort((a, b) => a - b);
+  const cap = tops.length ? tops[Math.min(tops.length - 1, Math.floor(tops.length * 0.95))] : 0;
+  const prepared: StoryFeatureCollection = {
+    type: "FeatureCollection",
+    features: fc.features.map((f) => {
+      const p = f.properties as { base?: number; top?: number } | null;
+      return {
+        ...f,
+        properties: {
+          ...f.properties,
+          _base01: cap > 0 ? Math.min((p?.base ?? 0) / cap, 1) : 0,
+          _top01: cap > 0 ? Math.min((p?.top ?? 0) / cap, 1) : 0,
+        },
+      };
+    }),
+  };
+  carbonCache.set(fc, prepared);
+  return prepared;
 }
 
 type IntervalRef = { current: ReturnType<typeof setInterval> | null };
@@ -1200,10 +1249,11 @@ function ensureGraticule(map: MaplibreMap, extent: BBox) {
 }
 
 /* ------------------------------------------------------------------
-   Density cells arrive as grid-aggregated points ({v, n} per ~2 km
-   cell); each becomes a hexagonal prism for the extrusion
-   layer. Longitudes are stretched by 1/cos(lat) so cells stay round
-   on the water instead of squashing at higher latitudes.
+   Carbon cells arrive as grid-aggregated points (one per ~2 km cell
+   and vintage); each becomes a hexagonal prism for the extrusion
+   layer — co-located vintages stack via fill-extrusion-base.
+   Longitudes are stretched by 1/cos(lat) so cells stay round on the
+   water instead of squashing at higher latitudes.
    ------------------------------------------------------------------ */
 function hexify(points: StoryFeatureCollection): StoryFeatureCollection {
   const R = 0.011; // matches the ~0.02° bake grid — chunky, readable columns
