@@ -136,7 +136,7 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
           </p>
         }
       />
-      <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
         <Figure
           src="/images/cultch-barge-planting.gif"
           alt="Barge loaded with cultch material for reef planting"
@@ -146,6 +146,11 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
           src="/images/cultch-concrete.jpg"
           alt="Close-up of crushed recycled concrete used as cultch"
           caption="Recycled crushed concrete. Roadbed going back to the reef it was mined from."
+        />
+        <Figure
+          src="/images/lease-30260/spat-on-rock-hand.jpg"
+          alt="A hand holding two pieces of river rock with young oyster spat cemented to them"
+          caption="Rock recovered from the lease after bedding: new oyster spat already cemented on and building shell three weeks after planting."
         />
         <Figure
           src="/images/cultch-pile.jpg"
@@ -212,7 +217,7 @@ export function ProofBand() {
     <BandShell>
       <SectionHeading
         eyebrow="Restore · Measure · Verify · Issue · Reinvest"
-        title="The methodology is the product"
+        title="The methodology is the key to the quality of our product"
         intro={
           <p>
             A carbon credit is only as good as the measurement under it. Ours stand on a survey
@@ -260,7 +265,7 @@ export function ProofBand() {
                 Reinvest: the loop closes over the side of the boat
               </h3>
               <p className="prose-cv mt-4 !text-mist/85 [&_strong]:!text-white">
-                {REINVESTMENT_PCT} percent of net revenue is committed back into cultch. Every
+                30 percent of net revenue is committed back into cultch. Every
                 credit sold buys the shell, limestone and rock for the next season&rsquo;s
                 placements, so the next vintage starts on substrate this one paid for. It is
                 written into our partnership with the commercial oyster industry, not a line in

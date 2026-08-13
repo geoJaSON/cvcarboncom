@@ -199,7 +199,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
                 title="Cameron Parish to Plaquemines Parish"
               >
                 <p>
-                  Both of your Louisiana sites are marked. The shading between them is surveyed
+                  The shading between them is surveyed
                   reef at commercial density. The bottom we have poled, counted, and had checked.
                   It is roughly a hundred and eighty miles of working coast, and the brief that
                   follows is how every acre of it got onto the chart.
@@ -260,10 +260,10 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
 
         {/* ---- Chapter three — the proof ---- */}
         <ChartStep scene="coverage" tall>
-          <ChapterCard eyebrow="Chapter three — the proof" title="We sound every acre we claim">
+          <ChapterCard eyebrow="Chapter three — the proof" title="We pole every acre we claim">
             <p>
               Our strength is our data: continuous bottom soundings plus dredge tows and
-              point samples, all geolocated, all repeatable. We have compiled the world&rsquo;s largest dataset of ground-truthed substrate data. This is not an artist&rsquo;s
+              point samples, all geolocated, all repeatable. We have compiled the world&rsquo;s largest set of ground-truthed substrate data. This is not an artist&rsquo;s
               rendering of a reef — it is the reef&rsquo;s paper trail.
             </p>
             <CardStats
@@ -277,7 +277,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         </ChartStep>
 
         <ChartStep scene="carbon" tall>
-          <ChapterCard eyebrow="Chapter three — the proof" title="Counted by hand, banked by the ton">
+          <ChapterCard eyebrow="Chapter three — the proof" title="Sampled on site and independently verified">
             <p>
               Each column is the net carbon on the books for that patch of water, stacked by
               vintage — the oldest season at the seabed, the newest on top. Heights are metric
@@ -302,8 +302,8 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
             title="Acres back at commercial density"
           >
             <p>
-              The shaded areas are surveyed reef at or above 20 oysters per square meter,
-              habitat doing everything a reef does: feeding a fishery, buffering a shoreline,
+              The shaded areas are surveyed reef at or above densities capable of being a net sink for carbon,
+              doing everything a reef does: feeding a fishery, buffering a shoreline,
               and holding carbon in shell and sediment.
             </p>
             <CardStats
@@ -420,7 +420,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         >
           <p className="eyebrow text-steel-400">The ask</p>
           <h2 className="mt-5 max-w-3xl font-display text-4xl leading-tight text-white sm:text-5xl">
-            Buy the ton that builds the reef.
+            Buy the offset that builds the reef.
           </h2>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-mist/85">
             Credits are available now, by the ton or by the batch, retired in your name with a

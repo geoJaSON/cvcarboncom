@@ -87,6 +87,8 @@ export function VentureBriefBand({
         <AlignmentCard
           index={1}
           heading="The capture goal"
+          theirsLabel="Your goal"
+          oursLabel="What we currently have"
           theirs={` On your website you commit to invest in carbon capture and storage at each of your projects with a CCS goal of 1 million tons of carbon per year.`}
           ours={
             <>
@@ -98,6 +100,8 @@ export function VentureBriefBand({
         <AlignmentCard
           index={2}
           heading="Coastal habitat is a shared priority for you and the community"
+          theirsLabel="Your accomplishments"
+          oursLabel="What we are monitoring"
           theirs={`${fmtInt(PROSPECT.marshAcres)} acres of marsh creation and restoration to date, and $${PROSPECT.wetlandCreditsUsdMillions} million in wetland mitigation credits.`}
           ours={
             <>
@@ -109,10 +113,12 @@ export function VentureBriefBand({
         <AlignmentCard
           index={3}
           heading="Venture Global and CV Carbon share the same footprint"
+          theirsLabel="Your community"
+          oursLabel="Where we are"
           theirs="Calcasieu Pass in Cameron Parish, and the export facility in Plaquemines Parish."
           ours={
             <>
-              From Calcasieu Pass to Plaguemines Parish, we have 462,653 acres of oyster leases run by 405 commercial oyster businesses.
+              From Calcasieu Pass to Plaquemines Parish, we have 462,653 acres of oyster leases run by 405 commercial oyster businesses.
             </>
           }
         >
@@ -239,13 +245,20 @@ export function VentureBriefBand({
 function AlignmentCard({
   index,
   heading,
+  theirsLabel,
   theirs,
+  oursLabel,
   ours,
   children,
 }: {
   index: number;
   heading: string;
+  /** Column captions are per-card: each pairs one thing they publish
+      ("Your goal") with the line of our record that answers it in kind
+      ("What we currently have"). */
+  theirsLabel: string;
   theirs: ReactNode;
+  oursLabel: string;
   ours: ReactNode;
   /** Optional closing line under the two columns. A card that lets the
       quoted figures speak for themselves omits it and loses the rule
@@ -264,11 +277,11 @@ function AlignmentCard({
 
         <div className="mt-7 grid gap-6 lg:grid-cols-2">
           <div className="border-l border-navy/15 pl-5">
-            <p className="story-note-ink">Your website posts</p>
+            <p className="story-note-ink">{theirsLabel}</p>
             <p className="mt-2 font-display text-lg leading-snug text-steel">{theirs}</p>
           </div>
           <div className="border-l border-verdigris/50 pl-5">
-            <p className="story-note-ink">Currently available</p>
+            <p className="story-note-ink">{oursLabel}</p>
             <p className="mt-2 font-display text-lg leading-snug text-navy">{ours}</p>
           </div>
         </div>

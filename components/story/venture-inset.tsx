@@ -264,16 +264,15 @@ export function VentureInset({
     <figure className="story-inset">
       <div className="story-inset-frame">
         <div ref={containerRef} className="h-full w-full" />
-        <div className="story-inset-legend" aria-hidden="true">
-          {leaseCount > 0 && (
+        {/* Surveyed reef is drawn but reads as background at these
+            zooms, so the legend doesn't claim it. */}
+        {leaseCount > 0 && (
+          <div className="story-inset-legend" aria-hidden="true">
             <span>
               <i style={{ background: CHART.coverage }} /> Oyster leases
             </span>
-          )}
-          <span>
-            <i style={{ background: CHART.tiers.med }} /> Surveyed reef
-          </span>
-        </div>
+          </div>
+        )}
         <button type="button" onClick={replay} className="story-inset-replay">
           {flown ? "Run it again" : "Pulling back"}
         </button>

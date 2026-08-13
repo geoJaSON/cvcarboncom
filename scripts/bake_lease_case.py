@@ -55,11 +55,8 @@ MEDIA = [
         "alt": "A dredge tow of live oysters in clusters on the boat's sorting table",
         "caption": "What a tow off a mature reef looks like on the table — live oysters in clusters, ready for the count.",
     },
-    {
-        "src": "/images/lease-30260/polling-reef-outline.png",
-        "alt": "Map of thousands of colored polling points outlining reef across two oyster leases",
-        "caption": "Thousands of soundings, plotted — dense enough that the reef outlines itself.",
-    },
+    # The soundings plot moved to the field gallery (gallery.json) —
+    # chapter five keeps the physical evidence, the gallery keeps the map.
 ]
 
 # Set once the highlight cut lands in public/video/:

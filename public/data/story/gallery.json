@@ -36,13 +36,6 @@
       "height": 1500
     },
     {
-      "src": "/images/lease-30260/polling-reef-outline.png",
-      "alt": "Map of thousands of colored polling points outlining reef across two oyster leases",
-      "caption": "Thousands of soundings plotted — dense enough that the reef outlines itself.",
-      "width": 1673,
-      "height": 1086
-    },
-    {
       "src": "/images/cultch-concrete.jpg",
       "alt": "Close-up of crushed recycled concrete used as cultch",
       "caption": "Recycled crushed concrete, headed back to the water as cultch.",
@@ -90,6 +83,13 @@
       "caption": "The dock where the survey days start and end.",
       "width": 4032,
       "height": 1624
+    },
+    {
+      "src": "/images/lease-30260/polling-reef-outline.png",
+      "alt": "Map of thousands of colored polling points outlining reef across two oyster leases",
+      "caption": "Thousands of soundings plotted — dense enough that the reef outlines itself.",
+      "width": 1673,
+      "height": 1086
     }
   ]
 }
