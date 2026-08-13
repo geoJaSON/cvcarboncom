@@ -107,6 +107,7 @@ const BENEFITS = [
 const CITATIONS = [
   "La Peyre, M.K., D. Aguilar Marshall, L.S. Miller, and A.T. Humphries. 2019. Oyster Reefs in Northern Gulf of Mexico Estuaries Harbor Diverse Fish and Decapod Crustacean Assemblages: A Meta-Synthesis. Front. Mar. Sci. 6:666. doi: 10.3389/fmars.2019.00666",
   "Peterson C.H., J.H. Grabowski, S.P. Powers. 2003. Estimated enhancement of fish production resulting from restoring oyster reef habitat: Quantitative valuation. Marine Ecology Progress Series 264: 249–264.",
+  "Peterson, C.H., M.C. Wong, M.F. Piehler, J.H. Grabowski, R.R. Twilley, and M.S. Fonseca. Patterns in habitat-specific estuarine primary productivity fail to predict distinctions at two higher trophic levels. NOAA-funded synthesis (NOAA Assessment and Restoration Division), estuaries from Laguna Madre, TX to Cape Cod, MA.",
   "Newell R.I.E., J.C. Cornwell, Owens M.S. 2002. Influence of simulated bivalve biodeposition and microphytobenthos on sediment nitrogen dynamics: A laboratory study. Limnology and Oceanography 47: 1367–1379.",
   "Piehler M.F., Smyth A.R. 2011. Habitat-specific distinctions in estuarine denitrification affect both ecosystem function and services. Ecosphere 2 (art. 12). doi:10.1890/ES10-00082.1",
   "Cressman K.A., M.H. Posey, M.A. Mallin, L.A. Leonard, T.D. Alphin. 2003. Effects of oyster reefs on water quality in a tidal creek estuary. Journal of Shellfish Research 22: 753–762.",
