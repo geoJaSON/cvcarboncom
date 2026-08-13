@@ -640,8 +640,12 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
 
       <Reveal className="mt-14">
         <div className="rounded-lg border border-navy/10 bg-white p-8">
-          <p className="eyebrow">The due-diligence answers</p>
-          <dl className="mt-6 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+          <p className="eyebrow">The due-diligence questions</p>
+          <p className="prose-cv mt-3 max-w-2xl">
+            Worth asking anyone who sells you carbon, not just us. Our answers are on the
+            record below — the questions are yours to keep for the next seller who calls.
+          </p>
+          <dl className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
 
               [
