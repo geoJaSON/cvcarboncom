@@ -149,7 +149,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
 
             </p>
             <p className="story-chart-note mt-9">
-              Chart № {snapshotDate ?? "PRE-RELEASE"} · Soundings in oysters per square meter
+             {snapshotDate ?? "PRE-RELEASE"}
             </p>
           </div>
           <div className="story-scroll-cue absolute bottom-8 left-1/2 -translate-x-1/2">
@@ -195,7 +195,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
                 <CardStats
                   stats={[
                     { value: s?.css_acres?.total, label: "acres at density" },
-                    { value: s?.parishes, label: "parishes surveyed" },
+                    { value: 12, label: "counties and parishes surveyed" },
                   ]}
                 />
               </ChapterCard>
