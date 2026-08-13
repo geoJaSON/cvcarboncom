@@ -605,6 +605,68 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
         }
       />
 
+      {/* The habitat argument under the whole program, from the paper
+          that inspired it: a NOAA-funded synthesis of every production
+          study from Texas to Cape Cod. House rule — this panel claims
+          food-web production only, never carbon; the ledger band makes
+          the carbon claim on its own measured numbers. */}
+      <Reveal className="mt-14">
+        <div className="rounded-lg border border-navy/10 bg-white p-8 sm:p-10">
+          <p className="eyebrow">We follow the science</p>
+          <div className="mt-6 grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-center">
+            <div>
+              <h3 className="font-display text-2xl text-navy sm:text-3xl">
+                Why reef, of all habitats
+              </h3>
+              <div className="prose-cv mt-4 text-[0.9375rem]">
+                <p>
+                  For a century, estuary conservation favored marsh and seagrass — habitats
+                  whose worth stands visibly in plants above the waterline. Then a
+                  NOAA-funded synthesis pulled every production study from Texas to Cape Cod
+                  and measured up the food chain instead of trusting the view from the
+                  surface. The overlooked habitat won.
+                </p>
+                <p>
+                  That synthesis closes by recommending the oyster be treated as habitat,
+                  not just a commodity. This program is that recommendation with a purchase
+                  order behind it: build the hard bottom, and the estuary does the rest.
+                </p>
+              </div>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-3">
+              <div className="border-l border-navy/15 pl-4">
+                <span className="font-display text-3xl text-verdigris-600">4–10×</span>
+                <p className="mt-2 text-sm leading-relaxed text-ink/70">
+                  the food-web production of any other estuarine habitat, acre for acre —
+                  marsh, seagrass, or open flat
+                </p>
+              </div>
+              <div className="border-l border-navy/15 pl-4">
+                <span className="font-display text-3xl text-verdigris-600">~200×</span>
+                <p className="mt-2 text-sm leading-relaxed text-ink/70">
+                  the animal production at the filter-feeder level — the work of stable hard
+                  bottom, which is exactly what cultch rebuilds
+                </p>
+              </div>
+              <div className="border-l border-navy/15 pl-4">
+                <span className="font-display text-3xl text-verdigris-600">5×</span>
+                <p className="mt-2 text-sm leading-relaxed text-ink/70">
+                  more animal production than the reef&rsquo;s own plants fix — the tide
+                  delivers the estuary&rsquo;s plankton, so one acre harvests many
+                </p>
+              </div>
+            </div>
+          </div>
+          <p className="mt-8 text-[0.6875rem] uppercase tracking-[0.12em] text-ink/40">
+            Peterson, Wong, Piehler, Grabowski, Twilley &amp; Fonseca — NOAA-funded synthesis,
+            Laguna Madre TX to Cape Cod MA · full literature on{" "}
+            <a href="/beyond-carbon" className="underline underline-offset-2">
+              Beyond Carbon
+            </a>
+          </p>
+        </div>
+      </Reveal>
+
       <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <BenefitCard
           figure={`${fmtInt(Math.round(FISH_LB_PER_ACRE_YEAR))} lb`}
