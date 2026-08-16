@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { CHART, MAP_TARGETS, SCENES, mapTarget, type SceneId } from "./scenes";
 import { fmtInt, type StorySeason } from "./use-story-data";
 import { vintageColor, type ChartView, type StageState } from "./map-stage";
@@ -67,6 +68,9 @@ export function Hud({
   carbonYears?: number[];
   onTarget: (id: string) => void;
 }) {
+  /* The rail is useful but it sits over the chart; let the visitor fold
+     it down to the header strip and keep the compass. */
+  const [targetsOpen, setTargetsOpen] = useState(true);
   const layers = SCENES[scene].layers;
   const showTiers = !!layers.css;
   const showCarbon = !!layers.carbon && !!carbonYears?.length;
@@ -166,14 +170,27 @@ export function Hud({
         <div className="absolute right-4 top-20 hidden w-64 flex-col gap-3 lg:flex lg:right-8">
           {canTarget && (
             <aside className="story-hud story-target-panel rounded-sm p-3" aria-label="Map area targets">
-              <div className="mb-2 flex items-center justify-between border-b border-white/10 pb-2">
-                <span>AREA TARGETS</span>
+              <div
+                className={`flex items-center justify-between ${
+                  targetsOpen ? "mb-2 border-b border-white/10 pb-2" : ""
+                }`}
+              >
+                <button
+                  type="button"
+                  className="story-target-toggle"
+                  aria-expanded={targetsOpen}
+                  aria-controls="story-target-list"
+                  onClick={() => setTargetsOpen((open) => !open)}
+                >
+                  <i className={targetsOpen ? "is-open" : ""} aria-hidden="true" />
+                  <span>AREA TARGETS</span>
+                </button>
                 <div className="story-compass" aria-hidden="true">
                   <span>N</span>
                   <i style={{ transform: `rotate(${compassBearing}deg)` }} />
                 </div>
               </div>
-              <div className="space-y-1">
+              <div id="story-target-list" hidden={!targetsOpen} className="space-y-1">
                 {MAP_TARGETS.map((candidate, index) => {
                   const active = candidate.id === targetId;
                   return (
@@ -196,9 +213,11 @@ export function Hud({
                   );
                 })}
               </div>
-              <p className="mt-2 border-t border-white/10 pt-2 text-[9px] leading-relaxed opacity-55">
-                SELECT TO FLY · CAMERA RETURNS TO BRIEF ON SCROLL
-              </p>
+              {targetsOpen && (
+                <p className="mt-2 border-t border-white/10 pt-2 text-[9px] leading-relaxed opacity-55">
+                  SELECT TO FLY · CAMERA RETURNS TO BRIEF ON SCROLL
+                </p>
+              )}
             </aside>
           )}
 

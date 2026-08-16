@@ -350,11 +350,11 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
               <ChapterCard eyebrow="Chapter five — the work" title="One month of cultch">
                 <p>
                   {cs.bedding.materials.join(" and ")} went over the side in {fmtInt(cs.bedding.placements)}{" "}
-                  logged placements, replayed here in the order the barge made them.
+                  logged barge load placements, replayed here in the order the barge made them.
                 </p>
                 <CardStats
                   stats={[
-                    { value: cs.bedding.placements, label: "placements, May–Jun 2025" },
+                    { value: cs.bedding.placements, label: "barge load placements, May–Jun 2025" },
                     // Tonnage joins once the confirmed figure lands in the bake —
                     // no tile beats a dash on a sales page.
                     ...(cs.bedding.short_tons != null

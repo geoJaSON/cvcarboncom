@@ -467,6 +467,36 @@
   box-shadow: 0 24px 55px -30px rgba(1, 8, 14, 0.95);
 }
 
+/* Fold the rail away — a caret that rotates rather than a second glyph. */
+.story-target-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: inherit;
+  transition: color 180ms ease;
+}
+
+.story-target-toggle:hover,
+.story-target-toggle:focus-visible {
+  color: var(--color-pearl);
+  outline: none;
+}
+
+.story-target-toggle i {
+  width: 0;
+  height: 0;
+  flex: 0 0 auto;
+  border-top: 0.19rem solid transparent;
+  border-bottom: 0.19rem solid transparent;
+  border-left: 0.3rem solid currentColor;
+  transform-origin: 30% 50%;
+  transition: transform 180ms ease;
+}
+
+.story-target-toggle i.is-open {
+  transform: rotate(90deg);
+}
+
 .story-target-button {
   display: flex;
   align-items: center;

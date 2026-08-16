@@ -317,8 +317,7 @@ export function PermanenceBand() {
           <p>
             Every biological carbon credit has to answer two questions before a serious buyer
             will touch it: how long does the carbon stay, and what happens when something goes
-            wrong. On the Gulf Coast the second question has a name, and it is hurricanes. Both
-            answers are better here than they are for most of what is on the market.
+            wrong. On the Gulf Coast the second question has a name, and it is hurricanes.
           </p>
         }
       />
@@ -511,7 +510,7 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
             phase="The work"
             window={fmtWindow(bedding.window)}
             figure={fmtInt(bedding.placements)}
-            unit="placements"
+            unit="barge load placements"
             accent
           >
             {bedding.materials.join(" and ")}
@@ -869,10 +868,9 @@ export function CreditsBand({
         <Reveal className="mt-16">
           <p className="eyebrow text-steel-400">How the footprint grew</p>
           <p className="prose-cv mt-4 max-w-2xl !text-mist/80">
-            The program&rsquo;s whole surveyed footprint, season over season — every acre on
-            the books at commercial density, whatever its tier, with the net new water called
-            out. This is what each survey added to the ledger, counted separately from
-            anything the barges built.
+            How much reef is on the books, and how much of it is new? Each bar is a
+            season&rsquo;s surveyed footprint at commercial density. Solid is the acreage that
+            season added; the outline carried over from the year before.
           </p>
           <div className="mt-8 max-w-xl">
             <GrowthBars manifest={manifest} />
