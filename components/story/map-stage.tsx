@@ -999,7 +999,7 @@ function setCssFilter(
    cell's cumulative tonnage normalized against the tallest column
    (stamped by prepareCarbon), so vintage slabs stack without gaps at
    any animation progress. */
-const CARBON_MAX_HEIGHT = 9000;
+const CARBON_MAX_HEIGHT = 12000;
 
 function carbonHeight(prop: "_base01" | "_top01", progress: number): ExpressionSpecification {
   return ["*", ["get", prop], CARBON_MAX_HEIGHT * Math.max(0, Math.min(1, progress))];
