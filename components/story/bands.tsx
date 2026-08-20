@@ -668,7 +668,7 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
             work happens. Lease {manifest.lease_number} is {fmtInt(manifest.acres)} acres on{" "}
             {manifest.location || "the water"}, {manifest.county} Parish. Its leaseholder polled
             and sampled it in June 2023 and found something worth protecting: an island of live reef
-            surrounded by buried reef. The leaseholder eplained that massive erosion caused by tropical
+            surrounded by buried reef. The leaseholder explained that massive erosion caused by tropical
             storms had buried the lower portions of what was previously highly productive reef. The
             plan for 2025 was to bed cultch around that island - never on it - watching each load
             land against the substrate data in the app. The leaseholder was unable to be present at

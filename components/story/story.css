@@ -1088,27 +1088,28 @@
    narrow screens it drops to a small card above the fold line. Pointer
    events stay off — the chart underneath is the subject. */
 .story-photo {
-  /* Left rail, under the chapter card. The right side belongs to the HUD
-     target list and the substrate key; parking a photo there buried it
-     under them. This keeps it beside the prose it illustrates and clear
-     of the coordinate readout below. */
-  left: 1.5rem;
-  bottom: 7.5rem;
+  /* Centre bottom. The right rail is the HUD target list and substrate
+     key, the left is the chapter card and the coordinate readout — the
+     middle of the lower edge is the only space that belongs to nothing
+     else, and it sits under the lease rather than beside it. */
+  left: 50%;
+  bottom: 2.5rem;
   width: min(17.5rem, 30vw);
   background: color-mix(in srgb, var(--color-abyss) 82%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-mist) 20%, transparent);
   backdrop-filter: blur(8px);
+  transform: translate(-50%, 0);
   animation: story-photo-rise 300ms ease both;
 }
 
 @keyframes story-photo-rise {
   from {
     opacity: 0;
-    transform: translateY(0.5rem);
+    transform: translate(-50%, 0.5rem);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, 0);
   }
 }
 
@@ -1170,9 +1171,8 @@
 
 @media (max-width: 640px) {
   .story-photo {
-    left: 1rem;
     bottom: 1rem;
-    width: min(10rem, 42vw);
+    width: min(10rem, 52vw);
   }
 
   .story-photo-meta {

@@ -496,6 +496,31 @@ export function MapStage({
       });
     }
 
+    /* Soundings go down before the cultch lines. MapLibre draws in
+       insertion order, and with 1,544 points over 88 tracks the dots
+       otherwise stipple the placements into invisibility. */
+    if (data.layers.savePolling) {
+      ensureSource(map, "save-polling", prepareCoverage(data.layers.savePolling));
+      for (const id of ["save-polling-before", "save-polling-after"] as const) {
+        ensureLayer(
+          map,
+          {
+            id,
+            type: "circle",
+            source: "save-polling",
+            layout: { visibility: "none" },
+            paint: {
+              "circle-color": substrateColor(),
+              "circle-blur": 0.25,
+              "circle-opacity": 0.9,
+              "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2.2, 14, 3.6, 16, 6.5],
+            },
+          },
+          "save-bedding-glow",
+        );
+      }
+    }
+
     if (data.layers.saveBedding) {
       ensureSource(map, "save-bedding", prepareBedding(data.layers.saveBedding));
       ensureLayer(map, {
@@ -575,24 +600,6 @@ export function MapStage({
           "line-width": ["interpolate", ["linear"], ["zoom"], 11, 2.2, 16, 5],
         },
       });
-    }
-
-    if (data.layers.savePolling) {
-      ensureSource(map, "save-polling", prepareCoverage(data.layers.savePolling));
-      for (const id of ["save-polling-before", "save-polling-after"] as const) {
-        ensureLayer(map, {
-          id,
-          type: "circle",
-          source: "save-polling",
-          layout: { visibility: "none" },
-          paint: {
-            "circle-color": substrateColor(),
-            "circle-blur": 0.25,
-            "circle-opacity": 0.9,
-            "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2.2, 14, 3.6, 16, 6.5],
-          },
-        });
-      }
     }
   }, [ready, data]);
 
@@ -1120,8 +1127,12 @@ function ensureSource(
   else map.addSource(id, { type: "geojson", data: fc, attribution });
 }
 
-function ensureLayer(map: MaplibreMap, layer: LayerSpecification) {
-  if (!map.getLayer(layer.id)) map.addLayer(layer);
+function ensureLayer(map: MaplibreMap, layer: LayerSpecification, beforeId?: string) {
+  if (map.getLayer(layer.id)) return;
+  /* beforeId pins draw order even when the snapshot files land out of
+     order — insertion order alone would leave whichever arrived last
+     on top. Ignored if that layer is not mounted yet. */
+  map.addLayer(layer, beforeId && map.getLayer(beforeId) ? beforeId : undefined);
 }
 
 function setVisible(map: MaplibreMap, id: string, visible: boolean) {
