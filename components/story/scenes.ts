@@ -70,11 +70,15 @@ export type Scene = {
   caseWipe?: boolean;
   /** Which survey pass of the field-save lease to sound. */
   savePhase?: "before" | "after";
-  /** Replay the save lease's placements up to the errant load, then hold
-      it pulsing in the alert color on top of the poled reef. */
+  /** Fade the errant load up alone on top of the poled reef and hold it
+      pulsing in the alert color. The loads placed before it are not part
+      of the mistake and stay hidden. */
   saveErrorSweep?: boolean;
   /** Replay every correctly-placed load; the errant one stays lit. */
   saveBeddingSweep?: boolean;
+  /** Step through the placements that have a field photo, lighting each in
+      turn so the inset can show the work on that load. */
+  savePhotoCycle?: boolean;
   /** Scan-line wipe to the save lease's resurvey. */
   saveWipe?: boolean;
 };
@@ -247,6 +251,7 @@ export const SCENES: Record<SceneId, Scene> = {
     layers: { graticule: true, counties: true, save: true, saveBedding: true },
     savePhase: "before",
     saveBeddingSweep: true,
+    savePhotoCycle: true,
   },
   "save-after": {
     id: "save-after",

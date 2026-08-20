@@ -39,6 +39,8 @@ export type StageState = {
   status: "STANDBY" | "IN TRANSIT" | "ACQUIRING" | "ON STATION" | "VERIFIED";
   progress: number;
   vintage?: number;
+  /** Index into SaveManifest.photos while a placement is lit; null otherwise. */
+  photo?: number | null;
 };
 
 type MapStageProps = {
@@ -67,6 +69,7 @@ export function MapStage({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MaplibreMap | null>(null);
   const sweepTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const photoTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const cameraTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -142,6 +145,7 @@ export function MapStage({
 
     return () => {
       if (sweepTimer.current) clearInterval(sweepTimer.current);
+      if (photoTimer.current) clearInterval(photoTimer.current);
       if (cameraTimer.current) clearTimeout(cameraTimer.current);
       mapRef.current = null;
       map.remove();
@@ -516,6 +520,33 @@ export function MapStage({
       });
       /* Load 10 alone, in the alert color the rest of the chart never
          wears. The cultch layers exclude it via NOT_ERR at scene time. */
+      /* The lit placement while the inset shows its photo. Same source,
+         drawn above the cultch lines so the highlight reads on top. */
+      ensureLayer(map, {
+        id: "save-bedding-focus-glow",
+        type: "line",
+        source: "save-bedding",
+        filter: photoFilter(null),
+        layout: { visibility: "none", "line-cap": "round" },
+        paint: {
+          "line-color": CHART.cultch,
+          "line-opacity": 0.34,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 10, 16, 20],
+          "line-blur": 5,
+        },
+      });
+      ensureLayer(map, {
+        id: "save-bedding-focus",
+        type: "line",
+        source: "save-bedding",
+        filter: photoFilter(null),
+        layout: { visibility: "none", "line-cap": "round" },
+        paint: {
+          "line-color": "#ffffff",
+          "line-opacity": 0.95,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 2.6, 16, 6],
+        },
+      });
       ensureLayer(map, {
         id: "save-bedding-err-glow",
         type: "line",
@@ -657,6 +688,18 @@ export function MapStage({
     const errVisible = !!scene.layers.saveBedding && !(scene.saveErrorSweep && !reducedMotion);
     setVisible(map, "save-bedding-err", errVisible);
     setVisible(map, "save-bedding-err-glow", errVisible);
+    /* The focus pair only ever lights during a photo cycle; clear the filter
+       so a scene change never leaves an orphaned placement lit. */
+    if (photoTimer.current) {
+      clearInterval(photoTimer.current);
+      photoTimer.current = null;
+    }
+    for (const id of ["save-bedding-focus", "save-bedding-focus-glow"] as const) {
+      if (map.getLayer(id)) {
+        setVisible(map, id, !!scene.savePhotoCycle);
+        map.setFilter(id, photoFilter(null));
+      }
+    }
     setVisible(map, "scan-line-glow", false);
     setVisible(map, "scan-line", false);
 
@@ -768,6 +811,16 @@ export function MapStage({
 
       if (reducedMotion) {
         if (latestCssYear) setCssFilter(map, latestCssYear, scene.cssTiers);
+        /* No cycling without motion, but the inset should still have a
+           placement to sit beside: light the first photographed load and
+           leave it there. */
+        if (scene.savePhotoCycle && (data.saveManifest?.photos?.length ?? 0) > 0) {
+          for (const id of ["save-bedding-focus", "save-bedding-focus-glow"] as const) {
+            if (map.getLayer(id)) map.setFilter(id, photoFilter(0));
+          }
+          onStageState?.({ status: "ON STATION", progress: 1, photo: 0 });
+          return;
+        }
         finish(latestCssYear);
         return;
       }
@@ -882,26 +935,26 @@ export function MapStage({
       }
 
       if (scene.saveErrorSweep && map.getLayer("save-bedding") && data.layers.saveBedding) {
-        /* Replay the run up to the errant load, then land it in alert
-           color and leave it breathing — the alarm holds until the
-           reader scrolls on to the correction. */
-        const errOrder = errStoryOrder(prepareBedding(data.layers.saveBedding));
+        /* The errant load alone. An earlier cut replayed the placements
+           ahead of it and landed this one "tenth", which the record does
+           not support — the loads before it are not part of the mistake,
+           so drawing them only invited the reader to count. Hold the rest
+           back, fade this one up in the alert color, and leave it
+           breathing until the reader scrolls on to the correction. */
+        const hideRest: FilterSpecification = ["all", NOT_ERR, ["==", ["get", "err"], "__none__"]];
+        map.setFilter("save-bedding", hideRest);
+        map.setFilter("save-bedding-glow", hideRest);
+        setVisible(map, "save-bedding-err", true);
+        setVisible(map, "save-bedding-err-glow", true);
         animateLayer(
           sweepTimer,
-          2600,
+          900,
           (progress) => {
-            const filter: FilterSpecification = [
-              "all",
-              NOT_ERR,
-              ["<=", ["get", "_storyOrder"], progress * errOrder],
-            ];
-            map.setFilter("save-bedding", filter);
-            map.setFilter("save-bedding-glow", filter);
+            map.setPaintProperty("save-bedding-err", "line-opacity", progress * 0.95);
+            map.setPaintProperty("save-bedding-err-glow", "line-opacity", progress * 0.3);
             onStageState?.({ status: "ACQUIRING", progress });
           },
           () => {
-            setVisible(map, "save-bedding-err", true);
-            setVisible(map, "save-bedding-err-glow", true);
             const landed = performance.now();
             sweepTimer.current = setInterval(() => {
               if (!map.getLayer("save-bedding-err")) return;
@@ -933,6 +986,25 @@ export function MapStage({
           () => {
             map.setFilter("save-bedding", NOT_ERR);
             map.setFilter("save-bedding-glow", NOT_ERR);
+            /* Replay done: walk the photographed placements so the inset has
+               something to sit beside. Held on each one long enough to read
+               the caption, and looped — the reader controls how long they
+               stay on this scene, so there is no natural end. */
+            const shots = data.saveManifest?.photos?.length ?? 0;
+            if (scene.savePhotoCycle && shots > 0) {
+              let at = 0;
+              const light = () => {
+                for (const id of ["save-bedding-focus", "save-bedding-focus-glow"] as const) {
+                  if (map.getLayer(id)) map.setFilter(id, photoFilter(at));
+                }
+                onStageState?.({ status: "ON STATION", progress: 1, photo: at });
+              };
+              light();
+              photoTimer.current = setInterval(() => {
+                at = (at + 1) % shots;
+                light();
+              }, PHOTO_DWELL_MS);
+            }
             finish();
           },
         );
@@ -1014,7 +1086,7 @@ export function MapStage({
     }
 
     return () => {
-      clearStoryTimers(sweepTimer, cameraTimer);
+      clearStoryTimers(sweepTimer, cameraTimer, photoTimer);
       map.stop();
     };
   }, [activeScene, targetId, ready, data, reducedMotion, onStageState]);
@@ -1078,17 +1150,16 @@ const PHASE_NONE: ExpressionSpecification = ["==", ["get", "phase"], "__none__"]
 
 /* The field-save bedding splits along the err flag the bake stamped on
    the errant load: cultch layers draw NOT_ERR, alert layers draw IS_ERR. */
-const IS_ERR: ExpressionSpecification = ["to-boolean", ["get", "err"]];
-const NOT_ERR: ExpressionSpecification = ["!", ["to-boolean", ["get", "err"]]];
+/** How long each photographed placement stays lit before the cycle moves on. */
+const PHOTO_DWELL_MS = 4200;
 
-/** _storyOrder of the errant load — the error sweep's stopping point. */
-function errStoryOrder(fc: StoryFeatureCollection): number {
-  for (const f of fc.features) {
-    const p = f.properties as { err?: unknown; _storyOrder?: number } | null;
-    if (p?.err && typeof p._storyOrder === "number") return p._storyOrder;
-  }
-  return 1;
+const IS_ERR: ExpressionSpecification = ["to-boolean", ["get", "err"]];
+
+/** The one placement carrying photo `index`, or nothing when index is null. */
+function photoFilter(index: number | null): FilterSpecification {
+  return ["==", ["get", "photo"], index ?? -1];
 }
+const NOT_ERR: ExpressionSpecification = ["!", ["to-boolean", ["get", "err"]]];
 
 function substrateColor(): ExpressionSpecification {
   return [
@@ -1323,11 +1394,13 @@ function prepareCarbon(fc: StoryFeatureCollection): StoryFeatureCollection {
 type IntervalRef = { current: ReturnType<typeof setInterval> | null };
 type TimeoutRef = { current: ReturnType<typeof setTimeout> | null };
 
-function clearStoryTimers(intervalRef: IntervalRef, timeoutRef: TimeoutRef) {
+function clearStoryTimers(intervalRef: IntervalRef, timeoutRef: TimeoutRef, extra?: IntervalRef) {
   if (intervalRef.current) clearInterval(intervalRef.current);
   if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  if (extra?.current) clearInterval(extra.current);
   intervalRef.current = null;
   timeoutRef.current = null;
+  if (extra) extra.current = null;
 }
 
 function smoothstep(t: number) {

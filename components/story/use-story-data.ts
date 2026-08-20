@@ -116,6 +116,8 @@ export type SaveManifest = {
     window: [string, string];
     materials: string[];
     short_tons: number | null;
+    /** Keyed by year: the build ran in two seasons a year apart. */
+    campaigns?: Record<string, SaveCampaign>;
   };
   error_load: {
     objectid: number;
@@ -125,6 +127,62 @@ export type SaveManifest = {
     material: string | null;
     date: string | null;
   } | null;
+  /** One row per survey session: how long capture took to become a record. */
+  provenance?: SaveSession[];
+  /** Field photos matched to a placement; bedding features index into this. */
+  photos?: SavePhoto[];
+  /** Adams Bay marsh loss around the lease — the sediment source that buries shell. */
+  marsh?: SaveMarsh;
+  /** Known limits on the numbers above, surfaced rather than buried. */
+  caveats?: { id: string; detail: string; affects?: string[] }[];
+};
+
+export type SaveCampaign = {
+  placements: number;
+  short_tons: number;
+  window: [string, string] | null;
+};
+
+export type SaveSession = {
+  date: string;
+  phase: "before" | "after";
+  points: number;
+  /** Median hours from pole-in-the-mud to a row in the database. */
+  lag_hours_median: number | null;
+  /** Median seconds between consecutive soundings — the boat's working pace. */
+  cadence_seconds_median: number | null;
+};
+
+export type SavePhoto = {
+  src: string;
+  alt: string;
+  caption: string;
+  width: number | null;
+  height: number | null;
+  objectid: number;
+  placement_index: number;
+  confidence: "high" | "medium" | "low" | null;
+  /** Metres from the photo's GPS to the placement track it is matched to. */
+  dist_to_track_m: number | null;
+  taken_local: string | null;
+};
+
+export type SaveMarsh = {
+  source: string;
+  aoi_leases: number;
+  acres_lost: number;
+  hectares_lost: number;
+  acres_per_year: number;
+  study_area_pct_change: number;
+  leases_losing_marsh: number;
+  pct_marsh_within_500m: number;
+  distance_to_marsh_increase_m: number;
+  steepest_year: string;
+  steepest_cause: string;
+  storms: { name: string; date: string; cat: number; landfall: string }[];
+  chronic: string;
+  mechanism: string;
+  limit: string;
 };
 
 /* The field gallery — overflow home for photos that don't fit the

@@ -24,6 +24,7 @@ import {
   type CaseStudyManifest,
   type ConstructionManifest,
   type SaveManifest,
+  type SaveMarsh,
   type StoryFeatureCollection,
   type StoryManifest,
 } from "./use-story-data";
@@ -571,6 +572,88 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
   );
 }
 
+/* Where the buried shell came from. The lease sits inside a six-year
+   satellite record of marsh loss around Adams Bay, and that record is the
+   only external evidence in this chapter — everything else is our own
+   survey. The mechanism matters and is easy to get backwards: marsh does
+   not shelter oysters. It erodes, and what it sheds settles out on the
+   lease and buries shell. So the marsh numbers are a sediment-supply
+   measure, not a wave-exposure one. */
+function MarshBurialPanel({ marsh, buried }: { marsh: SaveMarsh; buried: string }) {
+  return (
+    <Reveal className="mt-16">
+      <div className="rounded-lg border border-navy/10 bg-white/60 p-7 lg:p-9">
+        <div className="flex flex-wrap items-baseline justify-between gap-4">
+          <p className="eyebrow">Where the buried shell came from</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-steel">
+            2019&ndash;2024 &middot; satellite
+          </p>
+        </div>
+
+        <p className="mt-5 max-w-[60ch] text-sm leading-relaxed text-ink/70">
+          {buried} of the 2023 soundings came back buried shell &mdash; reef that is still
+          there, under sediment. The sediment has a source. Six years of imagery over the{" "}
+          {marsh.aoi_leases} leases around Adams Bay show{" "}
+          <strong className="text-navy">{fmtInt(marsh.acres_lost)} acres</strong> of marsh
+          converted to open water, about {fmtInt(marsh.acres_per_year)} acres a year. That
+          marsh does not simply vanish: as it erodes it moves into the water column and
+          settles out, and where it settles on a lease it buries shell.
+        </p>
+
+        <dl className="mt-7 grid gap-6 sm:grid-cols-3">
+          {[
+            { v: `${fmtInt(marsh.acres_lost)}`, u: "acres", l: "marsh lost to open water, 2019–2024" },
+            {
+              v: `${marsh.pct_marsh_within_500m}%`,
+              u: "",
+              l: "mean change in marsh within 500 m of a lease",
+            },
+            {
+              v: `${marsh.leases_losing_marsh}`,
+              u: `of ${marsh.aoi_leases}`,
+              l: "leases with marsh retreating around them",
+            },
+          ].map((stat) => (
+            <div key={stat.l} className="border-l border-steel/30 pl-4">
+              <dt className="sr-only">{stat.l}</dt>
+              <dd>
+                <span className="font-display text-4xl text-navy">{stat.v}</span>
+                {stat.u ? <span className="ml-1 font-display text-base text-steel">{stat.u}</span> : null}
+                <p className="mt-2 text-xs leading-relaxed text-ink/60">{stat.l}</p>
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="mt-8 border-t border-navy/10 pt-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-steel">
+            Four landfalls crossed this coast in six years
+          </p>
+          <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
+            {marsh.storms.map((storm) => (
+              <li key={storm.name} className="text-sm">
+                <span className="font-display text-base text-navy">{storm.name}</span>
+                <span className="ml-2 text-xs uppercase tracking-wide text-steel">
+                  Cat {storm.cat} &middot; {fmtMonth(storm.date)}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 max-w-[60ch] text-xs leading-relaxed text-ink/60">
+            The steepest single-year drop falls across {marsh.steepest_cause}. But {marsh.chronic.charAt(0).toLowerCase()}
+            {marsh.chronic.slice(1)} Subsidence and wave-driven edge erosion grind at the marsh
+            continuously; storms punctuate it.
+          </p>
+        </div>
+
+        <p className="mt-6 max-w-[60ch] text-xs leading-relaxed text-ink/50">
+          {marsh.limit} Source: {marsh.source}.
+        </p>
+      </div>
+    </Reveal>
+  );
+}
+
 /* ---- Bonus chapter (?32024): the field save ---- */
 export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
   const { before, after, bedding, error_load: err } = manifest;
@@ -583,11 +666,15 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
           <p>
             Every chart in this brief is the same live map our crews steer by, updating as the
             work happens. Lease {manifest.lease_number} is {fmtInt(manifest.acres)} acres on{" "}
-            {manifest.location || "the water"}, {manifest.county} Parish. Its leaseholder poled
-            it in June 2023 and found something worth protecting: an island of live reef
-            standing in bare bottom. The plan for 2025 was to bed cultch around that island —
-            never on it — watching each load land against the substrate data in the app. Nine
-            loads in, he left on a vacation a thousand miles away. He kept the app open.
+            {manifest.location || "the water"}, {manifest.county} Parish. Its leaseholder polled
+            and sampled it in June 2023 and found something worth protecting: an island of live reef
+            surrounded by buried reef. The leaseholder eplained that massive erosion caused by tropical
+            storms had buried the lower portions of what was previously highly productive reef. The
+            plan for 2025 was to bed cultch around that island - never on it - watching each load
+            land against the substrate data in the app. The leaseholder was unable to be present at
+            during the work in Adams Bay because he was across the Mississippi restoring reef in
+            another leases. He was able to monitor the progress in Adams Bay on the app. even though
+            he was on the other side of the Mississippi River.
           </p>
         }
       />
@@ -601,8 +688,8 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
             unit="solid reef"
           >
             {fmtInt(before.points)} soundings mapped live oysters surrounded by mud and
-            scattered shell. Everything around the island was open water to build on; the
-            island itself was off limits.
+            buried shell. The leaseholder was confident that the areas identified as buried shell
+            were primed to bounce back if he could get the fresh cultch material bedded.
           </CasePanel>
         </Reveal>
         <Reveal delay={90}>
@@ -613,9 +700,9 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
             unit="short tons, off target"
             accent
           >
-            Watching the chart from vacation, he saw barge load {err?.objectid ?? 10} go down
-            squarely on the poled reef. He called. The captain was certain he was over clay —
-            until he opened the app, saw the soundings under his hull, and pulled a sample
+            Watching the chart from Bay Boudreau in St. Bernard Parish, he saw the first barge load
+            go down squarely on the poled reef. He called to find out what happened. The captain thought
+            he was in the right area until he opened the app, saw the soundings under his hull, and pulled a sample
             dredge. It came up oysters.
           </CasePanel>
         </Reveal>
@@ -626,13 +713,22 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
             figure={fmtPct(after.pct_reef)}
             unit="solid reef"
           >
-            The remaining {fmtInt(bedding.placements - 1)} barge load placements went into
-            the unproductive bottom the chart showed safe. The repoll, at more than twice the
-            sounding density, found the island grown into {fmtPct(after.pct_reef)} of the
+            The remaining {fmtInt(bedding.placements - 1)} barge load placements went onto
+            the areas on the chart identified as buried reef. The repolling effort
+            found the island grown into {fmtPct(after.pct_reef)} of the
             lease — up from {fmtPct(before.pct_reef)}.
           </CasePanel>
         </Reveal>
       </div>
+
+      {manifest.marsh ? (
+        <MarshBurialPanel
+          marsh={manifest.marsh}
+          buried={fmtPct(
+            before.points ? (100 * (before.classes.buried ?? 0)) / before.points : null,
+          )}
+        />
+      ) : null}
 
       <Reveal className="mt-16">
         <PullQuote

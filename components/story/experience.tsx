@@ -18,6 +18,7 @@ import {
 import { GalleryBand } from "./gallery";
 import { Hud } from "./hud";
 import { MapStage, type ChartView, type StageState } from "./map-stage";
+import { PlacementInset } from "./placement-inset";
 import { SCENES, type SceneId } from "./scenes";
 import { SequenceBand } from "./sequence";
 import { SizerBand } from "./sizer";
@@ -145,6 +146,11 @@ export default function Experience({
         carbonYears={carbonYears}
         showSaveTarget={hasFieldSave}
         onTarget={setManualTarget}
+      />
+      <PlacementInset
+        photos={sv?.photos}
+        index={stageState.photo}
+        visible={hudVisible && scene === "save-fixed"}
       />
 
       {/* Way home — the site chrome is hidden on this route. */}
@@ -417,8 +423,8 @@ export default function Experience({
               <ChapterCard eyebrow="Bonus chapter — the field save" title="An island of oysters">
                 <p>
                   The 2023 poll, plotted where it happened. Every shell-gold sounding is
-                  bottom that rang solid reef — a standing island of live oysters in bare
-                  mud. The bedding plan drew itself: build around the island, never across
+                  bottom that rang solid reef — a standing island of live oysters surrounded
+                  by buried shell. The bedding plan drew itself: build around the island, never across
                   it.
                 </p>
                 <CardStats
@@ -438,10 +444,10 @@ export default function Experience({
             <ChartStep scene="save-error" tall>
               <ChapterCard eyebrow="Bonus chapter — the mistake" title="The first load lands on live reef">
                 <p>
-                  The placements replay in the order the barge made them. Nine land in the
-                  mud as drawn. The tenth goes down squarely on the island — and a thousand
-                  miles away, the leaseholder watched it happen live and picked up the
-                  phone.
+                  The plan put every load in the bare bottom around the island. This one
+                  went down squarely on the reef itself — the first to land on live
+                  oysters. A thousand miles away, the leaseholder watched it happen on the
+                  same chart, and picked up the phone.
                 </p>
                 <CardStats
                   stats={[
@@ -475,7 +481,7 @@ export default function Experience({
               <ChapterCard eyebrow="Bonus chapter — the return" title="Resurveyed: the island grew">
                 <p>
                   Back over the same bottom in late 2025, at more than twice the sounding
-                  density. The island is still there — bigger. The reef that nearly took{" "}
+                  area. The island is still there — bigger. The reef that took{" "}
                   {fmtInt(sv.error_load?.short_tons)} tons of concrete is now the core of a
                   lease reading {sv.after.pct_reef != null ? `${sv.after.pct_reef}%` : "—"}{" "}
                   solid reef.
