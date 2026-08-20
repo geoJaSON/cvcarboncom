@@ -375,8 +375,8 @@ export const CHART = {
   substrate: {
     mud: "#16405f", // navy  — mud
     firm: "#3e7191", // steel — firm/hard bottom
+    buried: "#8fb0c4", // haze  — buried shell
     scat: "#c5d8e3", // mist  — scattered shell
-    buried: "#c5d8e3", // mist — buried shell
     reef: "#d6c5aa", // sand  — solid reef
   },
 } as const;

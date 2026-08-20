@@ -42,6 +42,7 @@ const TIER_LEGEND = [
 const SUBSTRATE_LEGEND = [
   { label: "Mud", color: CHART.substrate.mud },
   { label: "Clay", color: CHART.substrate.firm },
+  { label: "Buried shell", color: CHART.substrate.buried },
   { label: "Scattered shell", color: CHART.substrate.scat },
   { label: "Solid reef", color: CHART.substrate.reef },
 ];
