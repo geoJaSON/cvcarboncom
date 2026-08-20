@@ -35,27 +35,27 @@ export function PlacementInset({
 
   return (
     <figure
-      className="story-inset pointer-events-none fixed z-20 overflow-hidden rounded-sm"
+      className="story-photo pointer-events-none fixed z-20 overflow-hidden rounded-sm"
       data-on="true"
     >
-      <div className="story-inset-frame">
+      <div className="story-photo-frame">
         <Image
           key={shown.src}
           src={shown.src}
           alt={shown.alt}
           width={shown.width ?? 960}
           height={shown.height ?? 1280}
-          className="story-inset-img"
+          className="story-photo-img"
           sizes="(max-width: 1024px) 40vw, 280px"
         />
       </div>
-      <figcaption className="story-inset-caption">
-        <span className="story-inset-label">
+      <figcaption className="story-photo-caption">
+        <span className="story-photo-label">
           Load {shown.objectid} &middot; placement {shown.placement_index}
         </span>
-        <span className="story-inset-text">{shown.caption}</span>
+        <span className="story-photo-text">{shown.caption}</span>
         {typeof shown.dist_to_track_m === "number" && (
-          <span className="story-inset-meta">
+          <span className="story-photo-meta">
             photo GPS {shown.dist_to_track_m} m from this load&rsquo;s logged track
           </span>
         )}

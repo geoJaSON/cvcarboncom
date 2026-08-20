@@ -661,7 +661,7 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
     <BandShell>
       <SectionHeading
         eyebrow="Bonus chapter: the field save"
-        title="The call from a thousand miles away"
+        title="The call from across the river"
         intro={
           <p>
             Every chart in this brief is the same live map our crews steer by, updating as the

@@ -39,8 +39,6 @@ export type StageState = {
   status: "STANDBY" | "IN TRANSIT" | "ACQUIRING" | "ON STATION" | "VERIFIED";
   progress: number;
   vintage?: number;
-  /** Index into SaveManifest.photos while a placement is lit; null otherwise. */
-  photo?: number | null;
 };
 
 type MapStageProps = {
@@ -51,6 +49,10 @@ type MapStageProps = {
   reducedMotion: boolean;
   onView?: (view: ChartView) => void;
   onStageState?: (state: StageState) => void;
+  /* The lit placement gets its own channel rather than riding on
+     StageState: the sweep emits status many times a second and every one
+     of those would have to remember to carry the photo index forward. */
+  onPhoto?: (index: number | null) => void;
 };
 
 /* ------------------------------------------------------------------
@@ -65,6 +67,7 @@ export function MapStage({
   reducedMotion,
   onView,
   onStageState,
+  onPhoto,
 }: MapStageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MaplibreMap | null>(null);
@@ -694,12 +697,15 @@ export function MapStage({
       clearInterval(photoTimer.current);
       photoTimer.current = null;
     }
-    for (const id of ["save-bedding-focus", "save-bedding-focus-glow"] as const) {
+    const focusLayers = ["save-bedding-focus", "save-bedding-focus-glow"] as const;
+    for (const id of focusLayers) {
       if (map.getLayer(id)) {
         setVisible(map, id, !!scene.savePhotoCycle);
         map.setFilter(id, photoFilter(null));
       }
     }
+    if (!scene.savePhotoCycle) onPhoto?.(null);
+
     setVisible(map, "scan-line-glow", false);
     setVisible(map, "scan-line", false);
 
@@ -811,16 +817,6 @@ export function MapStage({
 
       if (reducedMotion) {
         if (latestCssYear) setCssFilter(map, latestCssYear, scene.cssTiers);
-        /* No cycling without motion, but the inset should still have a
-           placement to sit beside: light the first photographed load and
-           leave it there. */
-        if (scene.savePhotoCycle && (data.saveManifest?.photos?.length ?? 0) > 0) {
-          for (const id of ["save-bedding-focus", "save-bedding-focus-glow"] as const) {
-            if (map.getLayer(id)) map.setFilter(id, photoFilter(0));
-          }
-          onStageState?.({ status: "ON STATION", progress: 1, photo: 0 });
-          return;
-        }
         finish(latestCssYear);
         return;
       }
@@ -986,25 +982,6 @@ export function MapStage({
           () => {
             map.setFilter("save-bedding", NOT_ERR);
             map.setFilter("save-bedding-glow", NOT_ERR);
-            /* Replay done: walk the photographed placements so the inset has
-               something to sit beside. Held on each one long enough to read
-               the caption, and looped — the reader controls how long they
-               stay on this scene, so there is no natural end. */
-            const shots = data.saveManifest?.photos?.length ?? 0;
-            if (scene.savePhotoCycle && shots > 0) {
-              let at = 0;
-              const light = () => {
-                for (const id of ["save-bedding-focus", "save-bedding-focus-glow"] as const) {
-                  if (map.getLayer(id)) map.setFilter(id, photoFilter(at));
-                }
-                onStageState?.({ status: "ON STATION", progress: 1, photo: at });
-              };
-              light();
-              photoTimer.current = setInterval(() => {
-                at = (at + 1) % shots;
-                light();
-              }, PHOTO_DWELL_MS);
-            }
             finish();
           },
         );
@@ -1085,11 +1062,36 @@ export function MapStage({
       cameraTimer.current = setTimeout(beginOnStation, (scene.flightDuration ?? 2800) + 120);
     }
 
+    /* The first photo lands with the scene rather than waiting out the
+       placement replay — the card is the point of this beat, and three
+       seconds of empty corner read as a bug. The replay carries on
+       underneath; the lit track simply leads it.
+
+       This has to sit below the status emit above, which carries no photo
+       key and would otherwise blank the card the moment it appeared. */
+    const shots = data.saveManifest?.photos?.length ?? 0;
+    if (scene.savePhotoCycle && shots > 0 && map.getLayer("save-bedding-focus")) {
+      let at = 0;
+      const light = () => {
+        for (const id of focusLayers) {
+          if (map.getLayer(id)) map.setFilter(id, photoFilter(at));
+        }
+        onPhoto?.(at);
+      };
+      light();
+      if (!reducedMotion) {
+        photoTimer.current = setInterval(() => {
+          at = (at + 1) % shots;
+          light();
+        }, PHOTO_DWELL_MS);
+      }
+    }
+
     return () => {
       clearStoryTimers(sweepTimer, cameraTimer, photoTimer);
       map.stop();
     };
-  }, [activeScene, targetId, ready, data, reducedMotion, onStageState]);
+  }, [activeScene, targetId, ready, data, reducedMotion, onStageState, onPhoto]);
 
   /* MapLibre stamps its own positioning classes onto the element it
      mounts in, so the fixed-position frame must be a separate parent.

@@ -1087,17 +1087,21 @@
    Pinned bottom-right on desktop, out of the way of the HUD rail; on
    narrow screens it drops to a small card above the fold line. Pointer
    events stay off — the chart underneath is the subject. */
-.story-inset {
-  right: 1.5rem;
-  bottom: 1.75rem;
-  width: min(17.5rem, 32vw);
+.story-photo {
+  /* Left rail, under the chapter card. The right side belongs to the HUD
+     target list and the substrate key; parking a photo there buried it
+     under them. This keeps it beside the prose it illustrates and clear
+     of the coordinate readout below. */
+  left: 1.5rem;
+  bottom: 7.5rem;
+  width: min(17.5rem, 30vw);
   background: color-mix(in srgb, var(--color-abyss) 82%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-mist) 20%, transparent);
   backdrop-filter: blur(8px);
-  animation: story-inset-rise 300ms ease both;
+  animation: story-photo-rise 300ms ease both;
 }
 
-@keyframes story-inset-rise {
+@keyframes story-photo-rise {
   from {
     opacity: 0;
     transform: translateY(0.5rem);
@@ -1108,22 +1112,25 @@
   }
 }
 
-.story-inset-frame {
+.story-photo-frame {
   position: relative;
-  aspect-ratio: 4 / 3;
+  /* The field photos are portrait (3:4). A square crop keeps the deck and
+     the horizon both in frame without the card growing tall enough to
+     reach the chapter card above it. */
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   background: color-mix(in srgb, var(--color-abyss) 92%, transparent);
 }
 
-.story-inset-img {
+.story-photo-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  animation: story-inset-in 320ms ease both;
+  animation: story-photo-in 320ms ease both;
 }
 
-@keyframes story-inset-in {
+@keyframes story-photo-in {
   from {
     opacity: 0;
     transform: scale(1.02);
@@ -1134,7 +1141,7 @@
   }
 }
 
-.story-inset-caption {
+.story-photo-caption {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -1142,40 +1149,48 @@
   font-family: var(--font-chart);
 }
 
-.story-inset-label {
+.story-photo-label {
   font-size: 0.625rem;
   letter-spacing: 0.11em;
   text-transform: uppercase;
   color: var(--color-sand);
 }
 
-.story-inset-text {
+.story-photo-text {
   font-size: 0.75rem;
   line-height: 1.45;
   color: color-mix(in srgb, var(--color-mist) 88%, transparent);
 }
 
-.story-inset-meta {
+.story-photo-meta {
   font-size: 0.625rem;
   letter-spacing: 0.04em;
   color: color-mix(in srgb, var(--color-mist) 58%, transparent);
 }
 
 @media (max-width: 640px) {
-  .story-inset {
-    right: 1rem;
+  .story-photo {
+    left: 1rem;
     bottom: 1rem;
-    width: min(11rem, 46vw);
+    width: min(10rem, 42vw);
   }
 
-  .story-inset-meta {
+  .story-photo-meta {
+    display: none;
+  }
+}
+
+/* Not enough vertical room for both the chapter card and a photo on the
+   same rail — drop the photo rather than have them overlap. */
+@media (max-height: 44rem) {
+  .story-photo {
     display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .story-inset,
-  .story-inset-img {
+  .story-photo,
+  .story-photo-img {
     animation: none;
   }
 }

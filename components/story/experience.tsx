@@ -96,6 +96,10 @@ export default function Experience({
     setView(v);
   }, []);
 
+  const [photoIndex, setPhotoIndex] = useState<number | null>(null);
+  const onPhoto = useCallback((next: number | null) => {
+    setPhotoIndex(next);
+  }, []);
   const onStageState = useCallback((next: StageState) => {
     setStageState(next);
   }, []);
@@ -134,6 +138,7 @@ export default function Experience({
         reducedMotion={reducedMotion}
         onView={onView}
         onStageState={onStageState}
+        onPhoto={onPhoto}
       />
       <Hud
         view={view}
@@ -149,7 +154,7 @@ export default function Experience({
       />
       <PlacementInset
         photos={sv?.photos}
-        index={stageState.photo}
+        index={photoIndex}
         visible={hudVisible && scene === "save-fixed"}
       />
 
@@ -446,7 +451,7 @@ export default function Experience({
                 <p>
                   The plan put every load in the bare bottom around the island. This one
                   went down squarely on the reef itself — the first to land on live
-                  oysters. A thousand miles away, the leaseholder watched it happen on the
+                  oysters. On the other side of the Mississippi, the leaseholder watched it happen on the
                   same chart, and picked up the phone.
                 </p>
                 <CardStats
