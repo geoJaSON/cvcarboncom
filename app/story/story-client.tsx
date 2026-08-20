@@ -17,6 +17,12 @@ const Experience = dynamic(() => import("@/components/story/experience"), {
   ),
 });
 
-export function StoryClient({ showVenturePois = false }: { showVenturePois?: boolean }) {
-  return <Experience showVenturePois={showVenturePois} />;
+export function StoryClient({
+  showVenturePois = false,
+  showFieldSave = false,
+}: {
+  showVenturePois?: boolean;
+  showFieldSave?: boolean;
+}) {
+  return <Experience showVenturePois={showVenturePois} showFieldSave={showFieldSave} />;
 }

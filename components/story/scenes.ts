@@ -16,7 +16,9 @@ export type LayerKey =
   | "carbon"
   | "css"
   | "case"
-  | "caseBedding";
+  | "caseBedding"
+  | "save"
+  | "saveBedding";
 
 export type SceneId =
   | "hero"
@@ -29,6 +31,10 @@ export type SceneId =
   | "case-before"
   | "case-work"
   | "case-after"
+  | "save-island"
+  | "save-error"
+  | "save-fixed"
+  | "save-after"
   | "close";
 
 export type Scene = {
@@ -62,6 +68,15 @@ export type Scene = {
   caseBeddingSweep?: boolean;
   /** Scan-line wipe that resurveys the lease: before points swap to after. */
   caseWipe?: boolean;
+  /** Which survey pass of the field-save lease to sound. */
+  savePhase?: "before" | "after";
+  /** Replay the save lease's placements up to the errant load, then hold
+      it pulsing in the alert color on top of the poled reef. */
+  saveErrorSweep?: boolean;
+  /** Replay every correctly-placed load; the errant one stays lit. */
+  saveBeddingSweep?: boolean;
+  /** Scan-line wipe to the save lease's resurvey. */
+  saveWipe?: boolean;
 };
 
 export const SCENES: Record<SceneId, Scene> = {
@@ -195,6 +210,57 @@ export const SCENES: Record<SceneId, Scene> = {
     casePhase: "after",
     caseWipe: true,
   },
+  /* Bonus chapter, behind the ?32024 flag — the field save. One lease,
+     one camera target; the drama is in the data layers, not the flight. */
+  "save-island": {
+    id: "save-island",
+    view: "overall",
+    pitch: 32,
+    bearing: 14,
+    targetId: "lease-32024",
+    flightDuration: 3400,
+    orbitDegrees: -10,
+    orbitDuration: 4600,
+    layers: { graticule: true, counties: true, save: true },
+    savePhase: "before",
+  },
+  "save-error": {
+    id: "save-error",
+    view: "overall",
+    pitch: 52,
+    bearing: -18,
+    zoomBias: 0.15,
+    targetId: "lease-32024",
+    flightDuration: 2600,
+    layers: { graticule: true, counties: true, save: true, saveBedding: true },
+    savePhase: "before",
+    saveErrorSweep: true,
+  },
+  "save-fixed": {
+    id: "save-fixed",
+    view: "overall",
+    pitch: 46,
+    bearing: 8,
+    zoomBias: 0.1,
+    targetId: "lease-32024",
+    flightDuration: 2600,
+    layers: { graticule: true, counties: true, save: true, saveBedding: true },
+    savePhase: "before",
+    saveBeddingSweep: true,
+  },
+  "save-after": {
+    id: "save-after",
+    view: "overall",
+    pitch: 34,
+    bearing: -6,
+    targetId: "lease-32024",
+    flightDuration: 2600,
+    orbitDegrees: 12,
+    orbitDuration: 5200,
+    layers: { graticule: true, counties: true, save: true },
+    savePhase: "after",
+    saveWipe: true,
+  },
   close: {
     id: "close",
     view: "overall",
@@ -264,6 +330,16 @@ export const MAP_TARGETS = [
     bounds: [-89.37423, 29.99187, -89.35457, 29.99646] as BBox,
     tag: "CASE STUDY",
   },
+  {
+    id: "lease-32024",
+    name: "Lease 32024",
+    suffix: "Adams Bay",
+    state: "LA",
+    /* View extent baked by scripts/bake_lease_save.py (lease + soundings).
+       Listed in the flight deck only when the ?32024 chapter is up. */
+    bounds: [-89.62892, 29.37404, -89.61488, 29.3884] as BBox,
+    tag: "FIELD SAVE",
+  },
 ] as const;
 
 export function mapTarget(id: string | null | undefined) {
@@ -283,6 +359,9 @@ export const CHART = {
   cultch: "#d6c5aa", // sand — shell returned to the water
   coverage: "#c5d8e3", // mist — sonar-ping survey cells
   graticule: "#c5d8e3",
+  /** The one thing on the chart that is wrong on purpose: the errant
+      barge load in the field-save chapter. Nothing else may wear it. */
+  alert: "#e2694e",
   tiers: {
     low: "#3e7191", // steel   — 20–119 oysters / m²
     med: "#2f8a74", // verdigris — 119–244 oysters / m²

@@ -452,6 +452,114 @@ export function MapStage({
         });
       }
     }
+
+    /* The field-save chapter (?32024) — same anatomy as chapter five,
+       plus a pair of alert layers holding only the errant barge load. */
+    if (data.layers.saveBoundary) {
+      ensureSource(map, "save-boundary", data.layers.saveBoundary);
+      ensureLayer(map, {
+        id: "save-boundary-fill",
+        type: "fill",
+        source: "save-boundary",
+        layout: { visibility: "none" },
+        paint: { "fill-color": CHART.tiers.med, "fill-opacity": 0.05 },
+      });
+      ensureLayer(map, {
+        id: "save-boundary-glow",
+        type: "line",
+        source: "save-boundary",
+        layout: { visibility: "none" },
+        paint: {
+          "line-color": CHART.tiers.med,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 6, 16, 14],
+          "line-opacity": 0.2,
+          "line-blur": 4,
+        },
+      });
+      ensureLayer(map, {
+        id: "save-boundary-line",
+        type: "line",
+        source: "save-boundary",
+        layout: { visibility: "none" },
+        paint: {
+          "line-color": CHART.tiers.med,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 1.5, 16, 2.5],
+          "line-opacity": 0.95,
+        },
+      });
+    }
+
+    if (data.layers.saveBedding) {
+      ensureSource(map, "save-bedding", prepareBedding(data.layers.saveBedding));
+      ensureLayer(map, {
+        id: "save-bedding-glow",
+        type: "line",
+        source: "save-bedding",
+        layout: { visibility: "none", "line-cap": "round" },
+        paint: {
+          "line-color": CHART.cultch,
+          "line-opacity": 0.14,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 6, 16, 12],
+          "line-blur": 3,
+        },
+      });
+      ensureLayer(map, {
+        id: "save-bedding",
+        type: "line",
+        source: "save-bedding",
+        layout: { visibility: "none", "line-cap": "round" },
+        paint: {
+          "line-color": CHART.cultch,
+          "line-opacity": 0.9,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 1.6, 16, 4],
+        },
+      });
+      /* Load 10 alone, in the alert color the rest of the chart never
+         wears. The cultch layers exclude it via NOT_ERR at scene time. */
+      ensureLayer(map, {
+        id: "save-bedding-err-glow",
+        type: "line",
+        source: "save-bedding",
+        filter: IS_ERR,
+        layout: { visibility: "none", "line-cap": "round" },
+        paint: {
+          "line-color": CHART.alert,
+          "line-opacity": 0.3,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 8, 16, 16],
+          "line-blur": 4,
+        },
+      });
+      ensureLayer(map, {
+        id: "save-bedding-err",
+        type: "line",
+        source: "save-bedding",
+        filter: IS_ERR,
+        layout: { visibility: "none", "line-cap": "round" },
+        paint: {
+          "line-color": CHART.alert,
+          "line-opacity": 0.95,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 11, 2.2, 16, 5],
+        },
+      });
+    }
+
+    if (data.layers.savePolling) {
+      ensureSource(map, "save-polling", prepareCoverage(data.layers.savePolling));
+      for (const id of ["save-polling-before", "save-polling-after"] as const) {
+        ensureLayer(map, {
+          id,
+          type: "circle",
+          source: "save-polling",
+          layout: { visibility: "none" },
+          paint: {
+            "circle-color": substrateColor(),
+            "circle-blur": 0.25,
+            "circle-opacity": 0.9,
+            "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2.2, 14, 3.6, 16, 6.5],
+          },
+        });
+      }
+    }
   }, [ready, data]);
 
   /* ---- invitation-only POIs, enabled by the story URL ---- */
@@ -537,6 +645,18 @@ export function MapStage({
     setVisible(map, "case-polling-after", !!scene.layers.case);
     setVisible(map, "case-bedding", !!scene.layers.caseBedding);
     setVisible(map, "case-bedding-glow", !!scene.layers.caseBedding);
+    setVisible(map, "save-boundary-fill", !!scene.layers.save);
+    setVisible(map, "save-boundary-glow", !!scene.layers.save);
+    setVisible(map, "save-boundary-line", !!scene.layers.save);
+    setVisible(map, "save-polling-before", !!scene.layers.save);
+    setVisible(map, "save-polling-after", !!scene.layers.save);
+    setVisible(map, "save-bedding", !!scene.layers.saveBedding);
+    setVisible(map, "save-bedding-glow", !!scene.layers.saveBedding);
+    /* The alert layers wait for the error sweep to land the load;
+       every other scene that draws the bedding shows them at once. */
+    const errVisible = !!scene.layers.saveBedding && !(scene.saveErrorSweep && !reducedMotion);
+    setVisible(map, "save-bedding-err", errVisible);
+    setVisible(map, "save-bedding-err-glow", errVisible);
     setVisible(map, "scan-line-glow", false);
     setVisible(map, "scan-line", false);
 
@@ -590,6 +710,30 @@ export function MapStage({
         scene.caseBeddingSweep && !reducedMotion ? ["<=", ["get", "_storyOrder"], 0] : null;
       map.setFilter("case-bedding", start);
       map.setFilter("case-bedding-glow", start);
+    }
+    if (map.getLayer("save-polling-before")) {
+      const phase = scene.savePhase ?? "after";
+      if (scene.saveWipe && !reducedMotion) {
+        map.setFilter("save-polling-before", PHASE_BEFORE);
+        map.setFilter("save-polling-after", PHASE_NONE);
+      } else {
+        map.setFilter("save-polling-before", phase === "before" ? PHASE_BEFORE : PHASE_NONE);
+        map.setFilter("save-polling-after", phase === "after" ? PHASE_AFTER : PHASE_NONE);
+      }
+    }
+    if (map.getLayer("save-bedding")) {
+      /* The cultch layers never draw the errant load — it belongs to the
+         alert layers. Sweeps start empty; static scenes show every
+         correct load at once. A prior scene's pulse may have left the
+         alert opacity anywhere, so put it back. */
+      const animated = (scene.saveErrorSweep || scene.saveBeddingSweep) && !reducedMotion;
+      const start: FilterSpecification = animated
+        ? ["all", NOT_ERR, ["<=", ["get", "_storyOrder"], -1]]
+        : NOT_ERR;
+      map.setFilter("save-bedding", start);
+      map.setFilter("save-bedding-glow", start);
+      map.setPaintProperty("save-bedding-err", "line-opacity", 0.95);
+      map.setPaintProperty("save-bedding-err-glow", "line-opacity", 0.3);
     }
 
     /* reef tier filter — latest survey year only, or fills stack up */
@@ -737,6 +881,96 @@ export function MapStage({
         return;
       }
 
+      if (scene.saveErrorSweep && map.getLayer("save-bedding") && data.layers.saveBedding) {
+        /* Replay the run up to the errant load, then land it in alert
+           color and leave it breathing — the alarm holds until the
+           reader scrolls on to the correction. */
+        const errOrder = errStoryOrder(prepareBedding(data.layers.saveBedding));
+        animateLayer(
+          sweepTimer,
+          2600,
+          (progress) => {
+            const filter: FilterSpecification = [
+              "all",
+              NOT_ERR,
+              ["<=", ["get", "_storyOrder"], progress * errOrder],
+            ];
+            map.setFilter("save-bedding", filter);
+            map.setFilter("save-bedding-glow", filter);
+            onStageState?.({ status: "ACQUIRING", progress });
+          },
+          () => {
+            setVisible(map, "save-bedding-err", true);
+            setVisible(map, "save-bedding-err-glow", true);
+            const landed = performance.now();
+            sweepTimer.current = setInterval(() => {
+              if (!map.getLayer("save-bedding-err")) return;
+              const pulse = 0.62 + 0.33 * Math.sin(((performance.now() - landed) / 1000) * 4.4);
+              map.setPaintProperty("save-bedding-err", "line-opacity", pulse);
+              map.setPaintProperty("save-bedding-err-glow", "line-opacity", pulse * 0.42);
+            }, 80);
+            /* Deliberately not VERIFIED — the chart is showing a mistake. */
+            onStageState?.({ status: "ON STATION", progress: 1 });
+          },
+        );
+        return;
+      }
+
+      if (scene.saveBeddingSweep && map.getLayer("save-bedding") && data.layers.saveBedding) {
+        animateLayer(
+          sweepTimer,
+          3200,
+          (progress) => {
+            const filter: FilterSpecification = [
+              "all",
+              NOT_ERR,
+              ["<=", ["get", "_storyOrder"], progress],
+            ];
+            map.setFilter("save-bedding", filter);
+            map.setFilter("save-bedding-glow", filter);
+            onStageState?.({ status: "ACQUIRING", progress });
+          },
+          () => {
+            map.setFilter("save-bedding", NOT_ERR);
+            map.setFilter("save-bedding-glow", NOT_ERR);
+            finish();
+          },
+        );
+        return;
+      }
+
+      if (scene.saveWipe && map.getLayer("save-polling-after") && data.layers.savePolling) {
+        setVisible(map, "scan-line-glow", true);
+        setVisible(map, "scan-line", true);
+        animateLayer(
+          sweepTimer,
+          3600,
+          (progress) => {
+            const scanLongitude = bounds[0] + (bounds[2] - bounds[0]) * progress;
+            map.setFilter("save-polling-before", [
+              "all",
+              PHASE_BEFORE,
+              [">", ["get", "_storyLongitude"], scanLongitude],
+            ]);
+            map.setFilter("save-polling-after", [
+              "all",
+              PHASE_AFTER,
+              ["<=", ["get", "_storyLongitude"], scanLongitude],
+            ]);
+            setScanLine(map, bounds, progress);
+            onStageState?.({ status: "ACQUIRING", progress });
+          },
+          () => {
+            map.setFilter("save-polling-before", PHASE_NONE);
+            map.setFilter("save-polling-after", PHASE_AFTER);
+            setVisible(map, "scan-line-glow", false);
+            setVisible(map, "scan-line", false);
+            finish();
+          },
+        );
+        return;
+      }
+
       if (scene.caseWipe && map.getLayer("case-polling-after") && data.layers.casePolling) {
         setVisible(map, "scan-line-glow", true);
         setVisible(map, "scan-line", true);
@@ -841,6 +1075,20 @@ function tierColor(): ExpressionSpecification {
 const PHASE_BEFORE: ExpressionSpecification = ["==", ["get", "phase"], "before"];
 const PHASE_AFTER: ExpressionSpecification = ["==", ["get", "phase"], "after"];
 const PHASE_NONE: ExpressionSpecification = ["==", ["get", "phase"], "__none__"];
+
+/* The field-save bedding splits along the err flag the bake stamped on
+   the errant load: cultch layers draw NOT_ERR, alert layers draw IS_ERR. */
+const IS_ERR: ExpressionSpecification = ["to-boolean", ["get", "err"]];
+const NOT_ERR: ExpressionSpecification = ["!", ["to-boolean", ["get", "err"]]];
+
+/** _storyOrder of the errant load — the error sweep's stopping point. */
+function errStoryOrder(fc: StoryFeatureCollection): number {
+  for (const f of fc.features) {
+    const p = f.properties as { err?: unknown; _storyOrder?: number } | null;
+    if (p?.err && typeof p._storyOrder === "number") return p._storyOrder;
+  }
+  return 1;
+}
 
 function substrateColor(): ExpressionSpecification {
   return [

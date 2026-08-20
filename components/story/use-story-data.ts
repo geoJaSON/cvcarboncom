@@ -98,6 +98,35 @@ export type CasePhaseStats = {
   pct_reef: number | null;
 };
 
+/* The lease 32024 field save — the bonus chapter told when the ?32024
+   flag is up. Same shape as the case study, plus the one barge load
+   that went down on the poled reef and was caught from out of state.
+   Baked by scripts/bake_lease_save.py. */
+export type SaveManifest = {
+  lease_number: string;
+  location: string;
+  county: string;
+  state: string;
+  acres: number | null;
+  bounds: { lease: BBox; view: BBox };
+  before: CasePhaseStats;
+  after: CasePhaseStats;
+  bedding: {
+    placements: number;
+    window: [string, string];
+    materials: string[];
+    short_tons: number | null;
+  };
+  error_load: {
+    objectid: number;
+    /** 1-based position in the date-ordered replay. */
+    placement_index: number;
+    short_tons: number | null;
+    material: string | null;
+    date: string | null;
+  } | null;
+};
+
 /* The field gallery — overflow home for photos that don't fit the
    curated bands. Maintained by scripts/add_gallery_photos.py; absent
    file, absent band. */
@@ -137,6 +166,7 @@ export type SequenceManifest = {
 export type StoryData = {
   manifest: StoryManifest | null;
   caseManifest: CaseStudyManifest | null;
+  saveManifest: SaveManifest | null;
   gallery: GalleryManifest | null;
   sequence: SequenceManifest | null;
   construction: ConstructionManifest | null;
@@ -152,6 +182,10 @@ export type StoryData = {
     caseBoundary: StoryFeatureCollection | null;
     casePolling: StoryFeatureCollection | null;
     caseBedding: StoryFeatureCollection | null;
+    /* The 32024 field save, URL-gated like the venture leases. */
+    saveBoundary: StoryFeatureCollection | null;
+    savePolling: StoryFeatureCollection | null;
+    saveBedding: StoryFeatureCollection | null;
     /* Enrolled lease boundaries. Not produced by the bake yet; the
        venture inset draws them when the file appears and falls back to
        surveyed reef alone until then. */
@@ -180,10 +214,14 @@ async function fetchJson<T>(path: string): Promise<T | null> {
    fetch shares the Promise.all barrier with everything else, so pulling
    it unconditionally would delay the whole chart for every reader to
    serve a page they did not open. Callers opt in. */
-export function useStoryData({ leases: wantLeases = false }: { leases?: boolean } = {}): StoryData {
+export function useStoryData({
+  leases: wantLeases = false,
+  save: wantSave = false,
+}: { leases?: boolean; save?: boolean } = {}): StoryData {
   const [data, setData] = useState<StoryData>({
     manifest: null,
     caseManifest: null,
+    saveManifest: null,
     gallery: null,
     sequence: null,
     construction: null,
@@ -196,6 +234,9 @@ export function useStoryData({ leases: wantLeases = false }: { leases?: boolean 
       caseBoundary: null,
       casePolling: null,
       caseBedding: null,
+      saveBoundary: null,
+      savePolling: null,
+      saveBedding: null,
       leases: null,
     },
     ready: false,
@@ -220,6 +261,10 @@ export function useStoryData({ leases: wantLeases = false }: { leases?: boolean 
         sequence,
         construction,
         leases,
+        saveManifest,
+        saveBoundary,
+        savePolling,
+        saveBedding,
       ] = await Promise.all([
         fetchJson<StoryManifest>("manifest.json"),
         fetchJson<StoryFeatureCollection>("bedding.geojson"),
@@ -237,11 +282,25 @@ export function useStoryData({ leases: wantLeases = false }: { leases?: boolean 
         wantLeases
           ? fetchJson<StoryFeatureCollection>("leases.geojson")
           : Promise.resolve(null),
+        /* The field-save pack rides only behind its URL flag, same
+           reasoning as the venture leases: don't tax every reader's
+           Promise.all barrier with a chapter they cannot see. */
+        wantSave ? fetchJson<SaveManifest>("lease_32024.json") : Promise.resolve(null),
+        wantSave
+          ? fetchJson<StoryFeatureCollection>("lease_32024_boundary.geojson")
+          : Promise.resolve(null),
+        wantSave
+          ? fetchJson<StoryFeatureCollection>("lease_32024_polling.geojson")
+          : Promise.resolve(null),
+        wantSave
+          ? fetchJson<StoryFeatureCollection>("lease_32024_bedding.geojson")
+          : Promise.resolve(null),
       ]);
       if (cancelled) return;
       setData({
         manifest,
         caseManifest,
+        saveManifest,
         gallery,
         sequence,
         construction,
@@ -254,6 +313,9 @@ export function useStoryData({ leases: wantLeases = false }: { leases?: boolean 
           caseBoundary,
           casePolling,
           caseBedding,
+          saveBoundary,
+          savePolling,
+          saveBedding,
           leases,
         },
         ready: true,
@@ -263,7 +325,7 @@ export function useStoryData({ leases: wantLeases = false }: { leases?: boolean 
     return () => {
       cancelled = true;
     };
-  }, [wantLeases]);
+  }, [wantLeases, wantSave]);
 
   return data;
 }

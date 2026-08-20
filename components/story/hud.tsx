@@ -28,6 +28,7 @@ function heading(value: number | undefined): string {
 const LEGENDS: { key: keyof (typeof SCENES)["hero"]["layers"]; label: string; color: string }[] = [
   { key: "bedding", label: "Cultch placed", color: CHART.cultch },
   { key: "caseBedding", label: "Cultch placed", color: CHART.cultch },
+  { key: "saveBedding", label: "Cultch placed", color: CHART.cultch },
   { key: "coverage", label: "Survey soundings", color: CHART.coverage },
 ];
 
@@ -54,6 +55,7 @@ export function Hud({
   targetId,
   stageState,
   carbonYears,
+  showSaveTarget = false,
   onTarget,
 }: {
   view: ChartView | null;
@@ -66,6 +68,8 @@ export function Hud({
   /** Vintages in carbon_columns.geojson, oldest first — the carbon
       scene's legend follows the data like the columns do. */
   carbonYears?: number[];
+  /** The ?32024 chapter is up — list its lease in the flight deck. */
+  showSaveTarget?: boolean;
   onTarget: (id: string) => void;
 }) {
   /* The rail is useful but it sits over the chart; let the visitor fold
@@ -74,10 +78,16 @@ export function Hud({
   const layers = SCENES[scene].layers;
   const showTiers = !!layers.css;
   const showCarbon = !!layers.carbon && !!carbonYears?.length;
-  const showSubstrate = !!layers.case;
+  const showSubstrate = !!layers.case || !!layers.save;
+  const showErrant = !!layers.saveBedding;
   const showLegend =
     showTiers || showCarbon || showSubstrate || LEGENDS.some((legend) => layers[legend.key]);
   const canTarget = !!layers.counties;
+  /* The field-save lease stays off the public flight deck; it flies
+     only for readers who arrived with the chapter's URL flag. */
+  const railTargets = MAP_TARGETS.filter(
+    (candidate) => showSaveTarget || candidate.id !== "lease-32024",
+  );
   const target = mapTarget(targetId);
   const compassBearing = view?.bearing ?? 0;
 
@@ -191,7 +201,7 @@ export function Hud({
                 </div>
               </div>
               <div id="story-target-list" hidden={!targetsOpen} className="space-y-1">
-                {MAP_TARGETS.map((candidate, index) => {
+                {railTargets.map((candidate, index) => {
                   const active = candidate.id === targetId;
                   return (
                     <button
@@ -251,6 +261,12 @@ export function Hud({
                       <span>{entry.label}</span>
                     </div>
                   ))}
+                {showErrant && (
+                  <div className="flex items-center gap-2.5">
+                    <span className="story-swatch" style={{ background: CHART.alert }} />
+                    <span>The errant load</span>
+                  </div>
+                )}
               </div>
             </div>
           )}

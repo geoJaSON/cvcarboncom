@@ -23,6 +23,7 @@ import {
   fmtInt,
   type CaseStudyManifest,
   type ConstructionManifest,
+  type SaveManifest,
   type StoryFeatureCollection,
   type StoryManifest,
 } from "./use-story-data";
@@ -566,6 +567,79 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
           </figure>
         </Reveal>
       )}
+    </BandShell>
+  );
+}
+
+/* ---- Bonus chapter (?32024): the field save ---- */
+export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
+  const { before, after, bedding, error_load: err } = manifest;
+  return (
+    <BandShell>
+      <SectionHeading
+        eyebrow="Bonus chapter: the field save"
+        title="The call from a thousand miles away"
+        intro={
+          <p>
+            Every chart in this brief is the same live map our crews steer by, updating as the
+            work happens. Lease {manifest.lease_number} is {fmtInt(manifest.acres)} acres on{" "}
+            {manifest.location || "the water"}, {manifest.county} Parish. Its leaseholder poled
+            it in June 2023 and found something worth protecting: an island of live reef
+            standing in bare bottom. The plan for 2025 was to bed cultch around that island —
+            never on it — watching each load land against the substrate data in the app. Nine
+            loads in, he left on a vacation a thousand miles away. He kept the app open.
+          </p>
+        }
+      />
+
+      <div className="mt-14 grid gap-6 lg:grid-cols-3">
+        <Reveal>
+          <CasePanel
+            phase="The island"
+            window={fmtMonth(before.window[0])}
+            figure={fmtPct(before.pct_reef)}
+            unit="solid reef"
+          >
+            {fmtInt(before.points)} soundings mapped live oysters surrounded by mud and
+            scattered shell. Everything around the island was open water to build on; the
+            island itself was off limits.
+          </CasePanel>
+        </Reveal>
+        <Reveal delay={90}>
+          <CasePanel
+            phase="The call"
+            window={fmtMonth(err?.date ?? bedding.window[0])}
+            figure={fmtInt(err?.short_tons)}
+            unit="short tons, off target"
+            accent
+          >
+            Watching the chart from vacation, he saw barge load {err?.objectid ?? 10} go down
+            squarely on the poled reef. He called. The captain was certain he was over clay —
+            until he opened the app, saw the soundings under his hull, and pulled a sample
+            dredge. It came up oysters.
+          </CasePanel>
+        </Reveal>
+        <Reveal delay={180}>
+          <CasePanel
+            phase="The resurvey"
+            window={fmtWindow(after.window)}
+            figure={fmtPct(after.pct_reef)}
+            unit="solid reef"
+          >
+            The remaining {fmtInt(bedding.placements - 1)} barge load placements went into
+            the unproductive bottom the chart showed safe. The repoll, at more than twice the
+            sounding density, found the island grown into {fmtPct(after.pct_reef)} of the
+            lease — up from {fmtPct(before.pct_reef)}.
+          </CasePanel>
+        </Reveal>
+      </div>
+
+      <Reveal className="mt-16">
+        <PullQuote
+          quote="No inspection flight, no season-end audit — a leaseholder on vacation, watching his own bottom in real time. The mistake was on the chart the moment it happened, and it lasted exactly one phone call."
+          cite={`Lease ${manifest.lease_number} · ${manifest.location} · CV Carbon Field`}
+        />
+      </Reveal>
     </BandShell>
   );
 }

@@ -8,6 +8,7 @@ import {
   CaseStudyBand,
   CoBenefitsBand,
   CreditsBand,
+  FieldSaveBand,
   LostBand,
   PermanenceBand,
   ProofBand,
@@ -31,10 +32,17 @@ import { VentureBriefBand } from "./venture";
    NEXT act's scene, so the camera repositions while covered.
    ------------------------------------------------------------------ */
 
-export default function Experience({ showVenturePois = false }: { showVenturePois?: boolean }) {
-  /* Lease boundaries are only ever drawn by the venture inset, so they
-     are fetched only when that opener is switched on. */
-  const data = useStoryData({ leases: showVenturePois });
+export default function Experience({
+  showVenturePois = false,
+  showFieldSave = false,
+}: {
+  showVenturePois?: boolean;
+  showFieldSave?: boolean;
+}) {
+  /* Lease boundaries are only ever drawn by the venture inset, and the
+     field-save pack only by its bonus chapter — each is fetched only
+     when its URL flag switched it on. */
+  const data = useStoryData({ leases: showVenturePois, save: showFieldSave });
   const [scene, setScene] = useState<SceneId>("hero");
   const [hudVisible, setHudVisible] = useState(true);
   const [view, setView] = useState<ChartView | null>(null);
@@ -47,6 +55,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
   const rootRef = useRef<HTMLDivElement>(null);
   const viewThrottle = useRef(0);
   const hasCaseStudy = data.caseManifest != null;
+  const hasFieldSave = data.saveManifest != null;
 
   /* Scene trigger: the section straddling the viewport's center wins.
      Opaque bands (data-covered) also fade the HUD out while they hold
@@ -73,9 +82,9 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
     );
     sections.forEach((s) => observer.observe(s));
     return () => observer.disconnect();
-    // Chapter five's sections mount once the case-study pack loads, so
-    // the observer must be rebuilt when they appear.
-  }, [hasCaseStudy]);
+    // Chapter five's and the field save's sections mount once their data
+    // packs load, so the observer must be rebuilt when they appear.
+  }, [hasCaseStudy, hasFieldSave]);
 
   /* The map fires per animation frame during a 2.4 s ease; the HUD only
      needs ~8 updates a second, and each setView re-renders this tree. */
@@ -107,6 +116,8 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
   const season = latestSeason(data.manifest);
   const s = data.manifest?.stats;
   const cs = data.caseManifest;
+  /* Fetched only behind the ?32024 flag, so its presence is the gate. */
+  const sv = data.saveManifest;
   /* Reef acreage created on the lease. (106 ac × 73.2% → 77.) The
      invitation-only opener quotes the same figure, so the arithmetic
      lives beside the snapshot types rather than in this file. */
@@ -132,6 +143,7 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
         targetId={activeTarget}
         stageState={stageState}
         carbonYears={carbonYears}
+        showSaveTarget={hasFieldSave}
         onTarget={setManualTarget}
       />
 
@@ -382,6 +394,99 @@ export default function Experience({ showVenturePois = false }: { showVenturePoi
                     {
                       value: cs.after.pct_reef,
                       label: "of the lease reads solid reef",
+                      decimals: 1,
+                      suffix: "%",
+                    },
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+          </>
+        )}
+
+        {/* ---- Bonus chapter — the field save (?32024 flag). The band and
+                 its scenes mount only when the pack was fetched, so the
+                 public brief never hints the chapter exists. ---- */}
+        {sv && (
+          <>
+            <div data-scene="save-island" data-covered="true">
+              <FieldSaveBand manifest={sv} />
+            </div>
+
+            <ChartStep scene="save-island" tall>
+              <ChapterCard eyebrow="Bonus chapter — the field save" title="An island of oysters">
+                <p>
+                  The 2023 poll, plotted where it happened. Every shell-gold sounding is
+                  bottom that rang solid reef — a standing island of live oysters in bare
+                  mud. The bedding plan drew itself: build around the island, never across
+                  it.
+                </p>
+                <CardStats
+                  stats={[
+                    { value: sv.before.points, label: "soundings before the work" },
+                    {
+                      value: sv.before.pct_reef,
+                      label: "of the lease read solid reef",
+                      decimals: 1,
+                      suffix: "%",
+                    },
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+
+            <ChartStep scene="save-error" tall>
+              <ChapterCard eyebrow="Bonus chapter — the mistake" title="Load 10 lands on the reef">
+                <p>
+                  The placements replay in the order the barge made them. Nine land in the
+                  mud as drawn. The tenth goes down squarely on the island — and a thousand
+                  miles away, the leaseholder watched it happen live and picked up the
+                  phone.
+                </p>
+                <CardStats
+                  stats={[
+                    {
+                      value: sv.error_load?.short_tons,
+                      label: "short tons on the wrong bottom",
+                    },
+                    { value: 1000, label: "miles away, watching live" },
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+
+            <ChartStep scene="save-fixed" tall>
+              <ChapterCard eyebrow="Bonus chapter — the correction" title="One dredge tow settled it">
+                <p>
+                  The captain was certain he was over clay. The chart said reef, so he pulled
+                  a sample dredge — and it came up oysters. The rest of the job went back to
+                  plan: every remaining load into the bare bottom the soundings had cleared.
+                </p>
+                <CardStats
+                  stats={[
+                    { value: sv.bedding.placements, label: "barge load placements" },
+                    { value: sv.bedding.short_tons, label: "short tons placed" },
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+
+            <ChartStep scene="save-after" tall>
+              <ChapterCard eyebrow="Bonus chapter — the return" title="Resurveyed: the island grew">
+                <p>
+                  Back over the same bottom in late 2025, at more than twice the sounding
+                  density. The island is still there — bigger. The reef that nearly took{" "}
+                  {fmtInt(sv.error_load?.short_tons)} tons of concrete is now the core of a
+                  lease reading {sv.after.pct_reef != null ? `${sv.after.pct_reef}%` : "—"}{" "}
+                  solid reef.
+                </p>
+                <CardStats
+                  stats={[
+                    { value: sv.after.points, label: "soundings on the repoll" },
+                    {
+                      value: sv.after.pct_reef,
+                      label: "reads solid reef, up from " +
+                        (sv.before.pct_reef != null ? `${sv.before.pct_reef}%` : "—"),
                       decimals: 1,
                       suffix: "%",
                     },
