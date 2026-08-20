@@ -436,7 +436,7 @@ export default function Experience({
             </ChartStep>
 
             <ChartStep scene="save-error" tall>
-              <ChapterCard eyebrow="Bonus chapter — the mistake" title="Load 10 lands on the reef">
+              <ChapterCard eyebrow="Bonus chapter — the mistake" title="The first load lands on live reef">
                 <p>
                   The placements replay in the order the barge made them. Nine land in the
                   mud as drawn. The tenth goes down squarely on the island — and a thousand
