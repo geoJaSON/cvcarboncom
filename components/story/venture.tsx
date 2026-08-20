@@ -80,7 +80,7 @@ export function VentureBriefBand({
     <BandShell>
       <SectionHeading
         eyebrow={`Prepared for ${PROSPECT.name}`}
-        title="We are a nature-based carbon capture and storage project build with local commercial fishermen."
+        title="We are a nature-based carbon capture and storage project built with local commercial fishermen."
       />
 
       <div className="mt-14 space-y-6">
