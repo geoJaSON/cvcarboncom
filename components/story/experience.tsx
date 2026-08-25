@@ -18,7 +18,7 @@ import {
 import { GalleryBand } from "./gallery";
 import { Hud } from "./hud";
 import { MapStage, type ChartView, type StageState } from "./map-stage";
-import { PlacementInset } from "./placement-inset";
+import { PlacementInset, dredgeInsetPhotos, placementInsetPhotos } from "./placement-inset";
 import { SCENES, type SceneId } from "./scenes";
 import { SequenceBand } from "./sequence";
 import { SizerBand } from "./sizer";
@@ -131,6 +131,15 @@ export default function Experience({
   const cs = data.caseManifest;
   /* Fetched only behind the ?32024 flag, so its presence is the gate. */
   const sv = data.saveManifest;
+  const insetPhotos = useMemo(
+    () =>
+      scene === "case-after"
+        ? dredgeInsetPhotos(cs?.photos)
+        : scene === "save-fixed"
+          ? placementInsetPhotos(sv?.photos)
+          : undefined,
+    [scene, cs?.photos, sv?.photos],
+  );
   /* Reef acreage created on the lease. (106 ac × 73.2% → 77.) The
      invitation-only opener quotes the same figure, so the arithmetic
      lives beside the snapshot types rather than in this file. */
@@ -160,10 +169,12 @@ export default function Experience({
         showSaveTarget={hasFieldSave}
         onTarget={setManualTarget}
       />
+      {/* One inset, two photo sets: the placement replay's field shots,
+          and the resurvey's dredge tows. The map runs one cycle at a time. */}
       <PlacementInset
-        photos={sv?.photos}
+        photos={insetPhotos}
         index={photoIndex}
-        visible={hudVisible && scene === "save-fixed"}
+        visible={hudVisible && (scene === "save-fixed" || scene === "case-after")}
       />
 
       {/* Way home — the site chrome is hidden on this route. */}

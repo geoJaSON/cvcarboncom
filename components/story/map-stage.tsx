@@ -460,6 +460,73 @@ export function MapStage({
       }
     }
 
+    /* Photographed dredge tows from the resurvey. A faint track under a
+       hollow ring marker; the focus pair lights whichever tow's photo the
+       inset is showing. Rings, not dots, so they never read as soundings. */
+    if (data.layers.caseDredges) {
+      ensureSource(map, "case-dredges", data.layers.caseDredges);
+      ensureLayer(map, {
+        id: "case-dredge-track",
+        type: "line",
+        source: "case-dredges",
+        filter: ["==", ["get", "kind"], "track"],
+        layout: { visibility: "none", "line-cap": "round" },
+        paint: {
+          "line-color": "#ffffff",
+          "line-opacity": 0.45,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 12, 1, 16, 2.2],
+          "line-dasharray": [2, 2],
+        },
+      });
+      /* The tows sit on the densest, brightest part of the chart, so a
+         white ring alone vanishes into the soundings. The focus glow is a
+         wide dark halo that clears a patch of the field around the lit
+         tow; the ring itself carries a dark stroke-shadow for the rest. */
+      ensureLayer(map, {
+        id: "case-dredge-focus-glow",
+        type: "circle",
+        source: "case-dredges",
+        filter: ["all", ["==", ["get", "kind"], "tow"], photoFilter(null)],
+        layout: { visibility: "none" },
+        paint: {
+          "circle-color": "#061726",
+          "circle-opacity": 0.78,
+          "circle-blur": 0.55,
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 18, 16, 40],
+        },
+      });
+      ensureLayer(map, {
+        id: "case-dredge-ring",
+        type: "circle",
+        source: "case-dredges",
+        filter: ["==", ["get", "kind"], "tow"],
+        layout: { visibility: "none" },
+        paint: {
+          "circle-color": "#061726",
+          "circle-opacity": 0.55,
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 6, 16, 13],
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 2,
+          "circle-stroke-opacity": 0.95,
+        },
+      });
+      ensureLayer(map, {
+        id: "case-dredge-focus",
+        type: "circle",
+        source: "case-dredges",
+        filter: ["all", ["==", ["get", "kind"], "tow"], photoFilter(null)],
+        layout: { visibility: "none" },
+        paint: {
+          "circle-color": "#ffffff",
+          "circle-opacity": 0.95,
+          "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 3.5, 16, 7],
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-width": 1.5,
+          "circle-stroke-opacity": 0.6,
+        },
+      });
+    }
+
     /* The field-save chapter (?32024) — same anatomy as chapter five,
        plus a pair of alert layers holding only the errant barge load. */
     if (data.layers.saveBoundary) {
@@ -686,6 +753,8 @@ export function MapStage({
     setVisible(map, "case-polling-after", !!scene.layers.case);
     setVisible(map, "case-bedding", !!scene.layers.caseBedding);
     setVisible(map, "case-bedding-glow", !!scene.layers.caseBedding);
+    setVisible(map, "case-dredge-track", !!scene.layers.caseDredges);
+    setVisible(map, "case-dredge-ring", !!scene.layers.caseDredges);
     setVisible(map, "save-boundary-fill", !!scene.layers.save);
     setVisible(map, "save-boundary-glow", !!scene.layers.save);
     setVisible(map, "save-boundary-line", !!scene.layers.save);
@@ -698,20 +767,44 @@ export function MapStage({
     const errVisible = !!scene.layers.saveBedding && !(scene.saveErrorSweep && !reducedMotion);
     setVisible(map, "save-bedding-err", errVisible);
     setVisible(map, "save-bedding-err-glow", errVisible);
-    /* The focus pair only ever lights during a photo cycle; clear the filter
-       so a scene change never leaves an orphaned placement lit. */
+    /* The focus pairs only ever light during a photo cycle; clear the
+       filters so a scene change never leaves an orphaned feature lit. Each
+       cycle owns its pair and its photo list — the placement replay lights
+       bedding tracks, the resurvey lights dredge tows. */
     if (photoTimer.current) {
       clearInterval(photoTimer.current);
       photoTimer.current = null;
     }
-    const focusLayers = ["save-bedding-focus", "save-bedding-focus-glow"] as const;
-    for (const id of focusLayers) {
+    const cycle = scene.casePhotoCycle
+      ? {
+          layers: ["case-dredge-focus", "case-dredge-focus-glow"] as const,
+          filter: (at: number | null): FilterSpecification => [
+            "all",
+            ["==", ["get", "kind"], "tow"],
+            photoFilter(at),
+          ],
+          shots: data.caseManifest?.photos?.length ?? 0,
+        }
+      : scene.savePhotoCycle
+        ? {
+            layers: ["save-bedding-focus", "save-bedding-focus-glow"] as const,
+            filter: photoFilter,
+            shots: data.saveManifest?.photos?.length ?? 0,
+          }
+        : null;
+    for (const id of [
+      "save-bedding-focus",
+      "save-bedding-focus-glow",
+      "case-dredge-focus",
+      "case-dredge-focus-glow",
+    ] as const) {
       if (map.getLayer(id)) {
-        setVisible(map, id, !!scene.savePhotoCycle);
-        map.setFilter(id, photoFilter(null));
+        const own = cycle?.layers.includes(id as never) ?? false;
+        setVisible(map, id, own);
+        map.setFilter(id, own ? cycle!.filter(null) : photoFilter(null));
       }
     }
-    if (!scene.savePhotoCycle) onPhoto?.(null);
+    if (!cycle) onPhoto?.(null);
 
     setVisible(map, "scan-line-glow", false);
     setVisible(map, "scan-line", false);
@@ -1076,12 +1169,12 @@ export function MapStage({
 
        This has to sit below the status emit above, which carries no photo
        key and would otherwise blank the card the moment it appeared. */
-    const shots = data.saveManifest?.photos?.length ?? 0;
-    if (scene.savePhotoCycle && shots > 0 && map.getLayer("save-bedding-focus")) {
+    if (cycle && cycle.shots > 0 && map.getLayer(cycle.layers[0])) {
+      const { shots } = cycle;
       let at = 0;
       const light = () => {
-        for (const id of focusLayers) {
-          if (map.getLayer(id)) map.setFilter(id, photoFilter(at));
+        for (const id of cycle.layers) {
+          if (map.getLayer(id)) map.setFilter(id, cycle.filter(at));
         }
         onPhoto?.(at);
       };
@@ -1168,8 +1261,10 @@ const PHOTO_DWELL_MS = 4200;
 
 const IS_ERR: ExpressionSpecification = ["to-boolean", ["get", "err"]];
 
-/** The one placement carrying photo `index`, or nothing when index is null. */
-function photoFilter(index: number | null): FilterSpecification {
+/** The one feature carrying photo `index`, or nothing when index is null.
+    Typed as an expression so it stands alone as a filter and composes
+    under ["all", ...] for the dredge layers. */
+function photoFilter(index: number | null): ExpressionSpecification {
   return ["==", ["get", "photo"], index ?? -1];
 }
 const NOT_ERR: ExpressionSpecification = ["!", ["to-boolean", ["get", "err"]]];

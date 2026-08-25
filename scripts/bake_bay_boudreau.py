@@ -25,17 +25,40 @@ Lease 36166 export quirks, verified against the 2026-08-25 files:
 Phase divider per lease: its own first deployment_date. For 36166 that is
 2025-05-08; every pre-work sounding predates it by weeks, so the split is
 unambiguous (942 before / 1,274 after).
+
+Dredge tows (optional). Drop a gis_dredge_samples export covering both
+leases at bay_Boudreau/dredges.geojson (or pass --dredges). Rows are read
+tolerantly — Supabase columns (id, sample_date ISO, oyster_count,
+oyster_calc, attachments jsonb) or an AGOL export (OBJECTID, epoch-ms
+sample_date). Tows sampled after the bedding began that carry at least one
+image attachment are candidates; the --max-tows densest ones, spread across
+both leases, become the "after" scene's photo cycle. Photos are pulled from
+the public feature-attachments bucket into public/images/bay-boudreau/ and
+web-sized; an already-downloaded file is never re-fetched. To work offline,
+--dredge-photos DIR supplies files named exactly as the attachment `name`.
+Hand-written alt/caption text lives in bay_Boudreau/dredge_captions.json,
+keyed by attachment name, and survives every rebake.
 """
 
+import argparse
 import json
 import math
+import re
 import sys
+import urllib.request
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "data" / "story"
+
+# Dredge-tow photos: the field app stores them as attachments in this public
+# bucket; the story serves a stripped, web-sized copy from its own tree.
+ATTACHMENT_BASE = "https://dsfiojtjwehyozrmnwcv.supabase.co/storage/v1/object/public/feature-attachments/"
+TOW_WEB_DIR = ROOT / "public" / "images" / "bay-boudreau"
+TOW_WEB_PREFIX = "/images/bay-boudreau"
+TOW_MAX_WIDTH = 2000
 
 SUBSTRATE_CODES = {
     "Mud": "mud",
@@ -270,6 +293,221 @@ def load_baked(prefix: str):
     }
 
 
+# ---- dredge tows with photos ----
+
+def parse_when(value):
+    """sample_date as epoch ms (AGOL) or ISO 8601 (Supabase)."""
+    if value in (None, ""):
+        return None
+    if isinstance(value, (int, float)):
+        return parse_ms(value)
+    try:
+        d = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return d if d.tzinfo else d.replace(tzinfo=timezone.utc)
+
+
+PHOTO_EXTS = (".jpg", ".jpeg", ".png", ".heic")
+
+
+def attachments_of(props, photo_dirs: list[Path]):
+    """Image attachments for one tow.
+
+    Supabase rows carry them in the `attachments` jsonb. An AGOL export
+    has no such column, so fall back to files dropped beside the export:
+    named by OBJECTID / id, by oyster_count, or `tow-<OBJECTID>-*`."""
+    raw = props.get("attachments")
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except ValueError:
+            raw = None
+    if isinstance(raw, list):
+        found = [
+            a
+            for a in raw
+            if isinstance(a, dict)
+            and a.get("storage_path")
+            and str(a.get("content_type", "image/")).startswith("image/")
+        ]
+        if found:
+            return found
+
+    stems = {
+        str(v)
+        for v in (props.get("OBJECTID"), props.get("id"), props.get("oyster_count"))
+        if v not in (None, "")
+    }
+    oid = props.get("OBJECTID") or props.get("id")
+    local = []
+    for d in photo_dirs:
+        if not d or not d.is_dir():
+            continue
+        for f in sorted(d.iterdir()):
+            if f.suffix.lower() not in PHOTO_EXTS:
+                continue
+            if f.stem in stems or (oid is not None and f.stem.lower().startswith(f"tow-{oid}-")):
+                local.append({"name": f.name, "local": f, "content_type": "image/"})
+    return local
+
+
+def tow_midpoint(geometry):
+    """A marker point for a tow: the middle vertex of its longest part."""
+    if geometry["type"] == "Point":
+        return geometry["coordinates"]
+    parts = geometry["coordinates"] if geometry["type"] == "MultiLineString" else [geometry["coordinates"]]
+    part = max(parts, key=len)
+    return part[len(part) // 2]
+
+
+def slug(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-") or "photo"
+
+
+def fetch_photo(att: dict, dest: Path, local_dir: Path | None) -> tuple[int, int] | None:
+    """Web-size one attachment into dest. Returns (w, h), or None if unavailable."""
+    from PIL import Image, ImageOps  # local import: the geometry-only bake needs no Pillow
+
+    if dest.exists():
+        with Image.open(dest) as im:
+            return im.size
+    source = None
+    if att.get("local"):
+        source = Path(att["local"])
+    elif local_dir and (local_dir / att["name"]).exists():
+        source = local_dir / att["name"]
+    else:
+        try:
+            with urllib.request.urlopen(ATTACHMENT_BASE + att["storage_path"], timeout=30) as r:
+                tmp = dest.with_suffix(".download")
+                tmp.write_bytes(r.read())
+                source = tmp
+        except Exception as exc:  # noqa: BLE001 - report and carry on
+            print(f"  SKIP {att.get('name')}: {exc}")
+            return None
+    image = ImageOps.exif_transpose(Image.open(source))
+    if image.width > TOW_MAX_WIDTH:
+        image = image.resize(
+            (TOW_MAX_WIDTH, max(1, round(image.height * TOW_MAX_WIDTH / image.width))), Image.LANCZOS
+        )
+    # EXIF is deliberately dropped: crew GPS stays out of the public bundle.
+    image.convert("RGB").save(dest, "JPEG", quality=84, optimize=True, progressive=True)
+    if source.suffix == ".download":
+        source.unlink()
+    return image.size
+
+
+def bake_dredges(path: Path, dividers: dict[str, datetime], max_tows: int, local_dir: Path | None):
+    """Select photographed after-bedding tows and return (features, tows, photos)."""
+    raw = json.loads(path.read_text(encoding="utf-8"))["features"]
+    captions_path = path.parent / "dredge_captions.json"
+    captions = json.loads(captions_path.read_text(encoding="utf-8")) if captions_path.exists() else {}
+
+    candidates = []
+    photo_dirs = [d for d in (local_dir, path.parent) if d]
+    for f in raw:
+        p = f["properties"]
+        lease = str(p.get("lease_number") or "")
+        when = parse_when(p.get("sample_date"))
+        atts = attachments_of(p, photo_dirs)
+        usable = str(p.get("usability") or "").lower()
+        if lease not in dividers or when is None or not atts or usable.startswith(("unus", "no")):
+            continue
+        if when < dividers[lease]:
+            continue
+        candidates.append(
+            {
+                "id": str(p.get("id") or p.get("OBJECTID") or p.get("globalid") or len(candidates) + 1),
+                "lease": lease,
+                "when": when,
+                "count": p.get("oyster_count"),
+                # The app's own figure; its unit is not per m² (it is
+                # count/area scaled by a fixed factor), so the page shows the
+                # raw tow instead and carries this only for the record.
+                "calc": p.get("oyster_calc"),
+                # Width in inches, length in feet, area in square feet —
+                # the export's convention (38 in × 52 ft = 164 sq ft).
+                "width_in": p.get("dredge_width"),
+                "length_ft": p.get("dredge_length"),
+                "area_sqft": p.get("dredge_area"),
+                "atts": atts,
+                "geometry": normalize(f["geometry"]),
+            }
+        )
+    print(f"dredge tows: {len(raw)} rows, {len(candidates)} photographed after bedding")
+
+    # Fullest baskets first, alternating leases so one cannot take every slot.
+    by_lease: dict[str, list] = {}
+    for c in sorted(candidates, key=lambda c: -(c["count"] or 0)):
+        by_lease.setdefault(c["lease"], []).append(c)
+    picked = []
+    while len(picked) < max_tows and any(by_lease.values()):
+        for lease in sorted(by_lease):
+            if by_lease[lease] and len(picked) < max_tows:
+                picked.append(by_lease[lease].pop(0))
+    picked.sort(key=lambda c: c["when"])
+
+    TOW_WEB_DIR.mkdir(parents=True, exist_ok=True)
+    features, tows, photos = [], [], []
+    for n, c in enumerate(picked, start=1):
+        date = c["when"].date().isoformat()
+        tow = {
+            "tow": n,
+            "id": c["id"],
+            "lease": c["lease"],
+            "date": date,
+            "oyster_count": c["count"],
+            "oyster_calc": c["calc"],
+            "width_in": c["width_in"],
+            "length_ft": c["length_ft"],
+            "area_sqft": c["area_sqft"],
+            "photos": [],
+        }
+        for att in c["atts"]:
+            dest = TOW_WEB_DIR / f"tow-{n:02d}-{slug(Path(att['name']).stem)}.jpg"
+            size = fetch_photo(att, dest, local_dir)
+            if size is None:
+                continue
+            hand = captions.get(att["name"], {})
+            # The inset prints count and density on its own provenance
+            # line, so the fallback caption stays prose and never repeats
+            # them. Hand captions in dredge_captions.json replace it.
+            when = c["when"].strftime("%-d %b %Y") if sys.platform != "win32" else c["when"].strftime("%#d %b %Y")
+            auto_caption = (
+                f"What came up in the basket on {when}: a density tow across the "
+                f"resurveyed bottom of lease {c['lease']}."
+            )
+            photos.append(
+                {
+                    "src": f"{TOW_WEB_PREFIX}/{dest.name}",
+                    "alt": hand.get("alt") or f"Dredge tow {n} on lease {c['lease']}, {date}",
+                    "caption": hand.get("caption") or auto_caption,
+                    "width": size[0],
+                    "height": size[1],
+                    "tow": n,
+                    "lease": c["lease"],
+                    "date": date,
+                    "oyster_count": c["count"],
+                    "width_in": c["width_in"],
+                    "length_ft": c["length_ft"],
+                    "area_sqft": c["area_sqft"],
+                }
+            )
+            tow["photos"].append(len(photos) - 1)
+        if not tow["photos"]:
+            continue
+        tows.append(tow)
+        props = {"tow": n, "lease": c["lease"], "d": date, "photo": tow["photos"][0]}
+        features.append(
+            {"type": "Feature", "properties": {**props, "kind": "tow"},
+             "geometry": {"type": "Point", "coordinates": tow_midpoint(c["geometry"])}}
+        )
+        if c["geometry"]["type"] != "Point":
+            features.append({"type": "Feature", "properties": {**props, "kind": "track"}, "geometry": c["geometry"]})
+    return features, tows, photos
+
+
 # ---- merge ----
 
 def merge_phase(phases):
@@ -283,7 +521,13 @@ def merge_phase(phases):
 
 
 def main():
-    src = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "bay_Boudreau"
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("source", nargs="?", default=str(ROOT / "bay_Boudreau"), help="lease 36166 export dir")
+    ap.add_argument("--dredges", help="gis_dredge_samples geojson (default: <source>/dredges.geojson)")
+    ap.add_argument("--dredge-photos", help="dir of attachment files named as in the export, for offline runs")
+    ap.add_argument("--max-tows", type=int, default=6, help="photographed tows to light in the after scene")
+    args = ap.parse_args()
+    src = Path(args.source)
     packs = [load_baked("lease_30260"), bake_raw(src)]
     # Lease-number order, matching the flight-deck label in scenes.ts.
     packs.sort(key=lambda p: p["lease"]["lease_number"])
@@ -340,6 +584,33 @@ def main():
         "media": next((p["media"] for p in packs if p.get("media")), []),
         "video": next((p["video"] for p in packs if p.get("video")), None),
     }
+
+    # ---- dredge tows: present only when the export is ----
+    dredges_path = Path(args.dredges) if args.dredges else next(
+        (p for p in (src / "dredges.geojson", src / "dredge.geojson") if p.exists()),
+        src / "dredges.geojson",
+    )
+    dredges_out = OUT / "bay_boudreau_dredges.geojson"
+    if dredges_path.exists():
+        # Each lease's bedding start is its own before/after line, as above.
+        dividers = {
+            lease["lease_number"]: datetime.fromisoformat(lease["bedding"]["window"][0]).replace(tzinfo=timezone.utc)
+            for lease in leases
+        }
+        features, tows, tow_photos = bake_dredges(
+            dredges_path, dividers, args.max_tows, Path(args.dredge_photos) if args.dredge_photos else None
+        )
+        manifest["dredges"] = tows
+        manifest["photos"] = tow_photos
+        write(dredges_out, fc(features, "bay_boudreau_dredges"))
+        for t in tows:
+            print(
+                f"  tow {t['tow']:>2}  lease {t['lease']}  {t['date']}  {t['oyster_count']} oysters "
+                f"over {t['area_sqft']} sq ft  {len(t['photos'])} photo(s)"
+            )
+    elif dredges_out.exists():
+        dredges_out.unlink()
+        print(f"removed stale {dredges_out.name} (no dredge export at {dredges_path})")
 
     write(OUT / "bay_boudreau_boundary.geojson", boundary)
     write(OUT / "bay_boudreau_polling.geojson", polling)

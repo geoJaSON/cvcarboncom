@@ -104,6 +104,42 @@ export type CaseStudyManifest = {
   bedding: CaseBeddingStats;
   media?: { src: string; alt: string; caption?: string }[];
   video?: { src: string; poster?: string; caption?: string; muteLoop?: boolean } | null;
+  /** Photographed dredge tows from the resurvey, lit in turn on the
+      after scene. Present only when a gis_dredge_samples export was baked. */
+  dredges?: CaseDredge[];
+  /** Tow photos; dredge features and `dredges[].photos` index into this. */
+  photos?: CasePhoto[];
+};
+
+/* Tow geometry as the export records it: width in inches, length in
+   feet, swept area in square feet. `oyster_calc` is the app's own scaled
+   figure (not per m²) and is carried for the record, never displayed. */
+export type CaseDredge = {
+  tow: number;
+  id: string;
+  lease: string;
+  date: string;
+  oyster_count: number | null;
+  oyster_calc: number | null;
+  width_in: number | null;
+  length_ft: number | null;
+  area_sqft: number | null;
+  photos: number[];
+};
+
+export type CasePhoto = {
+  src: string;
+  alt: string;
+  caption: string;
+  width: number | null;
+  height: number | null;
+  tow: number;
+  lease: string;
+  date: string;
+  oyster_count: number | null;
+  width_in: number | null;
+  length_ft: number | null;
+  area_sqft: number | null;
 };
 
 /** "Limestone, River Rock and Combo" — prose list, no Oxford comma. */
@@ -270,6 +306,8 @@ export type StoryData = {
     caseBoundary: StoryFeatureCollection | null;
     casePolling: StoryFeatureCollection | null;
     caseBedding: StoryFeatureCollection | null;
+    /* Photographed dredge tows (points + tracks) for the after scene. */
+    caseDredges: StoryFeatureCollection | null;
     /* The 32024 field save, URL-gated like the venture leases. */
     saveBoundary: StoryFeatureCollection | null;
     savePolling: StoryFeatureCollection | null;
@@ -322,6 +360,7 @@ export function useStoryData({
       caseBoundary: null,
       casePolling: null,
       caseBedding: null,
+      caseDredges: null,
       saveBoundary: null,
       savePolling: null,
       saveBedding: null,
@@ -350,6 +389,7 @@ export function useStoryData({
         construction,
         leases,
         saveManifest,
+        caseDredges,
         saveBoundary,
         savePolling,
         saveBedding,
@@ -374,6 +414,7 @@ export function useStoryData({
            reasoning as the venture leases: don't tax every reader's
            Promise.all barrier with a chapter they cannot see. */
         wantSave ? fetchJson<SaveManifest>("lease_32024.json") : Promise.resolve(null),
+        fetchJson<StoryFeatureCollection>("bay_boudreau_dredges.geojson"),
         wantSave
           ? fetchJson<StoryFeatureCollection>("lease_32024_boundary.geojson")
           : Promise.resolve(null),
@@ -401,6 +442,7 @@ export function useStoryData({
           caseBoundary,
           casePolling,
           caseBedding,
+          caseDredges,
           saveBoundary,
           savePolling,
           saveBedding,

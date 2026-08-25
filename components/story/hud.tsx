@@ -30,6 +30,7 @@ const LEGENDS: { key: keyof (typeof SCENES)["hero"]["layers"]; label: string; co
   { key: "caseBedding", label: "Cultch placed", color: CHART.cultch },
   { key: "saveBedding", label: "Cultch placed", color: CHART.cultch },
   { key: "coverage", label: "Survey soundings", color: CHART.coverage },
+  { key: "caseDredges", label: "Dredge tow, photographed", color: "#ffffff" },
 ];
 
 const TIER_LEGEND = [

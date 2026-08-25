@@ -17,6 +17,7 @@ export type LayerKey =
   | "css"
   | "case"
   | "caseBedding"
+  | "caseDredges"
   | "save"
   | "saveBedding";
 
@@ -68,6 +69,9 @@ export type Scene = {
   caseBeddingSweep?: boolean;
   /** Scan-line wipe that resurveys the lease: before points swap to after. */
   caseWipe?: boolean;
+  /** Step through the resurvey's photographed dredge tows, lighting each
+      in turn so the inset can show what came up in the basket. */
+  casePhotoCycle?: boolean;
   /** Which survey pass of the field-save lease to sound. */
   savePhase?: "before" | "after";
   /** Fade the errant load up alone on top of the poled reef and hold it
@@ -210,9 +214,10 @@ export const SCENES: Record<SceneId, Scene> = {
     flightDuration: 2600,
     orbitDegrees: -12,
     orbitDuration: 5200,
-    layers: { graticule: true, counties: true, case: true },
+    layers: { graticule: true, counties: true, case: true, caseDredges: true },
     casePhase: "after",
     caseWipe: true,
+    casePhotoCycle: true,
   },
   /* Bonus chapter, behind the ?32024 flag — the field save. One lease,
      one camera target; the drama is in the data layers, not the flight. */
