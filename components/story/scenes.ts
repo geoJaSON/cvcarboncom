@@ -175,14 +175,14 @@ export const SCENES: Record<SceneId, Scene> = {
     cssPlayback: true,
     cssTiers: ["low", "med", "high"],
   },
-  /* Chapter five — the coast-wide argument told again on one lease.
-     Same camera target throughout; only the survey data changes. */
+  /* Chapter five — the coast-wide argument told again on two adjoining
+     leases. Same camera target throughout; only the survey data changes. */
   "case-before": {
     id: "case-before",
     view: "overall",
     pitch: 30,
     bearing: -8,
-    targetId: "lease-30260",
+    targetId: "bay-boudreau",
     flightDuration: 3400,
     orbitDegrees: 10,
     orbitDuration: 4600,
@@ -195,7 +195,7 @@ export const SCENES: Record<SceneId, Scene> = {
     pitch: 50,
     bearing: -24,
     zoomBias: 0.1,
-    targetId: "lease-30260",
+    targetId: "bay-boudreau",
     flightDuration: 2600,
     layers: { graticule: true, counties: true, case: true, caseBedding: true },
     casePhase: "before",
@@ -206,7 +206,7 @@ export const SCENES: Record<SceneId, Scene> = {
     view: "overall",
     pitch: 36,
     bearing: 10,
-    targetId: "lease-30260",
+    targetId: "bay-boudreau",
     flightDuration: 2600,
     orbitDegrees: -12,
     orbitDuration: 5200,
@@ -327,12 +327,13 @@ export const MAP_TARGETS = [
     tag: "REGION",
   },
   {
-    id: "lease-30260",
-    name: "Lease 30260",
-    suffix: "Bay Boudreau",
+    id: "bay-boudreau",
+    name: "Bay Boudreau",
+    suffix: "Leases 30260 · 36166",
     state: "LA",
-    /* View extent baked by scripts/bake_lease_case.py (lease + soundings). */
-    bounds: [-89.37423, 29.99187, -89.35457, 29.99646] as BBox,
+    /* View extent baked by scripts/bake_bay_boudreau.py (both leases +
+       soundings). */
+    bounds: [-89.37762, 29.97878, -89.35413, 29.99817] as BBox,
     tag: "CASE STUDY",
   },
   {

@@ -3,6 +3,11 @@
 Usage:
     python scripts/bake_lease_case.py [source_dir]
 
+Lease 30260 is now one half of chapter five. The page loads the merged
+bay_boudreau_* pack written by scripts/bake_bay_boudreau.py, which reads
+this script's lease_30260_* output and adds lease 36166 — so rebake here
+first, then run that.
+
 Reads lease.geojson, polling_data.geojson, and bedding_lines.geojson from
 source_dir (default: ~/Downloads/lease_data) and writes the four optional
 snapshot files under public/data/story/. The story page renders fully

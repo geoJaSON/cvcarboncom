@@ -22,7 +22,15 @@ import { PlacementInset } from "./placement-inset";
 import { SCENES, type SceneId } from "./scenes";
 import { SequenceBand } from "./sequence";
 import { SizerBand } from "./sizer";
-import { fmtCompact, fmtInt, latestSeason, newReefAcres, useStoryData } from "./use-story-data";
+import {
+  caseLeaseLabel,
+  fmtCompact,
+  fmtInt,
+  fmtList,
+  latestSeason,
+  newReefAcres,
+  useStoryData,
+} from "./use-story-data";
 import { VentureBriefBand } from "./venture";
 
 /* ------------------------------------------------------------------
@@ -351,13 +359,14 @@ export default function Experience({
                 title={`${cs.location}, before the shell`}
               >
                 <p>
-                  Lease {cs.lease_number}: {fmtInt(cs.acres)} acres in {cs.county} Parish.
-                  Months of soundings before the work found what a mined coast leaves behind —
-                  bare clay bottom and mud, with almost nothing for a larva to land on.
+                  {caseLeaseLabel(cs)}: {fmtInt(cs.acres)} acres side by side in {cs.county}{" "}
+                  Parish, one leaseholder, one shared boundary. Months of soundings before the
+                  work found what a mined coast leaves behind — bare clay bottom and mud, with
+                  almost nothing for a larva to land on.
                 </p>
                 <CardStats
                   stats={[
-                    { value: cs.before.points, label: "soundings on the lease" },
+                    { value: cs.before.points, label: "soundings across both leases" },
                     {
                       value: cs.before.pct_unproductive,
                       label: "mud or bare clay bottom",
@@ -370,10 +379,11 @@ export default function Experience({
             </ChartStep>
 
             <ChartStep scene="case-work" tall>
-              <ChapterCard eyebrow="Chapter five — the work" title="One month of cultch">
+              <ChapterCard eyebrow="Chapter five — the work" title="Six weeks of cultch">
                 <p>
-                  {cs.bedding.materials.join(" and ")} went over the side in {fmtInt(cs.bedding.placements)}{" "}
-                  logged barge load placements, replayed here in the order the barge made them.
+                  {fmtList(cs.bedding.materials)} went over the side in {fmtInt(cs.bedding.placements)}{" "}
+                  logged barge load placements, replayed here in the order the barges made
+                  them — both leases worked in the same window.
                 </p>
                 <CardStats
                   stats={[
@@ -404,7 +414,7 @@ export default function Experience({
                     { value: cs.after.points, label: "soundings, Dec 2025" },
                     {
                       value: cs.after.pct_reef,
-                      label: "of the lease reads solid reef",
+                      label: "of the two leases reads solid reef",
                       decimals: 1,
                       suffix: "%",
                     },

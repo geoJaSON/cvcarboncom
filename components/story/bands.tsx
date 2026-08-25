@@ -19,8 +19,10 @@ import {
 import { YearBoard } from "./year-board";
 import { FISH_LB_PER_ACRE_YEAR, JOBS_PER_MILLION } from "./factors";
 import {
+  caseLeaseLabel,
   fmtCompact,
   fmtInt,
+  fmtList,
   type CaseStudyManifest,
   type ConstructionManifest,
   type SaveManifest,
@@ -478,19 +480,22 @@ function CasePanel({
 }
 
 export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
-  const { before, after, bedding } = manifest;
+  const { before, after, bedding, leases } = manifest;
+  const several = leases.length > 1;
   return (
     <BandShell>
       <SectionHeading
         eyebrow="Chapter five: the case study"
-        title="One lease, start to finish"
+        title={several ? "Two leases, one bottom, start to finish" : "One lease, start to finish"}
         intro={
           <p>
-            The whole argument, told once at full survey resolution. Lease{" "}
-            {manifest.lease_number} is {fmtInt(manifest.acres)} acres on{" "}
-            {manifest.location || "the water"}, {manifest.county} Parish. We sounded it for
-            months before the work, bedded it in one summer window, then sent the survey boat
-            back over the same bottom. What follows is that record, plotted where it happened.
+            The whole argument, told once at full survey resolution.{" "}
+            {caseLeaseLabel(manifest)} {several ? "share a boundary" : "sits"} on{" "}
+            {manifest.location || "the water"}, {manifest.county} Parish —{" "}
+            {fmtInt(manifest.acres)} acres {several ? "together, under one leaseholder" : ""}.
+            We sounded {several ? "both" : "it"} for months before the work, bedded{" "}
+            {several ? "them" : "it"} in one summer window, then sent the survey boat back over
+            the same bottom. What follows is that record, plotted where it happened.
           </p>
         }
       />
@@ -515,11 +520,11 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
             unit="barge load placements"
             accent
           >
-            {bedding.materials.join(" and ")}
+            {fmtList(bedding.materials)}
             {bedding.short_tons != null
               ? ` — ${fmtInt(bedding.short_tons)} short tons`
               : ""}{" "}
-            over the side in one month, every pass GPS-logged from the barge.
+            over the side in one summer window, every pass GPS-logged from the barge.
           </CasePanel>
         </Reveal>
         <Reveal delay={180}>
@@ -534,6 +539,44 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
           </CasePanel>
         </Reveal>
       </div>
+
+      {several && (
+        <Reveal className="mt-10">
+          <p className="eyebrow">Lease by lease</p>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[36rem] text-left text-sm">
+              <thead>
+                <tr className="text-xs font-semibold uppercase tracking-[0.14em] text-steel">
+                  <th className="pb-3 pr-6 font-semibold">Lease</th>
+                  <th className="pb-3 pr-6 font-semibold">Acres</th>
+                  <th className="pb-3 pr-6 font-semibold">Before</th>
+                  <th className="pb-3 pr-6 font-semibold">After</th>
+                  <th className="pb-3 pr-6 font-semibold">Barge loads</th>
+                  <th className="pb-3 font-semibold">Short tons</th>
+                </tr>
+              </thead>
+              <tbody className="text-ink/80">
+                {leases.map((lease) => (
+                  <tr key={lease.lease_number} className="border-t border-navy/10">
+                    <td className="py-3 pr-6 font-display text-lg text-navy">{lease.lease_number}</td>
+                    <td className="py-3 pr-6">{fmtInt(lease.acres)}</td>
+                    <td className="py-3 pr-6">
+                      {fmtPct(lease.before.pct_reef)} reef
+                      <span className="text-ink/45"> · {fmtInt(lease.before.points)} soundings</span>
+                    </td>
+                    <td className="py-3 pr-6">
+                      {fmtPct(lease.after.pct_reef)} reef
+                      <span className="text-ink/45"> · {fmtInt(lease.after.points)} soundings</span>
+                    </td>
+                    <td className="py-3 pr-6">{fmtInt(lease.bedding.placements)}</td>
+                    <td className="py-3">{fmtInt(lease.bedding.short_tons)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Reveal>
+      )}
 
       {!!manifest.media?.length && (
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -668,7 +711,7 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
             work happens. Lease {manifest.lease_number} is {fmtInt(manifest.acres)} acres on{" "}
             {manifest.location || "the water"}, {manifest.county} Parish. Its leaseholder polled
             and sampled it in June 2023 and found something worth protecting: an island of live reef
-            surrounded by buried reef. The leaseholder eplained that massive erosion caused by tropical
+            surrounded by buried reef. The leaseholder explained that massive erosion caused by tropical
             storms had buried the lower portions of what was previously highly productive reef. The
             plan for 2025 was to bed cultch around that island - never on it - watching each load
             land against the substrate data in the app. The leaseholder was unable to be present at

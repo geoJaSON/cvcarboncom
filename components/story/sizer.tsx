@@ -6,6 +6,7 @@ import { Reveal } from "@/components/reveal";
 import { BandShell } from "./bands";
 import { ACRE_M2, EPA, FISH_LB_PER_ACRE_YEAR } from "./factors";
 import {
+  caseLeaseLabel,
   fmtCompact,
   fmtInt,
   type CaseStudyManifest,
@@ -192,7 +193,7 @@ export function SizerBand({
                         : leaseCount.toFixed(leaseCount < 1 ? 2 : 1)
                     }
                     unit="×"
-                    label={`leases the size of ${caseManifest.lease_number}, the one in chapter five`}
+                    label={`the ${caseManifest.location} leases from chapter five, ${fmtInt(caseManifest.acres)} acres together`}
                   />
                 )}
               </dl>
@@ -224,7 +225,7 @@ export function SizerBand({
                       className="story-swatch"
                       style={{ background: "rgba(13,42,68,0.08)", borderColor: "#0d2a44" }}
                     />
-                    Lease {caseManifest.lease_number}, {fmtInt(caseManifest.acres)} acres
+                    {caseLeaseLabel(caseManifest)}, {fmtInt(caseManifest.acres)} acres
                   </span>
                 )}
               </div>
@@ -337,7 +338,7 @@ function FootprintPlot({ acres, lease }: { acres: number; lease: Ring[] }) {
         className="h-auto w-full rounded-lg border border-navy/10 bg-pearl"
         role="img"
         aria-label={`A square of ${fmtInt(Math.round(acres))} acres${
-          lease.length > 0 ? ", drawn at the same scale as the outline of lease 30260" : ""
+          lease.length > 0 ? ", drawn at the same scale as the outlines of the chapter-five leases" : ""
         }.`}
       >
         <rect

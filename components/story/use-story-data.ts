@@ -66,29 +66,59 @@ export type ConstructionManifest = {
 /** Substrate codes shipped by scripts/bake_lease_case.py. */
 export type SubstrateCode = "mud" | "firm" | "scat" | "buried" | "reef";
 
-/* One lease told start to finish — chapter five's data pack, baked by
-   scripts/bake_lease_case.py from the raw survey exports. Optional like
+export type CaseBeddingStats = {
+  placements: number;
+  window: [string, string];
+  materials: string[];
+  /** Unitless lines count as tons; cubic-yard/no-amount lines excluded. */
+  short_tons: number | null;
+  excluded_from_total?: number;
+};
+
+/** One lease's own record inside the chapter-five pack. */
+export type CaseLease = {
+  lease_number: string;
+  entity?: string | null;
+  acres: number | null;
+  bounds: { lease: BBox };
+  before: CasePhaseStats;
+  after: CasePhaseStats;
+  bedding: CaseBeddingStats;
+};
+
+/* Adjoining leases under one leaseholder, told start to finish as a
+   single record — chapter five's data pack, merged by
+   scripts/bake_bay_boudreau.py. The top-level stats are the combined
+   footprint; `leases` keeps each lease's own numbers. Optional like
    everything else: no files, no chapter. */
 export type CaseStudyManifest = {
-  lease_number: string;
   location: string;
   county: string;
   state: string;
+  leases: CaseLease[];
+  /** Combined acreage across `leases`. */
   acres: number | null;
   bounds: { lease: BBox; view: BBox };
   before: CasePhaseStats;
   after: CasePhaseStats;
-  bedding: {
-    placements: number;
-    window: [string, string];
-    materials: string[];
-    /** Unitless lines count as tons; cubic-yard/no-amount lines excluded. */
-    short_tons: number | null;
-    excluded_from_total?: number;
-  };
+  bedding: CaseBeddingStats;
   media?: { src: string; alt: string; caption?: string }[];
   video?: { src: string; poster?: string; caption?: string; muteLoop?: boolean } | null;
 };
+
+/** "Limestone, River Rock and Combo" — prose list, no Oxford comma. */
+export function fmtList(items: string[]): string {
+  if (items.length <= 1) return items[0] ?? "—";
+  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+}
+
+/** "Leases 30260 and 36166" — or "Lease 30260" when the pack holds one. */
+export function caseLeaseLabel(cs: CaseStudyManifest, withNoun = true): string {
+  const numbers = cs.leases.map((lease) => lease.lease_number);
+  const list = fmtList(numbers);
+  if (!withNoun) return list;
+  return `${numbers.length === 1 ? "Lease" : "Leases"} ${list}`;
+}
 
 export type CasePhaseStats = {
   points: number;
@@ -330,10 +360,10 @@ export function useStoryData({
         fetchJson<StoryFeatureCollection>("carbon_columns.geojson"),
         fetchJson<StoryFeatureCollection>("coverage.geojson"),
         fetchJson<StoryFeatureCollection>("counties.geojson"),
-        fetchJson<CaseStudyManifest>("lease_30260.json"),
-        fetchJson<StoryFeatureCollection>("lease_30260_boundary.geojson"),
-        fetchJson<StoryFeatureCollection>("lease_30260_polling.geojson"),
-        fetchJson<StoryFeatureCollection>("lease_30260_bedding.geojson"),
+        fetchJson<CaseStudyManifest>("bay_boudreau.json"),
+        fetchJson<StoryFeatureCollection>("bay_boudreau_boundary.geojson"),
+        fetchJson<StoryFeatureCollection>("bay_boudreau_polling.geojson"),
+        fetchJson<StoryFeatureCollection>("bay_boudreau_bedding.geojson"),
         fetchJson<GalleryManifest>("gallery.json"),
         fetchJson<SequenceManifest>("sequence.json"),
         fetchJson<ConstructionManifest>("construction.json"),
