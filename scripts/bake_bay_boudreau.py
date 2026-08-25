@@ -60,6 +60,22 @@ TOW_WEB_DIR = ROOT / "public" / "images" / "bay-boudreau"
 TOW_WEB_PREFIX = "/images/bay-boudreau"
 TOW_MAX_WIDTH = 2000
 
+# Editorial video for the material band that sits between the before and
+# work scenes: barges being loaded with cultch. Transcoded from
+# bay_Boudreau/VID_20260825_143309.mp4 (HEVC, with audio) to silent H.264:
+#   ffmpeg -i VID.mp4 -an -c:v libx264 -preset slow -crf 26 -pix_fmt yuv420p \
+#          -vf scale=1600:-2 -movflags +faststart public/video/bay-boudreau-loading.mp4
+# Set to None to drop the band; it rides through every rebake otherwise.
+VIDEO = {
+    "src": "/video/bay-boudreau-loading.mp4",
+    "poster": "/video/bay-boudreau-loading.jpg",
+    "caption": (
+        "Loading out for Bay Boudreau. Every barge that left this dock is one of the "
+        "GPS-logged runs replayed on the chart below."
+    ),
+    "muteLoop": True,
+}
+
 SUBSTRATE_CODES = {
     "Mud": "mud",
     "Firm/Hard Bottom": "firm",
@@ -582,7 +598,7 @@ def main():
         },
         # Editorial media rides with the 30260 pack (bake_lease_case.py MEDIA).
         "media": next((p["media"] for p in packs if p.get("media")), []),
-        "video": next((p["video"] for p in packs if p.get("video")), None),
+        "video": VIDEO,
     }
 
     # ---- dredge tows: present only when the export is ----

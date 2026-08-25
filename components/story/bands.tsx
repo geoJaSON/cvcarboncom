@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Figure, NumberedCard, PullQuote, SectionHeading, StatBand, TideRule } from "@/components/ui";
 import { Reveal } from "@/components/reveal";
 import {
@@ -439,6 +439,21 @@ function fmtMonth(iso: string | undefined): string {
   });
 }
 
+/** "8 May to 18 Jun 2025" — day-level, year once when both ends share it. */
+function fmtDayWindow(window: [string, string] | undefined): string {
+  if (!window) return "—";
+  const [a, b] = window.map((iso) => new Date(`${iso}T00:00:00Z`));
+  const day = (d: Date, withYear: boolean) =>
+    d.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+      ...(withYear ? { year: "numeric" } : {}),
+      timeZone: "UTC",
+    });
+  const sameYear = a.getUTCFullYear() === b.getUTCFullYear();
+  return `${day(a, !sameYear)} to ${day(b, true)}`;
+}
+
 function fmtWindow(window: [string, string] | undefined): string {
   if (!window) return "—";
   const [a, b] = [fmtMonth(window[0]), fmtMonth(window[1])];
@@ -586,32 +601,92 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
         </div>
       )}
 
-      {manifest.video && (
-        <Reveal className="mt-16">
-          <figure>
-            <div className="overflow-hidden rounded-lg bg-navy">
-              {/* Ambient loops run muted; anything with audio keeps controls. */}
-              <video
-                className="w-full"
-                src={manifest.video.src}
-                poster={manifest.video.poster}
-                controls={!manifest.video.muteLoop}
-                autoPlay={!!manifest.video.muteLoop}
-                muted={!!manifest.video.muteLoop}
-                loop={!!manifest.video.muteLoop}
-                playsInline
-                preload="metadata"
-              />
-            </div>
-            {manifest.video.caption && (
-              <figcaption className="mt-3 text-sm leading-relaxed text-ink/70">
-                {manifest.video.caption}
-              </figcaption>
-            )}
-          </figure>
-        </Reveal>
-      )}
     </BandShell>
+  );
+}
+
+/* ---- Chapter five, between the before and work scenes: the material.
+        The manifest's video is the dock footage of barges being loaded;
+        it plays silently on a loop so the tonnage on the next chart step
+        has a picture attached to it. Carries the case-work scene. ---- */
+export function MaterialBand({ manifest }: { manifest: CaseStudyManifest }) {
+  const { video, bedding } = manifest;
+  if (!video) return null;
+  return (
+    <BandShell tone="abyss">
+      <SectionHeading
+        tone="light"
+        eyebrow="Chapter five: the material"
+        title={
+          bedding.short_tons != null
+            ? `${fmtInt(bedding.short_tons)} short tons, one barge at a time`
+            : "One barge at a time"
+        }
+        intro={
+          <p>
+            Filmed at the dock as the loads went aboard. From {fmtDayWindow(bedding.window)}, the
+            crews put {fmtInt(bedding.placements)} barge loads of {fmtList(bedding.materials)}{" "}
+            over the side on these two leases. The chart that follows replays every one of
+            those runs from the barge&rsquo;s own GPS.
+          </p>
+        }
+      />
+      <Reveal className="mt-12">
+        <figure>
+          <div className="overflow-hidden rounded-lg border border-white/10 bg-navy">
+            <LoopVideo src={video.src} poster={video.poster} muteLoop={!!video.muteLoop} />
+          </div>
+          {video.caption && (
+            <figcaption className="mt-3 text-sm leading-relaxed text-mist/70">
+              {video.caption}
+            </figcaption>
+          )}
+        </figure>
+      </Reveal>
+    </BandShell>
+  );
+}
+
+/** A silent ambient loop that only fetches once the reader is near it —
+    the file is several megabytes and most of the page never scrolls this
+    far. Reduced-motion readers get the poster and a play control instead
+    of a moving background. Anything with audio keeps its controls. */
+function LoopVideo({ src, poster, muteLoop }: { src: string; poster?: string; muteLoop: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [armed, setArmed] = useState(false);
+  const [still, setStill] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    setStill(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setArmed(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "600px 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const ambient = muteLoop && !still;
+  return (
+    <video
+      ref={ref}
+      className="aspect-video w-full"
+      src={armed ? src : undefined}
+      poster={poster}
+      controls={!ambient}
+      autoPlay={ambient}
+      muted={muteLoop}
+      loop={muteLoop}
+      playsInline
+      preload={armed ? "auto" : "none"}
+    />
   );
 }
 

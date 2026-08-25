@@ -10,6 +10,7 @@ import {
   CreditsBand,
   FieldSaveBand,
   LostBand,
+  MaterialBand,
   PermanenceBand,
   ProofBand,
   TrajectoryBand,
@@ -388,6 +389,14 @@ export default function Experience({
                 />
               </ChapterCard>
             </ChartStep>
+
+            {/* The dock footage: opaque, so it carries the next scene and the
+                camera lines up on the leases while the barges are loading. */}
+            {cs.video && (
+              <div data-scene="case-work" data-covered="true">
+                <MaterialBand manifest={cs} />
+              </div>
+            )}
 
             <ChartStep scene="case-work" tall>
               <ChapterCard eyebrow="Chapter five — the work" title="Six weeks of cultch">
