@@ -1,10 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { FeaturedArticle } from "@/components/featured-article";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/ui";
 import { BandShell, REINVESTMENT_PCT } from "./bands";
-import { EROSION_REDUCTION_PCT, FISH_LB_PER_ACRE_YEAR } from "./factors";
 import { VENTURE_POIS } from "./venture-pois";
 import { VentureInset } from "./venture-inset";
 import {
@@ -50,10 +50,6 @@ const PROSPECT = {
      Never replace this with our characterisation of their record. */
   communityGoal:
     "positively impact the surrounding community by driving economic growth, engaging with our neighbors",
-  /* A verbatim fragment of the same sentence. Card four states the
-     commitment and the community panel below quotes it in full — the
-     fragment keeps the band from printing one sentence twice. */
-  communityGoalShort: "driving economic growth, engaging with our neighbors",
 } as const;
 
 /** Reef acreage bedded to date, per Jason's AGOL working layers as of
@@ -157,9 +153,9 @@ export function VentureBriefBand({
             This one answers the part of their commitment that carbon
             alone cannot: the ton is the means, and what rides along with
             it lands in the same parishes their facilities report from.
-            Both figures are literature, not our survey — sourced in the
-            footnote, and shared with the co-benefits band through
-            factors.ts so the two surfaces cannot drift apart. */}
+            Deliberately the only card carrying no figure — the
+            co-benefits band later in the brief is where the literature
+            behind this claim is quoted and sourced. */}
         <AlignmentCard
           index={4}
           heading="The benefits do not stop at the carbon"
@@ -175,10 +171,7 @@ export function VentureBriefBand({
           An engineered removal takes land and builds a plant. This one builds
           habitat: hard bottom that feeds a working fishery, breaks storm energy
           before it reaches the marsh, and accretes upward instead of settling
-          like rock or bulkhead. Those benefits are not a co-marketing line —
-          they accrue to the same coast your facilities operate on, to the
-          people who turn up at a public comment period, and they recur every
-          year for as long as the reef lives.
+          like rock or bulkhead.
         </AlignmentCard>
       </div>
 
@@ -290,6 +283,26 @@ export function VentureBriefBand({
         </div>
       </Reveal>
 
+      {/* Third-party corroboration, last thing before the sourcing note.
+          Everything above this is our own record making its own case;
+          this is someone else describing the work, which is the one
+          thing the brief cannot supply about itself. Same press card the
+          rest of the site uses, so the article is never linked twice
+          with two different framings. */}
+      <div className="mt-14">
+        <p className="eyebrow">Read about us</p>
+        <div className="mt-5">
+          {/* No attribution on purpose: this is the shape of the
+              program, not a line anyone said, so it runs as a standing
+              statement. The card's own eyebrow already names the
+              publication. */}
+          <FeaturedArticle
+            quote="CV Carbon blends traditional oyster fishing with GIS technology to help fishermen find productive reefs and create sustainable revenue streams, while building resilient coastal ecosystems."
+            image="/images/oyster-boats.jpg"
+          />
+        </div>
+      </div>
+
       <p className="mt-8 text-xs leading-relaxed text-ink/45">
         {PROSPECT.name} figures quoted from{" "}
         <a
@@ -301,7 +314,7 @@ export function VentureBriefBand({
           {PROSPECT.sourceLabel}
         </a>
         , read {PROSPECT.readOn}. CV Carbon figures are read from the survey snapshot dated{" "}
-        {manifest?.snapshot_date ?? "—"} that draws every chart on this page. Fish and shellfish
+        {manifest?.snapshot_date ?? "—"}. Fish and shellfish
         production per Peterson, Grabowski &amp; Powers (2003); shoreline-erosion
         evidence per LSU AgCenter monitoring. Both cited in full on{" "}
         <a href="/beyond-carbon" className="underline underline-offset-2">
