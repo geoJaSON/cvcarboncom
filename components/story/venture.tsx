@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { FeaturedArticle } from "@/components/featured-article";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/ui";
 import { BandShell, REINVESTMENT_PCT } from "./bands";
@@ -282,26 +281,6 @@ export function VentureBriefBand({
           </dl>
         </div>
       </Reveal>
-
-      {/* Third-party corroboration, last thing before the sourcing note.
-          Everything above this is our own record making its own case;
-          this is someone else describing the work, which is the one
-          thing the brief cannot supply about itself. Same press card the
-          rest of the site uses, so the article is never linked twice
-          with two different framings. */}
-      <div className="mt-14">
-        <p className="eyebrow">Read about us</p>
-        <div className="mt-5">
-          {/* No attribution on purpose: this is the shape of the
-              program, not a line anyone said, so it runs as a standing
-              statement. The card's own eyebrow already names the
-              publication. */}
-          <FeaturedArticle
-            quote="CV Carbon blends traditional oyster fishing with GIS technology to help fishermen find productive reefs and create sustainable revenue streams, while building resilient coastal ecosystems."
-            image="/images/oyster-boats.jpg"
-          />
-        </div>
-      </div>
 
       <p className="mt-8 text-xs leading-relaxed text-ink/45">
         {PROSPECT.name} figures quoted from{" "}

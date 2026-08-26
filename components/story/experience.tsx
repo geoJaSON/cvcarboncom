@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { EMAIL } from "@/lib/site";
 import "./story.css";
+import { FeaturedArticle } from "@/components/featured-article";
 import {
+  BandShell,
   CaseStudyBand,
   CoBenefitsBand,
   CreditsBand,
@@ -546,6 +548,26 @@ export default function Experience({
             caseManifest={data.caseManifest}
             caseBoundary={data.layers.caseBoundary}
           />
+
+          {/* Everything above this is our own record making its own
+              case. This is someone else describing the work — the one
+              thing the brief cannot supply about itself — so it lands
+              after the argument is finished and before the ask. Same
+              press card the rest of the site uses, so the article is
+              never linked twice with two different framings. */}
+          <BandShell tone="abyss">
+            <p className="eyebrow text-steel-400">Read about us</p>
+            <div className="mt-5">
+              {/* No attribution on purpose: this is the shape of the
+                  program, not a line anyone said, so it runs as a
+                  standing statement. The card's own eyebrow already
+                  names the publication. */}
+              <FeaturedArticle
+                quote="CV Carbon blends traditional oyster fishing with GIS technology to help fishermen find productive reefs and create sustainable revenue streams, while building resilient coastal ecosystems."
+                image="/images/oyster-boats.jpg"
+              />
+            </div>
+          </BandShell>
         </div>
 
         {/* ---- Close ---- */}
