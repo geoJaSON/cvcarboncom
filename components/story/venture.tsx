@@ -7,9 +7,11 @@ import { BandShell, REINVESTMENT_PCT } from "./bands";
 import { VENTURE_POIS } from "./venture-pois";
 import { VentureInset } from "./venture-inset";
 import {
+  beddedReefAcres,
   fmtInt,
   newReefAcres,
   type CaseStudyManifest,
+  type ConstructionManifest,
   type StoryFeatureCollection,
   type StoryManifest,
 } from "./use-story-data";
@@ -49,31 +51,51 @@ const PROSPECT = {
     "positively impact the surrounding community by driving economic growth, engaging with our neighbors",
 } as const;
 
+/** Reef acreage bedded to date, per Jason's AGOL working layers as of
+    August 2026. The construction bake trails this until the outstanding
+    placements sync; see the floor applied in VentureBriefBand. Delete
+    this constant once construction.json reports the higher figure. */
+const BEDDED_ACRES_FLOOR = 3813;
+
 /* What the rest of the brief answers, in the order it answers it. A
    reader who has been handed a scrolling map deserves to know the shape
    of the argument before committing to the scroll. */
 const AHEAD: [string, string][] = [
-  ["Chapter three — the proof", "How every acre is measured, and who is allowed to disagree with us."],
-  ["The ledger", "Net of our own fuel, serialized, and resolvable in a public registry."],
+  ["The science", "How every acre is measured, and how it is validated."],
+  ["The ledger", "The net tonnage securely stored, is derived by a mass balance calculation that accounds for our own carbon footprint."],
   ["Permanence", "What a hurricane does to a reef, and what the next resurvey would show if it took one."],
-  ["Size it", "Your tonnage, in acres of bottom and in shell over the side."],
+  ["Scalability", "Your tonnage, in acres of bottom and in shell over the side."],
 ];
 
 export function VentureBriefBand({
   manifest,
   caseManifest,
+  construction,
   leases,
   cssTiers,
   reducedMotion,
 }: {
   manifest: StoryManifest | null;
   caseManifest: CaseStudyManifest | null;
+  /* Card four quotes the construction ledger, the same bake that draws
+     the built-vs-restored chart later in the brief. */
+  construction: ConstructionManifest | null;
   leases: StoryFeatureCollection | null;
   cssTiers: StoryFeatureCollection | null;
   reducedMotion: boolean;
 }) {
   const s = manifest?.stats;
   const gained = newReefAcres(caseManifest);
+  /* The barges are ahead of the bake: acreage is still coming across
+     from AGOL that this snapshot has not picked up yet, and the true
+     figure today is BEDDED_ACRES_FLOOR. Quote the floor while the
+     ledger trails it, and hand back to the ledger the moment it passes
+     — so the sync catching up retires this override on its own instead
+     of leaving a stale number to be noticed by the reader. */
+  const ledger = beddedReefAcres(construction);
+  const bedded = ledger
+    ? { ...ledger, acres: Math.max(ledger.acres, BEDDED_ACRES_FLOOR) }
+    : null;
   const plant = VENTURE_POIS.find((poi) => poi.id === "new-gas-plant-site");
 
   return (
@@ -105,7 +127,7 @@ export function VentureBriefBand({
           theirs={`${fmtInt(PROSPECT.marshAcres)} acres of marsh creation and restoration to date, and $${PROSPECT.wetlandCreditsUsdMillions} million in wetland mitigation credits.`}
           ours={
             <>
-              {fmtInt(s?.css_acres?.total)} acres of surveyed high density reef
+              {fmtInt(s?.css_acres?.total)} acres of surveyed oyster reef
             </>
           }
         />
@@ -125,6 +147,33 @@ export function VentureBriefBand({
           The pins on the chart are your sites. Everything shaded around them is
           our survey data. Our project is already in the shadow of your facilities.
         </AlignmentCard>
+
+        {/* The work already in the water. Card two is what we measure;
+            this is what we built, and it is the only figure on the band
+            a reader can watch a barge produce. Sourced from the
+            construction ledger (floored while AGOL syncs, see above) so
+            that it tracks the per-year chart further down the brief
+            rather than being retyped in two places. */}
+        {bedded && (
+          <AlignmentCard
+            index={4}
+            heading="The reef is already in the water"
+            theirsLabel="Your accomplishments"
+            oursLabel="What we have built"
+            theirs={`${fmtInt(PROSPECT.marshAcres)} acres of marsh creation and restoration to date.`}
+            ours={
+              <>
+                {fmtInt(bedded.acres)} acres of oyster reef restored since {bedded.firstYear}
+              </>
+            }
+          >
+            Every acre of that is a GPS-logged bedding run off the side of a
+            working boat, and every one of them is resurveyed afterwards rather
+            than counted at the invoice. The construction ledger later in this
+            brief splits it year by year, into bare bottom we built on and
+            existing reef we brought back.
+          </AlignmentCard>
+        )}
       </div>
 
       {/* Card three says their sites and our survey share a coast. This

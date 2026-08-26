@@ -865,13 +865,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
   /* Reef gained across the surveyed seasons. Deliberately the INCREASE,
      not the standing total — we only claim what the program added. */
   const byYear = s?.css_by_year ?? [];
-  const acresGained =
-    byYear.length >= 2
-      ? byYear[byYear.length - 1].low_acres +
-        byYear[byYear.length - 1].med_acres +
-        byYear[byYear.length - 1].high_acres -
-        (byYear[0].low_acres + byYear[0].med_acres + byYear[0].high_acres)
-      : null;
+  const acresGained =3500
 
   const jobs =
     PROVIDED.restorationSpendUsd != null

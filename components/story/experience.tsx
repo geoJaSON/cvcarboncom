@@ -18,7 +18,7 @@ import {
 } from "./bands";
 import { GalleryBand } from "./gallery";
 import { Hud } from "./hud";
-import { MapStage, type ChartView, type StageState } from "./map-stage";
+import { MapStage, type ChartView } from "./map-stage";
 import { PlacementInset, dredgeInsetPhotos, placementInsetPhotos } from "./placement-inset";
 import { SCENES, type SceneId } from "./scenes";
 import { SequenceBand } from "./sequence";
@@ -28,7 +28,6 @@ import {
   fmtCompact,
   fmtInt,
   fmtList,
-  latestSeason,
   newReefAcres,
   useStoryData,
 } from "./use-story-data";
@@ -57,10 +56,6 @@ export default function Experience({
   const [hudVisible, setHudVisible] = useState(true);
   const [view, setView] = useState<ChartView | null>(null);
   const [manualTarget, setManualTarget] = useState<string | null>(null);
-  const [stageState, setStageState] = useState<StageState>({
-    status: "STANDBY",
-    progress: 0,
-  });
   const reducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const viewThrottle = useRef(0);
@@ -109,9 +104,6 @@ export default function Experience({
   const onPhoto = useCallback((next: number | null) => {
     setPhotoIndex(next);
   }, []);
-  const onStageState = useCallback((next: StageState) => {
-    setStageState(next);
-  }, []);
 
   const activeTarget = manualTarget ?? SCENES[scene].targetId ?? null;
 
@@ -127,7 +119,6 @@ export default function Experience({
   }, [data.layers.carbon]);
 
   const snapshotDate = data.manifest?.snapshot_date;
-  const season = latestSeason(data.manifest);
   const s = data.manifest?.stats;
   const cs = data.caseManifest;
   /* Fetched only behind the ?32024 flag, so its presence is the gate. */
@@ -155,17 +146,14 @@ export default function Experience({
         showVenturePois={showVenturePois}
         reducedMotion={reducedMotion}
         onView={onView}
-        onStageState={onStageState}
         onPhoto={onPhoto}
       />
       <Hud
         view={view}
         scene={scene}
         snapshotDate={snapshotDate}
-        season={season}
         visible={hudVisible}
         targetId={activeTarget}
-        stageState={stageState}
         carbonYears={carbonYears}
         showSaveTarget={hasFieldSave}
         onTarget={setManualTarget}
@@ -230,6 +218,7 @@ export default function Experience({
               <VentureBriefBand
                 manifest={data.manifest}
                 caseManifest={data.caseManifest}
+                construction={data.construction}
                 leases={data.layers.leases}
                 cssTiers={data.layers.cssTiers}
                 reducedMotion={reducedMotion}
@@ -301,9 +290,9 @@ export default function Experience({
           <WorkBand manifest={data.manifest} />
         </div>
 
-        {/* ---- Chapter three — the proof ---- */}
+        {/* ---- Chapter three — the science ---- */}
         <ChartStep scene="coverage" tall>
-          <ChapterCard eyebrow="Chapter three — the proof" title="We pole every acre we claim">
+          <ChapterCard eyebrow="The science" title="We pole every acre we claim">
             <p>
               Our strength is our data: continuous bottom soundings plus dredge tows and
               point samples, all geolocated, all repeatable. We have compiled the world&rsquo;s largest set of ground-truthed substrate data. This is not an artist&rsquo;s
@@ -320,7 +309,7 @@ export default function Experience({
         </ChartStep>
 
         <ChartStep scene="carbon" tall>
-          <ChapterCard eyebrow="Chapter three — the proof" title="Sampled on site and independently verified">
+          <ChapterCard eyebrow="The science" title="Sampled on site and independently verified">
             <p>
               Each column is the net carbon on the books for that patch of water, stacked by
               vintage — the oldest season at the seabed, the newest on top. Heights are metric

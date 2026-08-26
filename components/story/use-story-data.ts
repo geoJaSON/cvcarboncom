@@ -500,6 +500,28 @@ export function newReefAcres(cs: CaseStudyManifest | null): number | null {
   return Math.floor((cs.acres * (cs.after.pct_reef - cs.before.pct_reef)) / 100);
 }
 
+/** Total reef acreage the fleet has put cultch on, summed across the
+    construction ledger's years. Prefers each year's whole dissolved
+    bedding footprint and falls back to its built + restored split for
+    older bakes that predate `bedded_acres`. Returns null on no bake, so
+    a missing file shows an em dash rather than a confident zero.
+
+    Read by the invitation-only opener and quoted beside the same
+    ledger's per-year chart, so both must come from this one sum — a
+    hand-typed total is the fastest way to contradict our own chart. */
+export function beddedReefAcres(
+  construction: ConstructionManifest | null,
+): { acres: number; firstYear: number } | null {
+  const rows = construction?.by_year;
+  if (!rows?.length) return null;
+  let acres = 0;
+  for (const row of rows) {
+    acres += row.bedded_acres ?? row.constructed_acres + row.restored_acres;
+  }
+  if (!(acres > 0)) return null;
+  return { acres, firstYear: Math.min(...rows.map((row) => row.year)) };
+}
+
 /* ------------------------------------------------------------------
    Formatting helpers — stats render as an em dash until the snapshot
    provides them, so a missing bake never shows a wrong number.
