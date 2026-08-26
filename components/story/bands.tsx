@@ -17,7 +17,7 @@ import {
   VintageBars,
 } from "./charts";
 import { YearBoard } from "./year-board";
-import { FISH_LB_PER_ACRE_YEAR, JOBS_PER_MILLION } from "./factors";
+import { EROSION_REDUCTION_PCT, FISH_LB_PER_ACRE_YEAR, JOBS_PER_MILLION } from "./factors";
 import {
   caseLeaseLabel,
   fmtCompact,
@@ -959,7 +959,12 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           trout, red drum, flounder. It recurs annually for as long as the reef lives.
         </BenefitCard>
 
-        <BenefitCard figure="~50%" unit="less shoreline erosion" title="A breakwater that grows" source="LSU AgCenter monitoring">
+        <BenefitCard
+          figure={`~${EROSION_REDUCTION_PCT}%`}
+          unit="less shoreline erosion"
+          title="A breakwater that grows"
+          source="LSU AgCenter monitoring"
+        >
           Measured behind restored Louisiana reefs. Unlike rock or bulkhead, reef builds itself
           higher over time instead of settling and needing replacement.
         </BenefitCard>

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
 import { SectionHeading } from "@/components/ui";
 import { BandShell, REINVESTMENT_PCT } from "./bands";
+import { EROSION_REDUCTION_PCT, FISH_LB_PER_ACRE_YEAR } from "./factors";
 import { VENTURE_POIS } from "./venture-pois";
 import { VentureInset } from "./venture-inset";
 import {
@@ -49,6 +50,10 @@ const PROSPECT = {
      Never replace this with our characterisation of their record. */
   communityGoal:
     "positively impact the surrounding community by driving economic growth, engaging with our neighbors",
+  /* A verbatim fragment of the same sentence. Card four states the
+     commitment and the community panel below quotes it in full — the
+     fragment keeps the band from printing one sentence twice. */
+  communityGoalShort: "driving economic growth, engaging with our neighbors",
 } as const;
 
 /** Reef acreage bedded to date, per Jason's AGOL working layers as of
@@ -148,32 +153,33 @@ export function VentureBriefBand({
           our survey data. Our project is already in the shadow of your facilities.
         </AlignmentCard>
 
-        {/* The work already in the water. Card two is what we measure;
-            this is what we built, and it is the only figure on the band
-            a reader can watch a barge produce. Sourced from the
-            construction ledger (floored while AGOL syncs, see above) so
-            that it tracks the per-year chart further down the brief
-            rather than being retyped in two places. */}
-        {bedded && (
-          <AlignmentCard
-            index={4}
-            heading="The reef is already in the water"
-            theirsLabel="Your accomplishments"
-            oursLabel="What we have built"
-            theirs={`${fmtInt(PROSPECT.marshAcres)} acres of marsh creation and restoration to date.`}
-            ours={
-              <>
-                {fmtInt(bedded.acres)} acres of oyster reef restored since {bedded.firstYear}
-              </>
-            }
-          >
-            Every acre of that is a GPS-logged bedding run off the side of a
-            working boat, and every one of them is resurveyed afterwards rather
-            than counted at the invoice. The construction ledger later in this
-            brief splits it year by year, into bare bottom we built on and
-            existing reef we brought back.
-          </AlignmentCard>
-        )}
+        {/* Cards one through three answer their published goals in kind.
+            This one answers the part of their commitment that carbon
+            alone cannot: the ton is the means, and what rides along with
+            it lands in the same parishes their facilities report from.
+            Both figures are literature, not our survey — sourced in the
+            footnote, and shared with the co-benefits band through
+            factors.ts so the two surfaces cannot drift apart. */}
+        <AlignmentCard
+          index={4}
+          heading="The benefits do not stop at the carbon"
+          theirsLabel="Your commitment"
+          oursLabel="What rides along with the ton"
+          theirs={`An eagerness to giving back to the community.`}
+          ours={
+            <>
+              We provide benefits beyond carbon capture and storage for the local communities and environments where your projects are located.
+            </>
+          }
+        >
+          An engineered removal takes land and builds a plant. This one builds
+          habitat: hard bottom that feeds a working fishery, breaks storm energy
+          before it reaches the marsh, and accretes upward instead of settling
+          like rock or bulkhead. Those benefits are not a co-marketing line —
+          they accrue to the same coast your facilities operate on, to the
+          people who turn up at a public comment period, and they recur every
+          year for as long as the reef lives.
+        </AlignmentCard>
       </div>
 
       {/* Card three says their sites and our survey share a coast. This
@@ -211,6 +217,20 @@ export function VentureBriefBand({
                 {REINVESTMENT_PCT}%
               </p>
               <p className="story-chart-note mt-2">of net revenue, back into cultch</p>
+              {/* What that reinvestment has already bought. It belongs on
+                  this panel rather than beside the survey totals: the
+                  argument here is that the money lands as work in the
+                  water, and this is the acreage that work produced. */}
+              {bedded && (
+                <>
+                  <p className="mt-6 font-display text-3xl leading-none text-verdigris">
+                    {fmtInt(bedded.acres)}
+                  </p>
+                  <p className="story-chart-note mt-2">
+                    acres of reef restored since {bedded.firstYear}
+                  </p>
+                </>
+              )}
             </div>
             <div>
               <h3 className="font-display text-2xl text-white sm:text-3xl">
@@ -233,6 +253,9 @@ export function VentureBriefBand({
                     cultch
                   </strong>
                   , so the spend buys shell for the next season instead of ending at the invoice.
+                  {bedded
+                    ? ` That is what has put ${fmtInt(bedded.acres)} acres of reef back on the bottom since ${bedded.firstYear} — every one of them a GPS-logged bedding run off the side of a working boat, resurveyed afterwards rather than counted at the invoice.`
+                    : ""}
                 </p>
                 <p>
                   That is the rare environmental purchase that settles twice: a verified ton
@@ -278,8 +301,9 @@ export function VentureBriefBand({
           {PROSPECT.sourceLabel}
         </a>
         , read {PROSPECT.readOn}. CV Carbon figures are read from the survey snapshot dated{" "}
-        {manifest?.snapshot_date ?? "—"} that draws every chart on this page. Shoreline-erosion
-        evidence per LSU AgCenter monitoring, cited in full on{" "}
+        {manifest?.snapshot_date ?? "—"} that draws every chart on this page. Fish and shellfish
+        production per Peterson, Grabowski &amp; Powers (2003); shoreline-erosion
+        evidence per LSU AgCenter monitoring. Both cited in full on{" "}
         <a href="/beyond-carbon" className="underline underline-offset-2">
           Beyond Carbon
         </a>
