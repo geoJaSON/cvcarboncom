@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
   // Dev-only. Next blocks cross-origin requests to dev assets/HMR by default, so
   // a `cloudflared tunnel --url http://localhost:3000` share would 404 its chunks
   // without this. Quick tunnels get a fresh random subdomain every run.
-  allowedDevOrigins: ["*.trycloudflare.com"],
+  allowedDevOrigins: ["*.trycloudflare.com","10.1.10.*"],
 };
 
 export default nextConfig;

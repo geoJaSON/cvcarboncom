@@ -7,9 +7,11 @@ import { BandShell, REINVESTMENT_PCT } from "./bands";
 import { VENTURE_POIS } from "./venture-pois";
 import { VentureInset } from "./venture-inset";
 import {
+  beddedReefAcres,
   fmtInt,
   newReefAcres,
   type CaseStudyManifest,
+  type ConstructionManifest,
   type StoryFeatureCollection,
   type StoryManifest,
 } from "./use-story-data";
@@ -49,31 +51,51 @@ const PROSPECT = {
     "positively impact the surrounding community by driving economic growth, engaging with our neighbors",
 } as const;
 
+/** Reef acreage bedded to date, per Jason's AGOL working layers as of
+    August 2026. The construction bake trails this until the outstanding
+    placements sync; see the floor applied in VentureBriefBand. Delete
+    this constant once construction.json reports the higher figure. */
+const BEDDED_ACRES_FLOOR = 3813;
+
 /* What the rest of the brief answers, in the order it answers it. A
    reader who has been handed a scrolling map deserves to know the shape
    of the argument before committing to the scroll. */
 const AHEAD: [string, string][] = [
-  ["Chapter three — the proof", "How every acre is measured, and who is allowed to disagree with us."],
-  ["The ledger", "Net of our own fuel, serialized, and resolvable in a public registry."],
+  ["The science", "How every acre is measured, and how it is validated."],
+  ["The ledger", "The net tonnage securely stored, is derived by a mass balance calculation that accounds for our own carbon footprint."],
   ["Permanence", "What a hurricane does to a reef, and what the next resurvey would show if it took one."],
-  ["Size it", "Your tonnage, in acres of bottom and in shell over the side."],
+  ["Scalability", "Your tonnage, in acres of bottom and in shell over the side."],
 ];
 
 export function VentureBriefBand({
   manifest,
   caseManifest,
+  construction,
   leases,
   cssTiers,
   reducedMotion,
 }: {
   manifest: StoryManifest | null;
   caseManifest: CaseStudyManifest | null;
+  /* Card four quotes the construction ledger, the same bake that draws
+     the built-vs-restored chart later in the brief. */
+  construction: ConstructionManifest | null;
   leases: StoryFeatureCollection | null;
   cssTiers: StoryFeatureCollection | null;
   reducedMotion: boolean;
 }) {
   const s = manifest?.stats;
   const gained = newReefAcres(caseManifest);
+  /* The barges are ahead of the bake: acreage is still coming across
+     from AGOL that this snapshot has not picked up yet, and the true
+     figure today is BEDDED_ACRES_FLOOR. Quote the floor while the
+     ledger trails it, and hand back to the ledger the moment it passes
+     — so the sync catching up retires this override on its own instead
+     of leaving a stale number to be noticed by the reader. */
+  const ledger = beddedReefAcres(construction);
+  const bedded = ledger
+    ? { ...ledger, acres: Math.max(ledger.acres, BEDDED_ACRES_FLOOR) }
+    : null;
   const plant = VENTURE_POIS.find((poi) => poi.id === "new-gas-plant-site");
 
   return (
@@ -105,7 +127,7 @@ export function VentureBriefBand({
           theirs={`${fmtInt(PROSPECT.marshAcres)} acres of marsh creation and restoration to date, and $${PROSPECT.wetlandCreditsUsdMillions} million in wetland mitigation credits.`}
           ours={
             <>
-              {fmtInt(s?.css_acres?.total)} acres of surveyed high density reef
+              {fmtInt(s?.css_acres?.total)} acres of surveyed oyster reef
             </>
           }
         />
@@ -124,6 +146,31 @@ export function VentureBriefBand({
         >
           The pins on the chart are your sites. Everything shaded around them is
           our survey data. Our project is already in the shadow of your facilities.
+        </AlignmentCard>
+
+        {/* Cards one through three answer their published goals in kind.
+            This one answers the part of their commitment that carbon
+            alone cannot: the ton is the means, and what rides along with
+            it lands in the same parishes their facilities report from.
+            Deliberately the only card carrying no figure — the
+            co-benefits band later in the brief is where the literature
+            behind this claim is quoted and sourced. */}
+        <AlignmentCard
+          index={4}
+          heading="The benefits do not stop at the carbon"
+          theirsLabel="Your commitment"
+          oursLabel="What rides along with the ton"
+          theirs={`An eagerness to giving back to the community.`}
+          ours={
+            <>
+              We provide benefits beyond carbon capture and storage for the local communities and environments where your projects are located.
+            </>
+          }
+        >
+          An engineered removal takes land and builds a plant. This one builds
+          habitat: hard bottom that feeds a working fishery, breaks storm energy
+          before it reaches the marsh, and accretes upward instead of settling
+          like rock or bulkhead.
         </AlignmentCard>
       </div>
 
@@ -162,6 +209,20 @@ export function VentureBriefBand({
                 {REINVESTMENT_PCT}%
               </p>
               <p className="story-chart-note mt-2">of net revenue, back into cultch</p>
+              {/* What that reinvestment has already bought. It belongs on
+                  this panel rather than beside the survey totals: the
+                  argument here is that the money lands as work in the
+                  water, and this is the acreage that work produced. */}
+              {bedded && (
+                <>
+                  <p className="mt-6 font-display text-3xl leading-none text-verdigris">
+                    {fmtInt(bedded.acres)}
+                  </p>
+                  <p className="story-chart-note mt-2">
+                    acres of reef restored since {bedded.firstYear}
+                  </p>
+                </>
+              )}
             </div>
             <div>
               <h3 className="font-display text-2xl text-white sm:text-3xl">
@@ -184,6 +245,9 @@ export function VentureBriefBand({
                     cultch
                   </strong>
                   , so the spend buys shell for the next season instead of ending at the invoice.
+                  {bedded
+                    ? ` That is what has put ${fmtInt(bedded.acres)} acres of reef back on the bottom since ${bedded.firstYear} — every one of them a GPS-logged bedding run off the side of a working boat, resurveyed afterwards rather than counted at the invoice.`
+                    : ""}
                 </p>
                 <p>
                   That is the rare environmental purchase that settles twice: a verified ton
@@ -229,8 +293,9 @@ export function VentureBriefBand({
           {PROSPECT.sourceLabel}
         </a>
         , read {PROSPECT.readOn}. CV Carbon figures are read from the survey snapshot dated{" "}
-        {manifest?.snapshot_date ?? "—"} that draws every chart on this page. Shoreline-erosion
-        evidence per LSU AgCenter monitoring, cited in full on{" "}
+        {manifest?.snapshot_date ?? "—"}. Fish and shellfish
+        production per Peterson, Grabowski &amp; Powers (2003); shoreline-erosion
+        evidence per LSU AgCenter monitoring. Both cited in full on{" "}
         <a href="/beyond-carbon" className="underline underline-offset-2">
           Beyond Carbon
         </a>

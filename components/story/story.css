@@ -607,37 +607,6 @@
   border-bottom: 0.5rem solid var(--color-verdigris);
 }
 
-/* Acquisition strip in the bottom instrument panel. */
-.story-status-light {
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 999px;
-  background: var(--color-sand);
-  box-shadow: 0 0 0.7rem rgba(214, 197, 170, 0.65);
-  animation: story-status-pulse 1.05s steps(1) infinite;
-}
-
-.story-status-light.is-verified {
-  background: var(--color-verdigris);
-  box-shadow: 0 0 0.7rem rgba(47, 138, 116, 0.8);
-  animation: none;
-}
-
-.story-status-track {
-  display: block;
-  height: 2px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.09);
-}
-
-.story-status-track > span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-steel-400), var(--color-verdigris));
-  box-shadow: 0 0 0.5rem rgba(47, 138, 116, 0.65);
-  transition: width 90ms linear;
-}
-
 /* Four chart marks around the selected geography. */
 .story-reticle {
   display: none;
@@ -710,17 +679,6 @@
   50% {
     transform: scale(1.14);
     opacity: 1;
-  }
-}
-
-@keyframes story-status-pulse {
-  0%,
-  55% {
-    opacity: 1;
-  }
-  56%,
-  100% {
-    opacity: 0.28;
   }
 }
 
@@ -1057,14 +1015,12 @@
 @media (prefers-reduced-motion: reduce) {
   .story-cursor,
   .story-scroll-cue,
-  .story-status-light,
   .story-target-button.is-active .story-target-dot,
   .story-reticle {
     animation: none;
   }
 
   .story-compass i,
-  .story-status-track > span,
   .story-gallery-progress > span,
   .story-gallery-viewport::before,
   .story-gallery-viewport::after,

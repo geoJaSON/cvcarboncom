@@ -14,6 +14,12 @@ export const LB_PER_KG = 2.20462;
 /** Added fish and crustacean production on restored reef. Peterson et al. 2003. */
 export const FISH_G_PER_M2_YR = 260;
 
+/** Shoreline erosion reduction measured behind restored Louisiana reef.
+    LSU AgCenter monitoring. Quoted by the co-benefits band and by the
+    invitation-only opener, so it lives here rather than as a literal in
+    whichever band happened to need it first. */
+export const EROSION_REDUCTION_PCT = 50;
+
 /** Jobs supported per $1M of restoration spend. Hall & DeAngelis 2022. */
 export const JOBS_PER_MILLION = 18.55;
 

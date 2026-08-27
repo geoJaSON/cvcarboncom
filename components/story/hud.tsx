@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { CHART, MAP_TARGETS, SCENES, mapTarget, type SceneId } from "./scenes";
-import { fmtInt, type StorySeason } from "./use-story-data";
-import { vintageColor, type ChartView, type StageState } from "./map-stage";
+import { vintageColor, type ChartView } from "./map-stage";
 
 /* ------------------------------------------------------------------
    Mission instrumentation. The chart still owns the spectacle; this
@@ -18,11 +17,6 @@ function toDM(value: number, axis: "lat" | "lon"): string {
   const deg = Math.floor(abs);
   const min = (abs - deg) * 60;
   return `${deg}°${min.toFixed(2).padStart(5, "0")}′ ${hemi}`;
-}
-
-function heading(value: number | undefined): string {
-  if (value == null) return "—";
-  return `${Math.round((value + 360) % 360).toString().padStart(3, "0")}°`;
 }
 
 const LEGENDS: { key: keyof (typeof SCENES)["hero"]["layers"]; label: string; color: string }[] = [
@@ -52,10 +46,8 @@ export function Hud({
   view,
   scene,
   snapshotDate,
-  season,
   visible,
   targetId,
-  stageState,
   carbonYears,
   showSaveTarget = false,
   onTarget,
@@ -63,10 +55,8 @@ export function Hud({
   view: ChartView | null;
   scene: SceneId;
   snapshotDate?: string;
-  season: StorySeason | null;
   visible: boolean;
   targetId: string | null;
-  stageState: StageState;
   /** Vintages in carbon_columns.geojson, oldest first — the carbon
       scene's legend follows the data like the columns do. */
   carbonYears?: number[];
@@ -116,64 +106,24 @@ export function Hud({
         </div>
       )}
 
-      {/* position + acquisition readout */}
+      {/* position readout + imagery credit */}
       <div
-        className="story-hud pointer-events-none absolute bottom-6 left-4 hidden min-w-[31rem] rounded-sm px-4 py-3 sm:block lg:left-8"
+        className="story-hud pointer-events-none absolute bottom-6 left-4 hidden rounded-sm px-4 py-3 sm:block lg:left-8"
         aria-hidden="true"
       >
-        <div className="flex items-center justify-between gap-6">
-          <div className="flex gap-6">
-            <span>
-              LAT <span className="story-hud-value">{view ? toDM(view.lat, "lat") : "——"}</span>
-            </span>
-            <span>
-              LON <span className="story-hud-value">{view ? toDM(view.lon, "lon") : "——"}</span>
-            </span>
-            <span>
-              Z <span className="story-hud-value">{view ? view.zoom.toFixed(1) : "—"}</span>
-            </span>
-          </div>
-          <div className="flex gap-4 border-l border-white/10 pl-4">
-            <span>
-              HDG <span className="story-hud-value">{heading(view?.bearing)}</span>
-            </span>
-            <span>
-              PITCH <span className="story-hud-value">{view ? `${Math.round(view.pitch)}°` : "—"}</span>
-            </span>
-          </div>
-        </div>
-        <div className="story-status mt-2.5 flex items-center gap-3">
-          <span className={`story-status-light ${stageState.status === "VERIFIED" ? "is-verified" : ""}`} />
-          <span className="story-hud-value min-w-[5.8rem]">{stageState.status}</span>
-          <span className="story-status-track flex-1">
-            <span style={{ width: `${Math.round(stageState.progress * 100)}%` }} />
+        <div className="flex gap-6">
+          <span>
+            LAT <span className="story-hud-value">{view ? toDM(view.lat, "lat") : "\u2014\u2014"}</span>
           </span>
-          {stageState.vintage && <span>VINTAGE {stageState.vintage}</span>}
-          {target && (
-            <span>
-              {target.state}
-              {"geoid" in target
-                ? ` · GEOID ${target.geoid}`
-                : ` · ${"tag" in target ? target.tag : "REGION"}`}
-            </span>
-          )}
+          <span>
+            LON <span className="story-hud-value">{view ? toDM(view.lon, "lon") : "\u2014\u2014"}</span>
+          </span>
         </div>
-        {/* The chart is baked, but the fleet is not — say so, or a dated
-            snapshot reads as an archive instead of an operation. */}
+        {/* Esri's terms require the credit on-chart, and the map's own
+            attribution control is off (attributionControl: false). */}
         <div className="mt-1.5 text-[10px] opacity-70">
-          CV CARBON SURVEY ·{" "}
-          {season ? (
-            <>
-              {season.year} SEASON {season.inProgress ? "IN PROGRESS" : "COMPLETE"} ·{" "}
-              <span className="story-hud-value">{fmtInt(season.polling)}</span> SOUNDINGS LOGGED
-            </>
-          ) : (
-            "STATIC SNAPSHOT"
-          )}
-        </div>
-        <div className="text-[10px] opacity-70">
           IMAGERY © ESRI/MAXAR · BOUNDARIES US CENSUS/TIGER 2025
-          {snapshotDate ? ` · SNAPSHOT ${snapshotDate}` : ""}
+          {snapshotDate ? ` \u00b7 SNAPSHOT ${snapshotDate}` : ""}
         </div>
       </div>
 

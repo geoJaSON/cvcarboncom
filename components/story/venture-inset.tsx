@@ -281,7 +281,7 @@ export function VentureInset({
         {siteLabel}{" "}
         {leaseCount > 0 ? (
           <>
-            <strong>{fmtInt(leaseCount)} oyster leases</strong>
+            <strong>{fmtInt(leaseCount)} local oyster leases</strong>
           </>
         ) : (
           <>

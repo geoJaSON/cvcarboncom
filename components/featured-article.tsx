@@ -33,7 +33,11 @@ export function FeaturedArticle({
   image = "/images/oyster-boats.jpg",
 }: {
   quote: string;
-  attribution: string;
+  /** Omit to run the line as a standing statement rather than a
+      quotation. Nothing on the card names a speaker in that case, so
+      the text loses its quotation marks along with the credit — a
+      blockquote with no attribution reads as an unsourced claim. */
+  attribution?: string;
   image?: string;
 }) {
   return (
@@ -47,12 +51,20 @@ export function FeaturedArticle({
         <div className="p-9 sm:p-12">
           <p className="eyebrow text-steel-400">In the Press &middot; {ESRI_ARTICLE.publication}</p>
 
-          <blockquote className="mt-7 font-display text-2xl leading-relaxed text-white sm:text-[1.75rem]">
-            &ldquo;{quote}&rdquo;
-          </blockquote>
-          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-verdigris">
-            {attribution}
-          </p>
+          {attribution ? (
+            <>
+              <blockquote className="mt-7 font-display text-2xl leading-relaxed text-white sm:text-[1.75rem]">
+                &ldquo;{quote}&rdquo;
+              </blockquote>
+              <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-verdigris">
+                {attribution}
+              </p>
+            </>
+          ) : (
+            <p className="mt-7 font-display text-2xl leading-relaxed text-white sm:text-[1.75rem]">
+              {quote}
+            </p>
+          )}
 
           <div className="mt-10 border-t border-white/10 pt-7">
             <p className="font-display text-lg leading-snug text-white/90">{ESRI_ARTICLE.title}</p>
