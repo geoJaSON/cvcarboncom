@@ -53,7 +53,7 @@ export function GalleryBand({ gallery }: { gallery: GalleryManifest }) {
     canForward: true,
     progress: 0,
   });
-  /* The tile that opened the lightbox — focus goes home to it on close.
+  /* The tile that opened the lightbox - focus goes home to it on close.
      Captured explicitly because Safari doesn't focus buttons on click. */
   const openerRef = useRef<HTMLElement | null>(null);
   const railRef = useRef<HTMLDivElement>(null);
@@ -166,7 +166,7 @@ export function GalleryBand({ gallery }: { gallery: GalleryManifest }) {
         intro={
           <p>
             The chart is the argument; these are the days it is made of. Barges, boats, rock,
-            and shell — the program as the crews see it, added to as the seasons turn.
+            and shell - the program as the crews see it, added to as the seasons turn.
           </p>
         }
       />
@@ -332,7 +332,7 @@ function Lightbox({
 
   /* Scroll lock + modality. `overflow: hidden` alone doesn't stop iOS
      Safari touch-scrolling the document, so pin the body at its current
-     offset instead — the layout doesn't shift, so the scene observer
+     offset instead - the layout doesn't shift, so the scene observer
      stays quiet. `aria-modal` doesn't actually confine focus or
      screen-reader virtual cursors, so everything outside the portal
      goes inert while we're open. Focus hands back to the opening tile

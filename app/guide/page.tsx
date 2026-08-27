@@ -7,11 +7,11 @@ import { PageHero, Section, SectionHeading } from "@/components/ui";
 export const metadata = {
   title: "Field App Guide",
   description:
-    "A step-by-step walkthrough of CV Carbon Field — the mobile app oystermen, staff, and verifiers use to record polling, dredge and point samples, cultch placement, and notes on the water, online or off.",
+    "A step-by-step walkthrough of CV Carbon Field - the mobile app oystermen, staff, and verifiers use to record polling, dredge and point samples, cultch placement, and notes on the water, online or off.",
 };
 
 /* ------------------------------------------------------------------ */
-/* Local building blocks — chips, steps, callouts, and an inline       */
+/* Local building blocks - chips, steps, callouts, and an inline       */
 /* "UI label" so exact button names stand out inside prose.            */
 /* ------------------------------------------------------------------ */
 
@@ -153,7 +153,7 @@ export default function GuidePage() {
             step by step
           </>
         }
-        standfirst="CV Carbon Field is the mobile app our partner oystermen, staff, and independent verifiers use to record survey work on the water — polling passes, dredge and point samples, cultch placement, and field notes. This guide walks through every screen. Everything you save works offline and syncs on its own when you're back in coverage."
+        standfirst="CV Carbon Field is the mobile app our partner oystermen, staff, and independent verifiers use to record survey work on the water - polling passes, dredge and point samples, cultch placement, and field notes. This guide walks through every screen. Everything you save works offline and syncs on its own when you're back in coverage."
         image="/images/boat-wheelhouse.jpg"
         alt="View from the wheelhouse of a working oyster boat"
         position="center"
@@ -190,7 +190,7 @@ export default function GuidePage() {
       </Section>
 
       {/* ------------------------------------------------------------ */}
-      {/* 01 — Getting started                                          */}
+      {/* 01 - Getting started                                          */}
       {/* ------------------------------------------------------------ */}
       <Section id="get-started" className="border-t border-navy/10 bg-white">
         <div className="flex flex-wrap items-center gap-3">
@@ -262,7 +262,7 @@ export default function GuidePage() {
       </Section>
 
       {/* ------------------------------------------------------------ */}
-      {/* 02 — Reading the map                                          */}
+      {/* 02 - Reading the map                                          */}
       {/* ------------------------------------------------------------ */}
       <Section id="map" className="border-t border-navy/10 bg-pearl">
         <div className="flex flex-wrap items-center gap-3">
@@ -350,7 +350,7 @@ export default function GuidePage() {
       </Section>
 
       {/* ------------------------------------------------------------ */}
-      {/* 03 — Recording field work                                     */}
+      {/* 03 - Recording field work                                     */}
       {/* ------------------------------------------------------------ */}
       <Section id="collect" className="border-t border-navy/10 bg-white">
         <div className="flex flex-wrap items-center gap-3">
@@ -427,7 +427,7 @@ export default function GuidePage() {
                   items={[
                     { name: "Track", note: "Recorded live; length shows in feet as you tow." },
                     { name: "Oyster count", note: "Whole number of live oysters in the catch." },
-                    { name: "Dredge width", note: "In INCHES (e.g. 36) — remembered from your last sample." },
+                    { name: "Dredge width", note: "In INCHES (e.g. 36) - remembered from your last sample." },
                     { name: "Photo", note: "Optional photo of the catch." },
                   ]}
                 />
@@ -447,7 +447,7 @@ export default function GuidePage() {
                     add a photo if you like, and tap <Ui>Save sample</Ui>.
                   </Step>
                 </Steps>
-                <Callout tone="warn" title="Width is inches — and required">
+                <Callout tone="warn" title="Width is inches - and required">
                   Density can&rsquo;t be computed without the width, so the form won&rsquo;t save
                   without it. Measure the mouth of the dredge in inches, not feet.
                 </Callout>
@@ -470,7 +470,7 @@ export default function GuidePage() {
                   items={[
                     { name: "Sample type", note: "Hand · Tong · Dredge · Diver · Other" },
                     { name: "Oyster count", note: "Whole number of live oysters." },
-                    { name: "Sample width", note: "In inches (e.g. 24) — required." },
+                    { name: "Sample width", note: "In inches (e.g. 24) - required." },
                     { name: "Water depth", note: "Feet, optional." },
                     { name: "Photo", note: "Optional." },
                   ]}
@@ -546,7 +546,7 @@ export default function GuidePage() {
                     { name: "Shape", note: "Point · Line · Area" },
                     { name: "Capture", note: "Draw on map, or walk with GPS." },
                     { name: "Type", note: "Hazard · Disturbance · POI · Navigation · Other" },
-                    { name: "Comments", note: "Required — say what you saw." },
+                    { name: "Comments", note: "Required - say what you saw." },
                     { name: "Visibility", note: "My group (you, your group, and CV Carbon) or Public (everyone's map)." },
                   ]}
                 />
@@ -573,7 +573,7 @@ export default function GuidePage() {
       </Section>
 
       {/* ------------------------------------------------------------ */}
-      {/* 04 — Working offline (dark band)                              */}
+      {/* 04 - Working offline (dark band)                              */}
       {/* ------------------------------------------------------------ */}
       <section id="offline" className="relative bg-navy px-6 py-24 sm:py-28 lg:px-10">
         <div className="mx-auto max-w-7xl">
@@ -652,7 +652,7 @@ export default function GuidePage() {
       </section>
 
       {/* ------------------------------------------------------------ */}
-      {/* 05 — Syncing                                                  */}
+      {/* 05 - Syncing                                                  */}
       {/* ------------------------------------------------------------ */}
       <Section id="sync" className="bg-pearl">
         <div className="flex flex-wrap items-center gap-3">
@@ -677,12 +677,12 @@ export default function GuidePage() {
               <dl className="mt-5 space-y-3 text-sm leading-relaxed">
                 <div className="flex gap-3">
                   <dt className="w-28 shrink-0 font-semibold text-verdigris-600">Synced</dt>
-                  <dd className="text-ink/65">All clear — everything is uploaded, with the last sync time.</dd>
+                  <dd className="text-ink/65">All clear - everything is uploaded, with the last sync time.</dd>
                 </div>
                 <div className="flex gap-3">
                   <dt className="w-28 shrink-0 font-semibold text-[#a16207]">N pending</dt>
                   <dd className="text-ink/65">
-                    Saved work waiting for a connection. Normal all day on the water — it clears
+                    Saved work waiting for a connection. Normal all day on the water - it clears
                     itself when you&rsquo;re back in coverage.
                   </dd>
                 </div>
@@ -693,7 +693,7 @@ export default function GuidePage() {
                 <div className="flex gap-3">
                   <dt className="w-28 shrink-0 font-semibold text-[#b91c1c]">N errors</dt>
                   <dd className="text-ink/65">
-                    Something was rejected — tap the pill to see which rows and retry.
+                    Something was rejected - tap the pill to see which rows and retry.
                   </dd>
                 </div>
               </dl>
@@ -718,7 +718,7 @@ export default function GuidePage() {
       </Section>
 
       {/* ------------------------------------------------------------ */}
-      {/* 06 — For leaseholders                                         */}
+      {/* 06 - For leaseholders                                         */}
       {/* ------------------------------------------------------------ */}
       <Section id="clients" className="border-t border-navy/10 bg-white">
         <div className="flex flex-wrap items-center gap-3">
@@ -789,7 +789,7 @@ export default function GuidePage() {
       </Section>
 
       {/* ------------------------------------------------------------ */}
-      {/* 07 — Staff & verifiers                                        */}
+      {/* 07 - Staff & verifiers                                        */}
       {/* ------------------------------------------------------------ */}
       <Section id="staff" className="border-t border-navy/10 bg-pearl">
         <div className="flex flex-wrap items-center gap-3">
@@ -848,7 +848,7 @@ export default function GuidePage() {
       </Section>
 
       {/* ------------------------------------------------------------ */}
-      {/* 08 — Troubleshooting                                          */}
+      {/* 08 - Troubleshooting                                          */}
       {/* ------------------------------------------------------------ */}
       <Section id="help" className="border-t border-navy/10 bg-white">
         <SectionHeading

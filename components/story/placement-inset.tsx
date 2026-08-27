@@ -6,9 +6,9 @@ import { fmtInt, type CasePhoto, type SavePhoto } from "./use-story-data";
 
 /* ------------------------------------------------------------------
    The field photo that goes with the feature currently lit on the
-   chart — a bedding placement during the replay, a dredge tow on the
-   resurvey. The map owns which one is showing — it lights the feature
-   and reports the index up through onPhoto — so this component only
+   chart - a bedding placement during the replay, a dredge tow on the
+   resurvey. The map owns which one is showing - it lights the feature
+   and reports the index up through onPhoto - so this component only
    renders, cross-fading as the index changes.
 
    Provenance is on the card deliberately. Placement photos were matched

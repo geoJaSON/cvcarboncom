@@ -8,7 +8,7 @@ import { BandShell } from "./bands";
 import type { SequenceFrame, SequenceManifest } from "./use-story-data";
 
 /* ------------------------------------------------------------------
-   Same place, different day — a photo sequence the reader runs by
+   Same place, different day - a photo sequence the reader runs by
    hand. A row of stills asks the visitor to assemble the change
    themselves; scrubbed, one frame dissolving into the next does that
    work for them.
@@ -16,7 +16,7 @@ import type { SequenceFrame, SequenceManifest } from "./use-story-data";
    Deliberately generic: the frames, their labels and the band's own
    copy all come from public/data/story/sequence.json, so pointing this
    at a new set of photographs is a data edit, not a code change. No
-   file, no band — same contract as the gallery and the case study.
+   file, no band - same contract as the gallery and the case study.
    ------------------------------------------------------------------ */
 
 const ADVANCE_MS = 950;

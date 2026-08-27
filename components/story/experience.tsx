@@ -38,7 +38,7 @@ import { VentureBriefBand } from "./venture";
 /* ------------------------------------------------------------------
    The brief itself. One fixed chart behind everything; the narrative
    scrolls over it. Transparent sections expose the chart and carry a
-   data-scene attribute — when one crosses the center of the viewport
+   data-scene attribute - when one crosses the center of the viewport
    its scene is applied to the map. Opaque editorial bands carry the
    NEXT act's scene, so the camera repositions while covered.
    ------------------------------------------------------------------ */
@@ -51,7 +51,7 @@ export default function Experience({
   showFieldSave?: boolean;
 }) {
   /* Lease boundaries are only ever drawn by the venture inset, and the
-     field-save pack only by its bonus chapter — each is fetched only
+     field-save pack only by its bonus chapter - each is fetched only
      when its URL flag switched it on. */
   const data = useStoryData({ leases: showVenturePois, save: showFieldSave });
   const [scene, setScene] = useState<SceneId>("hero");
@@ -66,7 +66,7 @@ export default function Experience({
 
   /* Scene trigger: the section straddling the viewport's center wins.
      Opaque bands (data-covered) also fade the HUD out while they hold
-     the viewport — the HUD stacks above them, so it must yield. */
+     the viewport - the HUD stacks above them, so it must yield. */
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -110,7 +110,7 @@ export default function Experience({
   const activeTarget = manualTarget ?? SCENES[scene].targetId ?? null;
 
   /* The carbon legend lists the vintages actually baked into the
-     columns, oldest first — a new season needs no code change. */
+     columns, oldest first - a new season needs no code change. */
   const carbonYears = useMemo(() => {
     const years = new Set<number>();
     for (const f of data.layers.carbon?.features ?? []) {
@@ -168,7 +168,7 @@ export default function Experience({
         visible={hudVisible && (scene === "save-fixed" || scene === "case-after")}
       />
 
-      {/* Way home — the site chrome is hidden on this route. */}
+      {/* Way home - the site chrome is hidden on this route. */}
       <Link
         href="/"
         className="story-chart-note fixed left-4 top-5 z-30 rounded-sm px-2 py-1 transition-colors hover:text-white lg:left-8"
@@ -249,10 +249,10 @@ export default function Experience({
           </>
         )}
 
-        {/* ---- Chapter one — what was lost ---- */}
+        {/* ---- Chapter one - what was lost ---- */}
         <ChartStep scene="lost">
           <ChapterCard
-            eyebrow="Chapter one — what was lost"
+            eyebrow="Chapter one - what was lost"
             title="An engine of the coast, dismantled"
           >
             <p>
@@ -272,9 +272,9 @@ export default function Experience({
           <LostBand />
         </div>
 
-        {/* ---- Chapter two — the work ---- */}
+        {/* ---- Chapter two - the work ---- */}
         <ChartStep scene="bedding" tall>
-          <ChapterCard eyebrow="Chapter two — the work" title="Shell and other cultch materials go back in the water">
+          <ChapterCard eyebrow="Chapter two - the work" title="Shell and other cultch materials go back in the water">
             <p>
               Every gold trace on this chart is a cultch placement, GPS-logged from the barge
               that delivered material. The oyster reef this coast lost is being restored at working scale.
@@ -292,13 +292,13 @@ export default function Experience({
           <WorkBand manifest={data.manifest} />
         </div>
 
-        {/* ---- Chapter three — the science ---- */}
+        {/* ---- Chapter three - the science ---- */}
         <ChartStep scene="coverage" tall>
           <ChapterCard eyebrow="The science" title="We pole every acre we claim">
             <p>
               Our strength is our data: continuous bottom soundings plus dredge tows and
               point samples, all geolocated, all repeatable. We have compiled the world&rsquo;s largest set of ground-truthed substrate data. This is not an artist&rsquo;s
-              rendering of a reef — it is the reef&rsquo;s paper trail.
+              rendering of a reef - it is the reef&rsquo;s paper trail.
             </p>
             <CardStats
               stats={[
@@ -314,7 +314,7 @@ export default function Experience({
           <ChapterCard eyebrow="The science" title="Sampled on site and independently verified">
             <p>
               Each column is the net carbon on the books for that patch of water, stacked by
-              vintage — the oldest season at the seabed, the newest on top. Heights are metric
+              vintage - the oldest season at the seabed, the newest on top. Heights are metric
               tons CO₂e from the accepted results ledger, already net of our own operational
               emissions, and none of it is booked until a disinterested third party has
               verified the hand counts beneath it.
@@ -329,10 +329,10 @@ export default function Experience({
           <ProofBand />
         </div>
 
-        {/* ---- Chapter four — the return ---- */}
+        {/* ---- Chapter four - the return ---- */}
         <ChartStep scene="return" tall>
           <ChapterCard
-            eyebrow="Chapter four — the return"
+            eyebrow="Chapter four - the return"
             title="Acres back at commercial density"
           >
             <p>
@@ -349,7 +349,7 @@ export default function Experience({
           </ChapterCard>
         </ChartStep>
 
-        {/* ---- Chapter five — the case study (lights up with its data pack) ---- */}
+        {/* ---- Chapter five - the case study (lights up with its data pack) ---- */}
         {cs && (
           <>
             <div data-scene="case-before" data-covered="true">
@@ -358,13 +358,13 @@ export default function Experience({
 
             <ChartStep scene="case-before" tall>
               <ChapterCard
-                eyebrow="Chapter five — the case study"
+                eyebrow="Chapter five - the case study"
                 title={`${cs.location}, before the shell`}
               >
                 <p>
                   {caseLeaseLabel(cs)}: {fmtInt(cs.acres)} acres side by side in {cs.county}{" "}
                   Parish, one leaseholder, one shared boundary. Months of soundings before the
-                  work found what a mined coast leaves behind — bare clay bottom and mud, with
+                  work found what a mined coast leaves behind - bare clay bottom and mud, with
                   almost nothing for a larva to land on.
                 </p>
                 <CardStats
@@ -390,16 +390,16 @@ export default function Experience({
             )}
 
             <ChartStep scene="case-work" tall>
-              <ChapterCard eyebrow="Chapter five — the work" title="Six weeks of cultch">
+              <ChapterCard eyebrow="Chapter five - the work" title="Six weeks of cultch">
                 <p>
                   {fmtList(cs.bedding.materials)} went over the side in {fmtInt(cs.bedding.placements)}{" "}
                   logged barge load placements, replayed here in the order the barges made
-                  them — both leases worked in the same window.
+                  them - both leases worked in the same window.
                 </p>
                 <CardStats
                   stats={[
                     { value: cs.bedding.placements, label: "barge load placements, May–Jun 2025" },
-                    // Tonnage joins once the confirmed figure lands in the bake —
+                    // Tonnage joins once the confirmed figure lands in the bake -
                     // no tile beats a dash on a sales page.
                     ...(cs.bedding.short_tons != null
                       ? [{ value: cs.bedding.short_tons, label: "short tons placed" }]
@@ -410,11 +410,11 @@ export default function Experience({
             </ChartStep>
 
             <ChartStep scene="case-after" tall>
-              <ChapterCard eyebrow="Chapter five — the return" title="Resurveyed: solid reef">
+              <ChapterCard eyebrow="Chapter five - the return" title="Resurveyed: solid reef">
                 <p>
                   Six months on, the survey boat crossed the same bottom at more than twice the
                   sounding density. Where the chart turns shell-gold, the substrate now rings
-                  hard — {createdAcres != null ? `${fmtInt(createdAcres)} acres of ` : ""}new
+                  hard - {createdAcres != null ? `${fmtInt(createdAcres)} acres of ` : ""}new
                   reef, created in a single season, where before there was none.
                 </p>
                 <CardStats
@@ -436,7 +436,7 @@ export default function Experience({
           </>
         )}
 
-        {/* ---- Bonus chapter — the field save (?32024 flag). The band and
+        {/* ---- Bonus chapter - the field save (?32024 flag). The band and
                  its scenes mount only when the pack was fetched, so the
                  public brief never hints the chapter exists. ---- */}
         {sv && (
@@ -446,10 +446,10 @@ export default function Experience({
             </div>
 
             <ChartStep scene="save-island" tall>
-              <ChapterCard eyebrow="Bonus chapter — the field save" title="An island of oysters">
+              <ChapterCard eyebrow="Bonus chapter - the field save" title="An island of oysters">
                 <p>
                   The 2023 poll, plotted where it happened. Every shell-gold sounding is
-                  bottom that rang solid reef — a standing island of live oysters surrounded
+                  bottom that rang solid reef - a standing island of live oysters surrounded
                   by buried shell. The bedding plan drew itself: build around the island, never across
                   it.
                 </p>
@@ -468,10 +468,10 @@ export default function Experience({
             </ChartStep>
 
             <ChartStep scene="save-error" tall>
-              <ChapterCard eyebrow="Bonus chapter — the mistake" title="The first load lands on live reef">
+              <ChapterCard eyebrow="Bonus chapter - the mistake" title="The first load lands on live reef">
                 <p>
                   The plan put every load in the bare bottom around the island. This one
-                  went down squarely on the reef itself — the first to land on live
+                  went down squarely on the reef itself - the first to land on live
                   oysters. On the other side of the Mississippi, the leaseholder watched it happen on the
                   same chart, and picked up the phone.
                 </p>
@@ -488,10 +488,10 @@ export default function Experience({
             </ChartStep>
 
             <ChartStep scene="save-fixed" tall>
-              <ChapterCard eyebrow="Bonus chapter — the correction" title="One dredge tow settled it">
+              <ChapterCard eyebrow="Bonus chapter - the correction" title="One dredge tow settled it">
                 <p>
                   The captain was certain he was over clay. The chart said reef, so he pulled
-                  a sample dredge — and it came up oysters. The rest of the job went back to
+                  a sample dredge - and it came up oysters. The rest of the job went back to
                   plan: every remaining load into the bare bottom the soundings had cleared.
                 </p>
                 <CardStats
@@ -504,12 +504,12 @@ export default function Experience({
             </ChartStep>
 
             <ChartStep scene="save-after" tall>
-              <ChapterCard eyebrow="Bonus chapter — the return" title="Resurveyed: the island grew">
+              <ChapterCard eyebrow="Bonus chapter - the return" title="Resurveyed: the island grew">
                 <p>
                   Back over the same bottom in late 2025, at more than twice the sounding
-                  area. The island is still there — bigger. The reef that took{" "}
+                  area. The island is still there - bigger. The reef that took{" "}
                   {fmtInt(sv.error_load?.short_tons)} tons of concrete is now the core of a
-                  lease reading {sv.after.pct_reef != null ? `${sv.after.pct_reef}%` : "—"}{" "}
+                  lease reading {sv.after.pct_reef != null ? `${sv.after.pct_reef}%` : "-"}{" "}
                   solid reef.
                 </p>
                 <CardStats
@@ -518,7 +518,7 @@ export default function Experience({
                     {
                       value: sv.after.pct_reef,
                       label: "reads solid reef, up from " +
-                        (sv.before.pct_reef != null ? `${sv.before.pct_reef}%` : "—"),
+                        (sv.before.pct_reef != null ? `${sv.before.pct_reef}%` : "-"),
                       decimals: 1,
                       suffix: "%",
                     },
@@ -530,7 +530,7 @@ export default function Experience({
         )}
 
         <div data-scene="close" data-covered="true">
-          {/* Same water, different day — mounts only once its photos exist. */}
+          {/* Same water, different day - mounts only once its photos exist. */}
           {data.sequence && <SequenceBand sequence={data.sequence} />}
           <TrajectoryBand manifest={data.manifest} />
           <CreditsBand
@@ -550,8 +550,8 @@ export default function Experience({
           />
 
           {/* Everything above this is our own record making its own
-              case. This is someone else describing the work — the one
-              thing the brief cannot supply about itself — so it lands
+              case. This is someone else describing the work - the one
+              thing the brief cannot supply about itself - so it lands
               after the argument is finished and before the ask. Same
               press card the rest of the site uses, so the article is
               never linked twice with two different framings. */}
@@ -584,11 +584,11 @@ export default function Experience({
             certificate that points back to the water on this chart. And the chart is live
             water we work every week, so before you sign anything, come see it from the boat.
             What you take home is made to be passed along: a certificate, a serial, and this
-            chart — evidence you can put in front of the people you answer to.
+            chart - evidence you can put in front of the people you answer to.
           </p>
           {showVenturePois && (
             <p className="mt-4 max-w-xl text-base leading-relaxed text-mist/85">
-              Two of the marked sites — Calcasieu Pass and Port Sulphur — share this working
+              Two of the marked sites - Calcasieu Pass and Port Sulphur - share this working
               coast with the reefs on this chart.
             </p>
           )}
@@ -764,7 +764,7 @@ function CountUp({
   const shown = value == null ? null : value * progress;
   const text =
     shown == null
-      ? "—"
+      ? "-"
       : decimals != null
         ? shown.toFixed(decimals)
         : compact

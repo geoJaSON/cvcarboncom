@@ -47,7 +47,7 @@ const PILLARS = [
     href: "/science",
     eyebrow: "The Science",
     title: "Oysters sequester and store carbon",
-    copy: "Carbon captured in the marine environment reduces atmospheric CO₂ — and reefs lock it away in shell and sediment for millennia.",
+    copy: "Carbon captured in the marine environment reduces atmospheric CO₂ - and reefs lock it away in shell and sediment for millennia.",
     image: "/images/reef-underwater.jpg",
   },
   {
@@ -106,7 +106,7 @@ export default function HomePage() {
 
           <Reveal delay={240}>
             <p className="mt-8 max-w-xl text-lg leading-relaxed text-mist/85">
-              CV Carbon restores ecosystems by partnering with the commercial oyster industry —
+              CV Carbon restores ecosystems by partnering with the commercial oyster industry -
               ensuring sustainability and re-establishing historic reefs using proceeds from carbon
               capture credits.
             </p>
@@ -316,7 +316,7 @@ export default function HomePage() {
             src="/images/live-oysters-hand.jpg"
             alt="A handful of live oysters pulled from a restored reef"
             aspect="aspect-[4/5]"
-            caption="Spat settled on cultch — the beginning of new reef."
+            caption="Spat settled on cultch - the beginning of new reef."
           />
           <Figure
             src="/images/spat-on-cultch.jpg"

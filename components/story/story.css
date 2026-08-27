@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------
-   /story — survey-console chrome.
+   /story - survey-console chrome.
    Everything here is scoped under .story-* so it cannot leak into the
    editorial pages. The palette comes from the site tokens; the third
    type role (--font-chart) is the instrument voice of the page.
@@ -118,7 +118,7 @@
     0 0 1rem rgba(214, 197, 170, 0.72);
 }
 
-/* Chart annotations — small caps, tracked out, monospace. */
+/* Chart annotations - small caps, tracked out, monospace. */
 .story-chart-note {
   font-family: var(--font-chart);
   font-size: 0.6875rem;
@@ -467,7 +467,7 @@
   box-shadow: 0 24px 55px -30px rgba(1, 8, 14, 0.95);
 }
 
-/* Fold the rail away — a caret that rotates rather than a second glyph. */
+/* Fold the rail away - a caret that rotates rather than a second glyph. */
 .story-target-toggle {
   display: flex;
   align-items: center;
@@ -851,7 +851,7 @@
 }
 
 /* ------------------------------------------------------------------
-   Worksheet controls — the reef scrubber and the purchase sizer. Both
+   Worksheet controls - the reef scrubber and the purchase sizer. Both
    ride the pearl bands rather than the chart, so they wear ink and
    verdigris instead of the console palette.
    ------------------------------------------------------------------ */
@@ -1042,10 +1042,10 @@
    The field photo beside the placement the chart currently has lit.
    Pinned bottom-right on desktop, out of the way of the HUD rail; on
    narrow screens it drops to a small card above the fold line. Pointer
-   events stay off — the chart underneath is the subject. */
+   events stay off - the chart underneath is the subject. */
 .story-photo {
   /* Centre bottom. The right rail is the HUD target list and substrate
-     key, the left is the chapter card and the coordinate readout — the
+     key, the left is the chapter card and the coordinate readout - the
      middle of the lower edge is the only space that belongs to nothing
      else, and it sits under the lease rather than beside it. */
   left: 50%;
@@ -1137,7 +1137,7 @@
 }
 
 /* Not enough vertical room for both the chapter card and a photo on the
-   same rail — drop the photo rather than have them overlap. */
+   same rail - drop the photo rather than have them overlap. */
 @media (max-height: 44rem) {
   .story-photo {
     display: none;

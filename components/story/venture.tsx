@@ -20,7 +20,7 @@ import {
    The invitation-only opener. When the story URL carries ?venture the
    brief front-loads one band addressed to the reader, setting what they
    publish about their own coast beside what this chart already
-   measures — before the narrative starts from the beginning.
+   measures - before the narrative starts from the beginning.
 
    House rule for this band: every figure on it is either theirs, quoted
    from their own page with the read date recorded below, or ours, read
@@ -35,7 +35,7 @@ const PROSPECT = {
   sourceUrl: "https://ventureglobal.com/about-us/safety-and-environment/",
   /* Their page animates these counters up from zero, so the values are
      the counters' own targets rather than anything rendered on screen.
-     Re-read the page before the link goes out — if they move, this band
+     Re-read the page before the link goes out - if they move, this band
      is the first thing a reader will check. */
   readOn: "August 2026",
   ccsGoalTonsPerYear: 1_000_000,
@@ -90,7 +90,7 @@ export function VentureBriefBand({
      from AGOL that this snapshot has not picked up yet, and the true
      figure today is BEDDED_ACRES_FLOOR. Quote the floor while the
      ledger trails it, and hand back to the ledger the moment it passes
-     — so the sync catching up retires this override on its own instead
+     - so the sync catching up retires this override on its own instead
      of leaving a stale number to be noticed by the reader. */
   const ledger = beddedReefAcres(construction);
   const bedded = ledger
@@ -152,7 +152,7 @@ export function VentureBriefBand({
             This one answers the part of their commitment that carbon
             alone cannot: the ton is the means, and what rides along with
             it lands in the same parishes their facilities report from.
-            Deliberately the only card carrying no figure — the
+            Deliberately the only card carrying no figure - the
             co-benefits band later in the brief is where the literature
             behind this claim is quoted and sourced. */}
         <AlignmentCard
@@ -193,7 +193,7 @@ export function VentureBriefBand({
 
       {/* The local-benefit case, which is the one argument on this band
           that a ton bought anywhere else cannot answer. Built entirely
-          on their own published goal for the parish — the point is that
+          on their own published goal for the parish - the point is that
           this instrument does something they have already said they
           want, not that they owe anyone an apology. Keep it that way. */}
       <Reveal className="mt-10">
@@ -238,7 +238,7 @@ export function VentureBriefBand({
                 </p>
                 <p>
                   A ton bought from a broker is a line in a report. This one is a purchase order
-                  to a commercial oyster business in the parishes your facilities report from —
+                  to a commercial oyster business in the parishes your facilities report from -
                   for work its own crew does, on its own lease, in its own boat.{" "}
                   <strong>
                     {REINVESTMENT_PCT} percent of net revenue is committed straight back into
@@ -246,7 +246,7 @@ export function VentureBriefBand({
                   </strong>
                   , so the spend buys shell for the next season instead of ending at the invoice.
                   {bedded
-                    ? ` That is what has put ${fmtInt(bedded.acres)} acres of reef back on the bottom since ${bedded.firstYear} — every one of them a GPS-logged bedding run off the side of a working boat, resurveyed afterwards rather than counted at the invoice.`
+                    ? ` That is what has put ${fmtInt(bedded.acres)} acres of reef back on the bottom since ${bedded.firstYear} - every one of them a GPS-logged bedding run off the side of a working boat, resurveyed afterwards rather than counted at the invoice.`
                     : ""}
                 </p>
                 <p>
@@ -293,7 +293,7 @@ export function VentureBriefBand({
           {PROSPECT.sourceLabel}
         </a>
         , read {PROSPECT.readOn}. CV Carbon figures are read from the survey snapshot dated{" "}
-        {manifest?.snapshot_date ?? "—"}. Fish and shellfish
+        {manifest?.snapshot_date ?? "-"}. Fish and shellfish
         production per Peterson, Grabowski &amp; Powers (2003); shoreline-erosion
         evidence per LSU AgCenter monitoring. Both cited in full on{" "}
         <a href="/beyond-carbon" className="underline underline-offset-2">

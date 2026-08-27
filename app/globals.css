@@ -52,7 +52,7 @@
 }
 
 @layer components {
-  /* Small all-caps label that sits above a heading — the site's
+  /* Small all-caps label that sits above a heading - the site's
      connective tissue, used on every section. */
   .eyebrow {
     font-size: 0.6875rem;
@@ -119,7 +119,7 @@
   transform: none;
 }
 
-/* Slow drift on hero photography — suggests a tide without distracting. */
+/* Slow drift on hero photography - suggests a tide without distracting. */
 @keyframes tide-drift {
   from {
     transform: scale(1.06) translate3d(0, 0, 0);

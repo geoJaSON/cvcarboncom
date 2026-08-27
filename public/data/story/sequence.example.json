@@ -1,5 +1,5 @@
 {
-  "_comment": "Template for the scrubbable photo sequence. Copy to sequence.json, drop the photos in public/images/sequence/, and the band appears on /story between chapter five and the trajectory band. Delete sequence.json and the band disappears — nothing else needs touching. `aspect` is portrait | landscape | square and crops every frame to the same box, so shoot or pick frames from a consistent vantage. `label` is the short tick under the scrubber; `caption` swaps as the reader drags.",
+  "_comment": "Template for the scrubbable photo sequence. Copy to sequence.json, drop the photos in public/images/sequence/, and the band appears on /story between chapter five and the trajectory band. Delete sequence.json and the band disappears - nothing else needs touching. `aspect` is portrait | landscape | square and crops every frame to the same box, so shoot or pick frames from a consistent vantage. `label` is the short tick under the scrubber; `caption` swaps as the reader drags.",
   "eyebrow": "The same water, over time",
   "title": "One spot on the lease, four visits",
   "intro": "Same coordinates, same heading, four trips across a year. Nothing between these frames but the reef doing its own work.",

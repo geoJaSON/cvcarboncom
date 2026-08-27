@@ -378,8 +378,8 @@ export function MapStage({
       });
     }
 
-    /* Chapter five — one lease at survey resolution. Boundary under
-       cultch under soundings, all added last so they ride above the
+    /* Chapter five - one lease at survey resolution. Boundary under
+       soundings under cultch, all added last so they ride above the
        program layers at close zoom. */
     if (data.layers.caseBoundary) {
       ensureSource(map, "case-boundary", data.layers.caseBoundary);
@@ -442,21 +442,28 @@ export function MapStage({
       });
     }
 
+    /* Soundings go under the cultch lines, as in the save chapter: at
+       survey density the dots otherwise stipple the placements into
+       invisibility. */
     if (data.layers.casePolling) {
       ensureSource(map, "case-polling", prepareCoverage(data.layers.casePolling));
       for (const id of ["case-polling-before", "case-polling-after"] as const) {
-        ensureLayer(map, {
-          id,
-          type: "circle",
-          source: "case-polling",
-          layout: { visibility: "none" },
-          paint: {
-            "circle-color": substrateColor(),
-            "circle-blur": 0.25,
-            "circle-opacity": 0.9,
-            "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2.2, 14, 3.6, 16, 6.5],
+        ensureLayer(
+          map,
+          {
+            id,
+            type: "circle",
+            source: "case-polling",
+            layout: { visibility: "none" },
+            paint: {
+              "circle-color": substrateColor(),
+              "circle-blur": 0.25,
+              "circle-opacity": 0.9,
+              "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 2.2, 14, 3.6, 16, 6.5],
+            },
           },
-        });
+          "case-bedding-glow",
+        );
       }
     }
 
@@ -527,7 +534,7 @@ export function MapStage({
       });
     }
 
-    /* The field-save chapter (?32024) — same anatomy as chapter five,
+    /* The field-save chapter (?32024) - same anatomy as chapter five,
        plus a pair of alert layers holding only the errant barge load. */
     if (data.layers.saveBoundary) {
       ensureSource(map, "save-boundary", data.layers.saveBoundary);
@@ -702,7 +709,7 @@ export function MapStage({
     const bounds =
       resolveTargetBounds(data.layers.counties, activeTarget) ?? resolveBounds(scene.view, data);
 
-    /* camera — retry with minimal padding rather than silently freeze
+    /* camera - retry with minimal padding rather than silently freeze
        when the padded fit doesn't fit (short landscape viewports) */
     const camera =
       map.cameraForBounds(toLngLatBounds(bounds), {
@@ -769,7 +776,7 @@ export function MapStage({
     setVisible(map, "save-bedding-err-glow", errVisible);
     /* The focus pairs only ever light during a photo cycle; clear the
        filters so a scene change never leaves an orphaned feature lit. Each
-       cycle owns its pair and its photo list — the placement replay lights
+       cycle owns its pair and its photo list - the placement replay lights
        bedding tracks, the resurvey lights dredge tows. */
     if (photoTimer.current) {
       clearInterval(photoTimer.current);
@@ -871,7 +878,7 @@ export function MapStage({
       }
     }
     if (map.getLayer("save-bedding")) {
-      /* The cultch layers never draw the errant load — it belongs to the
+      /* The cultch layers never draw the errant load - it belongs to the
          alert layers. Sweeps start empty; static scenes show every
          correct load at once. A prior scene's pulse may have left the
          alert opacity anywhere, so put it back. */
@@ -885,7 +892,7 @@ export function MapStage({
       map.setPaintProperty("save-bedding-err-glow", "line-opacity", 0.3);
     }
 
-    /* reef tier filter — latest survey year only, or fills stack up */
+    /* reef tier filter - latest survey year only, or fills stack up */
     if (scene.layers.css && map.getLayer("css-fill") && data.layers.cssTiers) {
       const tiers = scene.cssTiers ?? ["low", "med", "high"];
       const latest = Math.max(
@@ -894,7 +901,7 @@ export function MapStage({
       setCssFilter(map, latest, tiers);
     }
 
-    /* cultch sweep — replay placements year by year */
+    /* cultch sweep - replay placements year by year */
     const latestCssYear =
       scene.layers.css && data.layers.cssTiers
         ? Math.max(
@@ -1033,7 +1040,7 @@ export function MapStage({
       if (scene.saveErrorSweep && map.getLayer("save-bedding") && data.layers.saveBedding) {
         /* The errant load alone. An earlier cut replayed the placements
            ahead of it and landed this one "tenth", which the record does
-           not support — the loads before it are not part of the mistake,
+           not support - the loads before it are not part of the mistake,
            so drawing them only invited the reader to count. Hold the rest
            back, fade this one up in the alert color, and leave it
            breathing until the reader scrolls on to the correction. */
@@ -1058,7 +1065,7 @@ export function MapStage({
               map.setPaintProperty("save-bedding-err", "line-opacity", pulse);
               map.setPaintProperty("save-bedding-err-glow", "line-opacity", pulse * 0.42);
             }, 80);
-            /* Deliberately not VERIFIED — the chart is showing a mistake. */
+            /* Deliberately not VERIFIED - the chart is showing a mistake. */
             onStageState?.({ status: "ON STATION", progress: 1 });
           },
         );
@@ -1163,7 +1170,7 @@ export function MapStage({
     }
 
     /* The first photo lands with the scene rather than waiting out the
-       placement replay — the card is the point of this beat, and three
+       placement replay - the card is the point of this beat, and three
        seconds of empty corner read as a bug. The replay carries on
        underneath; the lit track simply leads it.
 
@@ -1195,8 +1202,8 @@ export function MapStage({
 
   /* MapLibre stamps its own positioning classes onto the element it
      mounts in, so the fixed-position frame must be a separate parent.
-     `inert` keeps the (non-interactive) chart's internals — attribution
-     links included — out of the tab order; the imagery credit is
+     `inert` keeps the (non-interactive) chart's internals - attribution
+     links included - out of the tab order; the imagery credit is
      surfaced as text in the HUD instead. */
   return (
     <div className="story-map" aria-hidden="true" inert>
@@ -1223,7 +1230,7 @@ function ensureSource(
 function ensureLayer(map: MaplibreMap, layer: LayerSpecification, beforeId?: string) {
   if (map.getLayer(layer.id)) return;
   /* beforeId pins draw order even when the snapshot files land out of
-     order — insertion order alone would leave whichever arrived last
+     order - insertion order alone would leave whichever arrived last
      on top. Ignored if that layer is not mounted yet. */
   map.addLayer(layer, beforeId && map.getLayer(beforeId) ? beforeId : undefined);
 }
@@ -1382,7 +1389,7 @@ function ventureMarkerElement(poi: VenturePoi): HTMLDivElement {
   return root;
 }
 
-/** Room for the narrative column — cards ride left on wide screens,
+/** Room for the narrative column - cards ride left on wide screens,
     bottom on small ones. Clamped to the viewport so short landscape
     phones never ask for more padding than there is map. */
 function scenePadding() {
@@ -1434,7 +1441,7 @@ function carbonHeight(prop: "_base01" | "_top01", progress: number): ExpressionS
   return ["*", ["get", prop], CARBON_MAX_HEIGHT * Math.max(0, Math.min(1, progress))];
 }
 
-/* Vintages oldest → newest wear steel, verdigris, then shell-gold —
+/* Vintages oldest → newest wear steel, verdigris, then shell-gold -
    the newest season catches the light at the top of the stack. Ramp
    picks stay legible on the dark satellite; the navy steps would sink.
    Built from the data, so a new season needs no code change. */
@@ -1462,7 +1469,7 @@ export function vintageColor(index: number): string {
 }
 
 /* Stamp each (cell, vintage) slab with its cumulative base/top as a
-   share of the 95th-percentile column, clamped at 1 — tonnage is
+   share of the 95th-percentile column, clamped at 1 - tonnage is
    heavily skewed (a few cells hold whole leases), and normalizing
    against the raw maximum flattens the median column into a tile.
    The handful of clamped outliers max out honestly at the ceiling.
@@ -1625,7 +1632,7 @@ function setScanLine(map: MaplibreMap, bounds: BBox, progress: number) {
   });
 }
 
-/* Graticule — the chart's quarter-degree grid, drawn over the extent
+/* Graticule - the chart's quarter-degree grid, drawn over the extent
    of the data with a margin so camera moves never run off it. */
 function ensureGraticule(map: MaplibreMap, extent: BBox) {
   const step = 0.25;
@@ -1682,12 +1689,12 @@ function ensureGraticule(map: MaplibreMap, extent: BBox) {
 /* ------------------------------------------------------------------
    Carbon cells arrive as grid-aggregated points (one per ~2 km cell
    and vintage); each becomes a hexagonal prism for the extrusion
-   layer — co-located vintages stack via fill-extrusion-base.
+   layer - co-located vintages stack via fill-extrusion-base.
    Longitudes are stretched by 1/cos(lat) so cells stay round on the
    water instead of squashing at higher latitudes.
    ------------------------------------------------------------------ */
 function hexify(points: StoryFeatureCollection): StoryFeatureCollection {
-  const R = 0.011; // matches the ~0.02° bake grid — chunky, readable columns
+  const R = 0.011; // matches the ~0.02° bake grid - chunky, readable columns
   const features: Feature[] = [];
 
   for (const f of points.features) {

@@ -8,7 +8,7 @@ import { CHESAPEAKE_OUTLINE } from "./chesapeake-outline";
 import { fmtInt, type StoryFeatureCollection, type StoryManifest } from "./use-story-data";
 
 /* ------------------------------------------------------------------
-   The ledger, year by year — every surveyed vintage drawn as its own
+   The ledger, year by year - every surveyed vintage drawn as its own
    map strip at one shared scale, so growth reads as the chart filling
    in. Rendered straight from css_tiers.geojson, which the map stage
    has already fetched: a re-baked snapshot updates these strips with
@@ -17,7 +17,7 @@ import { fmtInt, type StoryFeatureCollection, type StoryManifest } from "./use-s
    Two encodings share each strip, because most surveyed patches are
    genuinely smaller than a pixel at strip scale: patches big enough
    to shade are drawn as true fills (ink proportional to area), and
-   every smaller patch becomes one fixed-size speck — position-true,
+   every smaller patch becomes one fixed-size speck - position-true,
    deduplicated on a coarse grid so dense reef reads as texture, not
    as inflated acreage. The figure note says so; exact acreage lives
    in each strip's header and the table twin.
@@ -25,11 +25,11 @@ import { fmtInt, type StoryFeatureCollection, type StoryManifest } from "./use-s
    The program works two coasts an ocean apart, so one frame would
    shrink both to dust: each strip is the Gulf at full width with a
    Chesapeake Bay inset that lights up the season Maryland enters the
-   ledger. Rings route to a side by longitude — nothing straddles the
+   ledger. Rings route to a side by longitude - nothing straddles the
    split, there is only ocean between them.
 
    The strips wear the map's own tier hues (CHART.tiers) rather than
-   the pearl-band ramp in charts.tsx — they are the stage's data drawn
+   the pearl-band ramp in charts.tsx - they are the stage's data drawn
    small, and matching the stage and HUD legend outranks re-stepping
    the ramp. Tier identity never rides on color alone: the tiers are
    ordered magnitude with a legend, and the table twin carries exact
@@ -45,7 +45,7 @@ const COAST_SPLIT = -80;
 /** Inset geometry: gap between the Gulf frame and the Chesapeake box. */
 const INSET_W = 112;
 const INSET_GAP = 16;
-/** Dedupe tolerance for coincident points, in viewBox units — small
+/** Dedupe tolerance for coincident points, in viewBox units - small
     enough that fills keep essentially all of their true area. */
 const MIN_STEP = 0.1;
 /** Speck side length and the grid specks deduplicate on. */
@@ -85,7 +85,7 @@ type Board = {
   years: YearPaths[];
 };
 
-/** Outer rings and holes alike — drawn into one path with evenodd fill. */
+/** Outer rings and holes alike - drawn into one path with evenodd fill. */
 function polygonRings(geometry: Geometry | null | undefined): Position[][] {
   if (!geometry) return [];
   if (geometry.type === "Polygon") return geometry.coordinates;
@@ -497,8 +497,8 @@ export const YearBoard = memo(function YearBoard({
         head={["Vintage", "Credits issued", "Acres at density"]}
         rows={board.years.map((y) => [
           y.year,
-          credits.get(y.year) ?? "—",
-          acres.get(y.year) ?? "—",
+          credits.get(y.year) ?? "-",
+          acres.get(y.year) ?? "-",
         ])}
       />
     </figure>

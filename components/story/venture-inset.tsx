@@ -23,7 +23,7 @@ import { fmtInt, type BBox, type StoryFeatureCollection } from "./use-story-data
 
    It is a second, self-contained MapLibre canvas rather than a borrowed
    scene on the main chart, because the main chart is pinned behind the
-   scroll and this band is opaque — a scene change underneath it would
+   scroll and this band is opaque - a scene change underneath it would
    play to a covered stage.
 
    The frame is the whole lease layer, since that file is already scoped
@@ -62,7 +62,7 @@ export function VentureInset({
   const [flown, setFlown] = useState(false);
 
   /* The lease export is already clipped to the water worth showing, so
-     it is drawn whole — re-clipping it here is what cut the layer off.
+     it is drawn whole - re-clipping it here is what cut the layer off.
      It sizes the frame instead. */
   const frame = useMemo(() => frameFor(leases, center), [leases, center]);
   const localReef = useMemo(
@@ -148,7 +148,7 @@ export function VentureInset({
     /* Leases ride above the reef: the boundaries are the point, the reef
        inside them is the evidence. At the settled frame an average lease
        is under two pixels wide, so the outline alone would sparkle into
-       noise — the fill is what carries the mass at that distance, and
+       noise - the fill is what carries the mass at that distance, and
        the outline resolves the parcels on the way out. */
     if (leases) {
       if (map.getSource("inset-leases")) {
@@ -355,7 +355,7 @@ const overlaps = (a: BBox, b: BBox) => a[0] <= b[2] && a[2] >= b[0] && a[1] <= b
 
 /** Cut a coast-wide collection down to one frame. Polygons are filtered
     ring by ring, because the reef tiers arrive as a handful of enormous
-    MultiPolygons whose own bbox spans the whole Gulf — filtering those
+    MultiPolygons whose own bbox spans the whole Gulf - filtering those
     at feature level would keep every last one of them. */
 function clipToBBox(
   fc: StoryFeatureCollection | null,
@@ -393,7 +393,7 @@ function clipToBBox(
     around the site.
 
     Fitting the raw lease extent would leave the site wherever it happens
-    to fall — 61% across, for the Port Sulphur export — which reads as a
+    to fall - 61% across, for the Port Sulphur export - which reads as a
     camera that drifted. Taking the larger half-width on each axis and
     mirroring it keeps the site dead center and still contains every
     lease, at the cost of some empty water on the shorter side. */

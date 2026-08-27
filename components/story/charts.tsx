@@ -12,12 +12,12 @@ import {
 } from "./use-story-data";
 
 /* ------------------------------------------------------------------
-   Perspective graphics. All values flow from the snapshot manifest —
+   Perspective graphics. All values flow from the snapshot manifest -
    a missing bake renders nothing, never a wrong number.
 
    Color rules (validated against both band surfaces):
    - The tier stack is ORDERED magnitude, so it wears a sequential
-     verdigris ramp (light→dark), not the map's categorical tier hues —
+     verdigris ramp (light→dark), not the map's categorical tier hues -
      those fail contrast/separation checks on the pearl surface.
    - Single-series marks use one brand hue; identity lives in labels
      and legends, never color alone. Text wears ink/mist, not mark color.
@@ -25,7 +25,7 @@ import {
 
 /* Sequential ramp, low → high density (light → dark). */
 const RAMP = { low: "#8fc2b2", med: "#3f9680", high: "#1d5f4e" } as const;
-const BAR = "#23705d"; // verdigris-600 — single-series marks on pearl
+const BAR = "#23705d"; // verdigris-600 - single-series marks on pearl
 
 /* Physical yardsticks for the perspective tiles. */
 const EMPIRE_STATE_SHORT_TONS = 365_000; // commonly cited total weight
@@ -304,7 +304,7 @@ export function NetWaterfall({ manifest }: { manifest: StoryManifest | null }) {
 
 /* ---- The footprint's growth, no tiers (dark ledger band) ----
    The whole surveyed footprint per season, with the net-new portion
-   solid and the carried portion a ghost outline — growth is encoded by
+   solid and the carried portion a ghost outline - growth is encoded by
    fill presence, not hue, so it survives any color vision. */
 export function GrowthBars({ manifest }: { manifest: StoryManifest | null }) {
   const raw = manifest?.stats?.css_by_year;
@@ -358,7 +358,7 @@ export function GrowthBars({ manifest }: { manifest: StoryManifest | null }) {
           .join("; ")}`}
       >
         {rows.map((r, i) => {
-          /* The first survey is a baseline, not a season's addition —
+          /* The first survey is a baseline, not a season's addition -
              its standing stock draws as the ghost, never as net new. */
           const prev = i > 0 ? rows[i - 1].total : null;
           const carried = prev === null ? r.total : Math.min(prev, r.total);
@@ -447,7 +447,7 @@ export function GrowthBars({ manifest }: { manifest: StoryManifest | null }) {
         rows={rows.map((r, i) => [
           r.year,
           Math.round(r.total),
-          i > 0 ? Math.round(r.total - rows[i - 1].total) : "—",
+          i > 0 ? Math.round(r.total - rows[i - 1].total) : "-",
         ])}
       />
     </figure>
@@ -458,14 +458,14 @@ export function GrowthBars({ manifest }: { manifest: StoryManifest | null }) {
    Grouped pairs per year. New work is solid cultch sand and restored
    reef is a mist ghost outline, matching GrowthBars one section up:
    across the whole ledger band, solid ink means new and an outline
-   means reef that was already there — never the same hue meaning both.
+   means reef that was already there - never the same hue meaning both.
    Data arrives via construction.json
    (scripts/bake_reef_construction.py); no bake, no chart. */
 const CONSTRUCTION_KINDS = [
   { key: "constructed_acres", label: "built on bare bottom", ghost: false },
   { key: "restored_acres", label: "existing reef restored", ghost: true },
 ] as const;
-const CONSTRUCTED = "#d6c5aa"; // sand — the cultch token
+const CONSTRUCTED = "#d6c5aa"; // sand - the cultch token
 
 export function ConstructionBars({
   construction,
@@ -603,7 +603,7 @@ export function EquivalentsStrip({ manifest }: { manifest: StoryManifest | null 
 
   return (
     <div>
-      <p className="story-chart-note">{fmtInt(net)} MT CO₂e is roughly —</p>
+      <p className="story-chart-note">{fmtInt(net)} MT CO₂e is roughly -</p>
       <div className="mt-5 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((it, i) => (
           <Reveal key={it.label} delay={i * 80}>
@@ -643,7 +643,7 @@ export function PerspectiveTiles({ manifest }: { manifest: StoryManifest | null 
       {miles != null && miles > HOUSTON_NYC_MILES && (
         <PerspectiveTile
           figure={`${fmtInt(miles)} mi`}
-          text="of GPS-logged placement track — farther than driving Houston to New York City"
+          text="of GPS-logged placement track - farther than driving Houston to New York City"
         />
       )}
     </div>
@@ -771,7 +771,7 @@ export function SeasonTile({ manifest }: { manifest: StoryManifest | null }) {
       text={
         season.inProgress ? (
           <>
-            soundings already logged in the {season.year} season — the chart above is a survey
+            soundings already logged in the {season.year} season - the chart above is a survey
             still running, not a finished report
           </>
         ) : (

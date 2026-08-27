@@ -33,7 +33,7 @@ const TIER_LEGEND = [
   { label: `~19 MT CO2e per Acre`, color: CHART.tiers.high },
 ];
 
-/* Polling substrate classes, worst bottom first — chapter five's key. */
+/* Polling substrate classes, worst bottom first - chapter five's key. */
 const SUBSTRATE_LEGEND = [
   { label: "Mud", color: CHART.substrate.mud },
   { label: "Clay", color: CHART.substrate.firm },
@@ -57,10 +57,10 @@ export function Hud({
   snapshotDate?: string;
   visible: boolean;
   targetId: string | null;
-  /** Vintages in carbon_columns.geojson, oldest first — the carbon
+  /** Vintages in carbon_columns.geojson, oldest first - the carbon
       scene's legend follows the data like the columns do. */
   carbonYears?: number[];
-  /** The ?32024 chapter is up — list its lease in the flight deck. */
+  /** The ?32024 chapter is up - list its lease in the flight deck. */
   showSaveTarget?: boolean;
   onTarget: (id: string) => void;
 }) {
@@ -121,10 +121,7 @@ export function Hud({
         </div>
         {/* Esri's terms require the credit on-chart, and the map's own
             attribution control is off (attributionControl: false). */}
-        <div className="mt-1.5 text-[10px] opacity-70">
-          IMAGERY © ESRI/MAXAR · BOUNDARIES US CENSUS/TIGER 2025
-          {snapshotDate ? ` \u00b7 SNAPSHOT ${snapshotDate}` : ""}
-        </div>
+
       </div>
 
       {/* flight deck + legend */}
@@ -145,7 +142,7 @@ export function Hud({
                   onClick={() => setTargetsOpen((open) => !open)}
                 >
                   <i className={targetsOpen ? "is-open" : ""} aria-hidden="true" />
-                  <span>AREA TARGETS</span>
+                  <span>AREAS</span>
                 </button>
                 <div className="story-compass" aria-hidden="true">
                   <span>N</span>
@@ -175,11 +172,7 @@ export function Hud({
                   );
                 })}
               </div>
-              {targetsOpen && (
-                <p className="mt-2 border-t border-white/10 pt-2 text-[9px] leading-relaxed opacity-55">
-                  SELECT TO FLY · CAMERA RETURNS TO BRIEF ON SCROLL
-                </p>
-              )}
+              {targetsOpen}
             </aside>
           )}
 

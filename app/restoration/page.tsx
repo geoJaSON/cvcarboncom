@@ -15,7 +15,7 @@ import {
 export const metadata = {
   title: "Restoring Oyster Habitat",
   description:
-    "Place hard substrate in the right place at the right time, and oysters will colonize it. The challenges are fouling, burial, and timing — and the commercial industry has already solved them.",
+    "Place hard substrate in the right place at the right time, and oysters will colonize it. The challenges are fouling, burial, and timing - and the commercial industry has already solved them.",
 };
 
 const STATS: Stat[] = [
@@ -23,7 +23,7 @@ const STATS: Stat[] = [
     value: "2",
     unit: "weeks",
     label:
-      "is all it takes for cultch to become completely fouled — after which there is no opportunity for oyster recruitment.",
+      "is all it takes for cultch to become completely fouled - after which there is no opportunity for oyster recruitment.",
   },
   {
     value: "2×",
@@ -35,7 +35,7 @@ const STATS: Stat[] = [
     value: "3–4",
     unit: "weeks",
     label:
-      "the age of the spat in the photographs below — shells returned from a shucking house to the lease they came from.",
+      "the age of the spat in the photographs below - shells returned from a shucking house to the lease they came from.",
   },
 ];
 

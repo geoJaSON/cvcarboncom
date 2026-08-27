@@ -23,7 +23,7 @@ Differences from the 30260 export handled here, verified 2026-08-20:
   - all bedding lines carry units == "Tons", so every amount counts.
 
 Phase divider: the first deployment_date. The five 2025-04-30 soundings
-are a pre-work check and land in "before" with the 2023 poll — the split
+are a pre-work check and land in "before" with the 2023 poll - the split
 matches the export's own archive == "bedded" flag exactly (459 points).
 """
 
@@ -55,7 +55,7 @@ UNPRODUCTIVE = {"mud", "firm"}
 #
 # NOTE ON MECHANISM. The source report reads these numbers as loss of *shelter*
 # ("the marsh is their breakwater"). That is wrong and is corrected here: marsh
-# does not shelter oysters. Eroding marsh is a sediment *source* — the material
+# does not shelter oysters. Eroding marsh is a sediment *source* - the material
 # it sheds is what buries shell on the lease. The measurements stand; only the
 # interpretation changes, and under the corrected one they bear directly on the
 # buried-shell class rather than on wave exposure.
@@ -72,7 +72,7 @@ MARSH = {
     "steepest_year": "2021",
     "steepest_cause": "Hurricane Ida, 29 Aug 2021, Cat 4 at Port Fourchon (63 km W)",
     # Four landfalls crossed this coast inside the study window. They punctuate
-    # the loss; they do not cause all of it — every year in the series lost
+    # the loss; they do not cause all of it - every year in the series lost
     # ground, including the two with no landfall at all.
     "storms": [
         {"name": "Barry", "date": "2019-07-13", "cat": 1, "landfall": "Intracoastal City"},

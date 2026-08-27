@@ -14,7 +14,7 @@ import {
 export const metadata = {
   title: "Beyond Carbon: The Other Benefits of Oyster Reefs",
   description:
-    "Oyster reefs deliver greater food web services per unit area than any other estuarine habitat — habitat, water quality, shoreline protection, food and recreation.",
+    "Oyster reefs deliver greater food web services per unit area than any other estuarine habitat - habitat, water quality, shoreline protection, food and recreation.",
 };
 
 const STATS: Stat[] = [
@@ -134,7 +134,7 @@ export default function BeyondCarbonPage() {
             reach far beyond carbon
           </>
         }
-        standfirst="Oyster reefs deliver greater food web services per unit area than any other estuarine habitat — including salt marsh, sea grass meadows, or tidal flats."
+        standfirst="Oyster reefs deliver greater food web services per unit area than any other estuarine habitat - including salt marsh, sea grass meadows, or tidal flats."
         image="/images/reef-seagrass.jpg"
         alt="An oyster reef surrounded by seagrass in clear shallow water"
       />
@@ -214,7 +214,7 @@ export default function BeyondCarbonPage() {
               src="/images/oysters-plate.jpg"
               alt="A plate of raw oysters served on ice with lemon"
               aspect="aspect-[4/5]"
-              caption="Commercial harvest keeps the industry — and the restoration — funded."
+              caption="Commercial harvest keeps the industry - and the restoration - funded."
             />
           </Reveal>
           <Reveal delay={200}>

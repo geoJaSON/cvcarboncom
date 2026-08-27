@@ -5,7 +5,7 @@ import { NextPage, PageHero, Section, SectionHeading } from "@/components/ui";
 export const metadata = {
   title: "Meet the Team",
   description:
-    "A fisheries ecologist, a fourth-generation oysterman, and a civil engineer — the people behind CV Carbon's oyster reef restoration and blue carbon work.",
+    "A fisheries ecologist, a fourth-generation oysterman, and a civil engineer - the people behind CV Carbon's oyster reef restoration and blue carbon work.",
 };
 
 /* Headshots are matched to bios by the order they appear in the legacy page. */
@@ -105,7 +105,7 @@ export default function TeamPage() {
             behind these services
           </>
         }
-        standfirst="Long appreciated only as a commercial source of oysters, oyster reefs are now acknowledged for the other services they provide — enhancing water quality, stabilizing shorelines. CV Carbon helps develop a framework to assess the value of those services."
+        standfirst="Long appreciated only as a commercial source of oysters, oyster reefs are now acknowledged for the other services they provide - enhancing water quality, stabilizing shorelines. CV Carbon helps develop a framework to assess the value of those services."
         image="/images/bay-sunset.jpg"
         alt="Late light over a Gulf Coast bay"
       />

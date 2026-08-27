@@ -20,7 +20,7 @@ export default async function StoryPage({
 }) {
   const params = await searchParams;
   const showVenturePois = Object.prototype.hasOwnProperty.call(params, "venture");
-  /* /story?32024 — the field-save bonus chapter, gated like ?venture. */
+  /* /story?32024 - the field-save bonus chapter, gated like ?venture. */
   const showFieldSave = Object.prototype.hasOwnProperty.call(params, "32024");
 
   return (

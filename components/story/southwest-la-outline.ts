@@ -1,6 +1,6 @@
 import type { FeatureCollection, Polygon } from "geojson";
 
-/** Hand-authored operations-area outline for southwest Louisiana —
+/** Hand-authored operations-area outline for southwest Louisiana -
  *  Calcasieu Lake and Pass west, the Cameron chenier coast, and
  *  Vermilion Bay with Marsh Island east. An authored chart region,
  *  not an official boundary. */

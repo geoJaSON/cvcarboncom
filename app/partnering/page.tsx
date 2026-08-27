@@ -15,7 +15,7 @@ import {
 export const metadata = {
   title: "Partnering with Oystermen",
   description:
-    "Partnering with commercial oystermen to restore reefs within their existing leases — with quantification, monitoring, and independent third-party verification of every carbon offset.",
+    "Partnering with commercial oystermen to restore reefs within their existing leases - with quantification, monitoring, and independent third-party verification of every carbon offset.",
 };
 
 const STATS: Stat[] = [
@@ -32,7 +32,7 @@ const STATS: Stat[] = [
   {
     value: "4.2",
     unit: "×",
-    label: "more surface area in the public areas — which produced 1% of the harvest.",
+    label: "more surface area in the public areas - which produced 1% of the harvest.",
   },
   {
     value: "3.5",
@@ -109,7 +109,7 @@ const METHOD = [
 const CITATIONS = [
   "LDWF 2021 Stock Assessment Report of the Public Oyster Seed Grounds and Reservations of Louisiana. https://www.wlf.louisiana.gov/assets/Resources/Publications/Stock_Assesments/Oyster/2021-Oyster-Stock-Assessment.pdf",
   "Greenhouse Gas Protocol. https://ghgprotocol.org/",
-  "U.S. Environmental Protection Agency — Green Power Markets, Market Instruments. https://www.epa.gov/green-power-markets/market-instruments",
+  "U.S. Environmental Protection Agency - Green Power Markets, Market Instruments. https://www.epa.gov/green-power-markets/market-instruments",
 ];
 
 export default function PartneringPage() {
@@ -183,7 +183,7 @@ export default function PartneringPage() {
           <div>
             <SectionHeading
               eyebrow="The Louisiana Evidence"
-              title="Private leases carry the harvest — because leaseholders keep reinvesting"
+              title="Private leases carry the harvest - because leaseholders keep reinvesting"
               intro={
                 <>
                   <p>
@@ -258,7 +258,7 @@ export default function PartneringPage() {
                 Browse the carbon credit registry
               </p>
               <p className="mt-3 max-w-xl leading-relaxed text-mist/75">
-                Each offset we issue is listed publicly — quantified against the GHG Protocol,
+                Each offset we issue is listed publicly - quantified against the GHG Protocol,
                 monitored on the water, and independently verified.
               </p>
             </div>
@@ -296,7 +296,7 @@ export default function PartneringPage() {
               src="/images/cultch-barge.jpg"
               alt="A barge and crane placing cultch material into a lease"
               aspect="aspect-[4/5]"
-              caption="Cultch placement — the physical act of building reef."
+              caption="Cultch placement - the physical act of building reef."
             />
           </Reveal>
           <Reveal delay={100}>

@@ -98,7 +98,7 @@ export default function SciencePage() {
               src="/images/shells-topdown.jpg"
               alt="Oyster shells viewed from above, showing the calcium carbonate structure"
               aspect="aspect-[4/3]"
-              caption="Carbon locked into calcium carbonate — an oyster's shell is a carbon store you can hold."
+              caption="Carbon locked into calcium carbonate - an oyster's shell is a carbon store you can hold."
             />
           </div>
         </div>

@@ -33,7 +33,7 @@ import {
 
 /* ------------------------------------------------------------------
    Editorial interludes. These are the opaque bands that slide over
-   the chart between acts — set in the site's own editorial voice so
+   the chart between acts - set in the site's own editorial voice so
    the brief reads as one continuous CV Carbon document.
 
    Numbers Jason supplies by hand (dollars, anything without a public
@@ -47,17 +47,17 @@ const PROVIDED = {
   restorationSpendUsd: null as number | null,
   /** Share of every issuance held back against reversal, as a percent.
       The permanence band's third card stays dark until this is a real
-      number from the methodology — a buffer is a promise, and we do not
+      number from the methodology - a buffer is a promise, and we do not
       make one the page cannot back. */
   bufferPoolPct: null as number | null,
 };
 
 /* The reinvestment guarantee. Also stated on the home page, the contact
-   page and in the site footer — a revenue commitment that reads two
+   page and in the site footer - a revenue commitment that reads two
    different ways in two places is a diligence problem, so move all four
    together. */
 export const REINVESTMENT_PCT = 30;
-/** Restore · Measure · Verify · Issue · Reinvest — this is the fifth. */
+/** Restore · Measure · Verify · Issue · Reinvest - this is the fifth. */
 const REINVESTMENT_STEP = 5;
 
 export function BandShell({
@@ -236,7 +236,7 @@ export function ProofBand() {
           track GPS-logged from the barge.
         </NumberedCard>
         <NumberedCard index={2} title="Measure">
-          Dredge tows and point samples counted by hand, plus continuous bottom soundings —
+          Dredge tows and point samples counted by hand, plus continuous bottom soundings -
           density in oysters per square meter, not estimates.
         </NumberedCard>
         <NumberedCard index={3} title="Verify">
@@ -426,12 +426,12 @@ function DurabilityCard({
 /* ---- Chapter five's cover page: the case study, before the dive ---- */
 
 function fmtPct(n: number | null | undefined): string {
-  if (n == null) return "—";
+  if (n == null) return "-";
   return `${Number.isInteger(n) ? n.toFixed(0) : n.toFixed(1)}%`;
 }
 
 function fmtMonth(iso: string | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
     month: "short",
     year: "numeric",
@@ -439,9 +439,9 @@ function fmtMonth(iso: string | undefined): string {
   });
 }
 
-/** "8 May to 18 Jun 2025" — day-level, year once when both ends share it. */
+/** "8 May to 18 Jun 2025" - day-level, year once when both ends share it. */
 function fmtDayWindow(window: [string, string] | undefined): string {
-  if (!window) return "—";
+  if (!window) return "-";
   const [a, b] = window.map((iso) => new Date(`${iso}T00:00:00Z`));
   const day = (d: Date, withYear: boolean) =>
     d.toLocaleDateString("en-US", {
@@ -455,7 +455,7 @@ function fmtDayWindow(window: [string, string] | undefined): string {
 }
 
 function fmtWindow(window: [string, string] | undefined): string {
-  if (!window) return "—";
+  if (!window) return "-";
   const [a, b] = [fmtMonth(window[0]), fmtMonth(window[1])];
   return a === b ? a : `${a} – ${b}`;
 }
@@ -506,7 +506,7 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
           <p>
             The whole argument, told once at full survey resolution.{" "}
             {caseLeaseLabel(manifest)} {several ? "share a boundary" : "sits"} on{" "}
-            {manifest.location || "the water"}, {manifest.county} Parish —{" "}
+            {manifest.location || "the water"}, {manifest.county} Parish -{" "}
             {fmtInt(manifest.acres)} acres {several ? "together, under one leaseholder" : ""}.
             We sounded {several ? "both" : "it"} for months before the work, bedded{" "}
             {several ? "them" : "it"} in one summer window, then sent the survey boat back over
@@ -537,7 +537,7 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
           >
             {fmtList(bedding.materials)}
             {bedding.short_tons != null
-              ? ` — ${fmtInt(bedding.short_tons)} short tons`
+              ? ` - ${fmtInt(bedding.short_tons)} short tons`
               : ""}{" "}
             over the side in one summer window, every pass GPS-logged from the barge.
           </CasePanel>
@@ -647,7 +647,7 @@ export function MaterialBand({ manifest }: { manifest: CaseStudyManifest }) {
   );
 }
 
-/** A silent ambient loop that only fetches once the reader is near it —
+/** A silent ambient loop that only fetches once the reader is near it -
     the file is several megabytes and most of the page never scrolls this
     far. Reduced-motion readers get the poster and a play control instead
     of a moving background. Anything with audio keeps its controls. */
@@ -692,7 +692,7 @@ function LoopVideo({ src, poster, muteLoop }: { src: string; poster?: string; mu
 
 /* Where the buried shell came from. The lease sits inside a six-year
    satellite record of marsh loss around Adams Bay, and that record is the
-   only external evidence in this chapter — everything else is our own
+   only external evidence in this chapter - everything else is our own
    survey. The mechanism matters and is easy to get backwards: marsh does
    not shelter oysters. It erodes, and what it sheds settles out on the
    lease and buries shell. So the marsh numbers are a sediment-supply
@@ -834,7 +834,7 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
             The remaining {fmtInt(bedding.placements - 1)} barge load placements went onto
             the areas on the chart identified as buried reef. The repolling effort
             found the island grown into {fmtPct(after.pct_reef)} of the
-            lease — up from {fmtPct(before.pct_reef)}.
+            lease - up from {fmtPct(before.pct_reef)}.
           </CasePanel>
         </Reveal>
       </div>
@@ -850,7 +850,7 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
 
       <Reveal className="mt-16">
         <PullQuote
-          quote="No inspection flight, no season-end audit — a leaseholder on vacation, watching his own bottom in real time. The mistake was on the chart the moment it happened, and it lasted exactly one phone call."
+          quote="No inspection flight, no season-end audit - a leaseholder on vacation, watching his own bottom in real time. The mistake was on the chart the moment it happened, and it lasted exactly one phone call."
           cite={`Lease ${manifest.lease_number} · ${manifest.location} · CV Carbon Field`}
         />
       </Reveal>
@@ -863,7 +863,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
   const s = manifest?.stats;
 
   /* Reef gained across the surveyed seasons. Deliberately the INCREASE,
-     not the standing total — we only claim what the program added. */
+     not the standing total - we only claim what the program added. */
   const byYear = s?.css_by_year ?? [];
   const acresGained =3500
 
@@ -888,7 +888,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
 
       {/* The habitat argument under the whole program, from the paper
           that inspired it: a NOAA-funded synthesis of every production
-          study from Texas to Cape Cod. House rule — this panel claims
+          study from Texas to Cape Cod. House rule - this panel claims
           food-web production only, never carbon; the ledger band makes
           the carbon claim on its own measured numbers. */}
       <Reveal className="mt-14">
@@ -901,7 +901,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
               </h3>
               <div className="prose-cv mt-4 text-[0.9375rem]">
                 <p>
-                  For a century, estuary conservation favored marsh and seagrass — habitats
+                  For a century, estuary conservation favored marsh and seagrass - habitats
                   whose worth stands visibly in plants above the waterline. Then a
                   NOAA-funded synthesis pulled every production study from Texas to Cape Cod
                   and measured up the food chain instead of trusting the view from the
@@ -918,28 +918,28 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
               <div className="border-l border-navy/15 pl-4">
                 <span className="font-display text-3xl text-verdigris-600">4–10×</span>
                 <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                  the food-web production of any other estuarine habitat, acre for acre —
+                  the food-web production of any other estuarine habitat, acre for acre -
                   marsh, seagrass, or open flat
                 </p>
               </div>
               <div className="border-l border-navy/15 pl-4">
                 <span className="font-display text-3xl text-verdigris-600">~200×</span>
                 <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                  the animal production at the filter-feeder level — the work of stable hard
+                  the animal production at the filter-feeder level - the work of stable hard
                   bottom, which is exactly what cultch rebuilds
                 </p>
               </div>
               <div className="border-l border-navy/15 pl-4">
                 <span className="font-display text-3xl text-verdigris-600">5×</span>
                 <p className="mt-2 text-sm leading-relaxed text-ink/70">
-                  more animal production than the reef&rsquo;s own plants fix — the tide
+                  more animal production than the reef&rsquo;s own plants fix - the tide
                   delivers the estuary&rsquo;s plankton, so one acre harvests many
                 </p>
               </div>
             </div>
           </div>
           <p className="mt-8 text-[0.6875rem] uppercase tracking-[0.12em] text-ink/40">
-            Peterson, Wong, Piehler, Grabowski, Twilley &amp; Fonseca — NOAA-funded synthesis,
+            Peterson, Wong, Piehler, Grabowski, Twilley &amp; Fonseca - NOAA-funded synthesis,
             Laguna Madre TX to Cape Cod MA · full literature on{" "}
             <a href="/beyond-carbon" className="underline underline-offset-2">
               Beyond Carbon
@@ -981,7 +981,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
         </BenefitCard>
 
         <BenefitCard
-          figure={acresGained != null ? fmtCompact(acresGained) : "—"}
+          figure={acresGained != null ? fmtCompact(acresGained) : "-"}
           unit="acres gained, 3 seasons"
           title="Additional by construction"
           source="CV Carbon survey record"
@@ -996,7 +996,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           <p className="eyebrow">The due-diligence questions</p>
           <p className="prose-cv mt-3 max-w-2xl">
             Worth asking anyone who sells you carbon, not just us. Our answers are on the
-            record below — the questions are yours to keep for the next seller who calls.
+            record below - the questions are yours to keep for the next seller who calls.
           </p>
           <dl className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
             {[
@@ -1171,7 +1171,7 @@ export function CreditsBand({
           <p className="prose-cv mt-4 max-w-2xl !text-mist/80">
             The construction ledger. Every bedding run is GPS-logged from the barge; buffer
             the tracks to the spread of the cultch and the year&rsquo;s work becomes an
-            acreage — new reef where the bottom was bare, restored reef where old bottom got
+            acreage - new reef where the bottom was bare, restored reef where old bottom got
             fresh shell.
           </p>
           <div className="mt-8 max-w-xl">
@@ -1217,7 +1217,7 @@ export function CreditsBand({
               <span className="text-steel-400">sequence</span>
             </p>
             <p className="mt-2 max-w-md text-sm leading-relaxed text-mist/70">
-              Year it was grown, the water it was grown in, and its place in the issuance —
+              Year it was grown, the water it was grown in, and its place in the issuance -
               every credit answers for itself.
             </p>
           </div>

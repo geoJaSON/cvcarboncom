@@ -5,13 +5,13 @@ Usage:
 
 Lease 30260 is now one half of chapter five. The page loads the merged
 bay_boudreau_* pack written by scripts/bake_bay_boudreau.py, which reads
-this script's lease_30260_* output and adds lease 36166 — so rebake here
+this script's lease_30260_* output and adds lease 36166 - so rebake here
 first, then run that.
 
 Reads lease.geojson, polling_data.geojson, and bedding_lines.geojson from
 source_dir (default: ~/Downloads/lease_data) and writes the four optional
 snapshot files under public/data/story/. The story page renders fully
-without them and lights the chapter up when they exist — same contract as
+without them and lights the chapter up when they exist - same contract as
 the main snapshot bake (generate_story_snapshot.py in the app repo).
 
 Quirks handled here, verified against the 2026-08 export:
@@ -38,7 +38,7 @@ MEDIA = [
     {
         "src": "/images/lease-30260/cultch-barge-loaded.jpg",
         "alt": "Barge deck loaded with piles of shell and limestone cultch, a crewman working the water cannons",
-        "caption": "Bedding material staged on the barge, paid for with carbon credits — washed over the side exactly where the chart says.",
+        "caption": "Bedding material staged on the barge, paid for with carbon credits - washed over the side exactly where the chart says.",
     },
     {
         "src": "/images/lease-30260/spat-on-rock-hand.jpg",
@@ -48,7 +48,7 @@ MEDIA = [
     {
         "src": "/images/lease-30260/spat-on-rock-pile.jpg",
         "alt": "A pile of river rock on deck, nearly every piece carrying young oyster spat",
-        "caption": "Not one lucky rock — a deck sample of the placed river rock, spat on nearly every piece. This is the reef the December resurvey confirmed.",
+        "caption": "Not one lucky rock - a deck sample of the placed river rock, spat on nearly every piece. This is the reef the December resurvey confirmed.",
     },
     {
         "src": "/images/lease-30260/dredge-sample.jpg",
@@ -58,9 +58,9 @@ MEDIA = [
     {
         "src": "/images/lease-30260/dredge-mature-reef.jpg",
         "alt": "A dredge tow of live oysters in clusters on the boat's sorting table",
-        "caption": "What a tow off a mature reef looks like on the table — live oysters in clusters, ready for the count.",
+        "caption": "What a tow off a mature reef looks like on the table - live oysters in clusters, ready for the count.",
     },
-    # The soundings plot moved to the field gallery (gallery.json) —
+    # The soundings plot moved to the field gallery (gallery.json) -
     # chapter five keeps the physical evidence, the gallery keeps the map.
 ]
 

@@ -30,7 +30,7 @@ export default function ContactPage() {
       <PageHero
         eyebrow="Contact"
         title="Let's talk"
-        standfirst="Whether you are buying offsets, working a lease, or checking our arithmetic — start here."
+        standfirst="Whether you are buying offsets, working a lease, or checking our arithmetic - start here."
         image="/images/beach-sunset.jpg"
         alt="Sunset over a Gulf Coast beach and pier"
       />

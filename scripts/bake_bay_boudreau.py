@@ -28,7 +28,7 @@ unambiguous (942 before / 1,274 after).
 
 Dredge tows (optional). Drop a gis_dredge_samples export covering both
 leases at bay_Boudreau/dredges.geojson (or pass --dredges). Rows are read
-tolerantly — Supabase columns (id, sample_date ISO, oyster_count,
+tolerantly - Supabase columns (id, sample_date ISO, oyster_count,
 oyster_calc, attachments jsonb) or an AGOL export (OBJECTID, epoch-ms
 sample_date). Tows sampled after the bedding began that carry at least one
 image attachment are candidates; the --max-tows densest ones, spread across
@@ -278,7 +278,7 @@ def bake_raw(src: Path):
 
 
 def load_baked(prefix: str):
-    """A pack bake_lease_case.py already wrote — lease 30260 today."""
+    """A pack bake_lease_case.py already wrote - lease 30260 today."""
     manifest = json.loads((OUT / f"{prefix}.json").read_text(encoding="utf-8"))
     boundary = json.loads((OUT / f"{prefix}_boundary.geojson").read_text(encoding="utf-8"))
     polling = json.loads((OUT / f"{prefix}_polling.geojson").read_text(encoding="utf-8"))
@@ -442,7 +442,7 @@ def bake_dredges(path: Path, dividers: dict[str, datetime], max_tows: int, local
                 # count/area scaled by a fixed factor), so the page shows the
                 # raw tow instead and carries this only for the record.
                 "calc": p.get("oyster_calc"),
-                # Width in inches, length in feet, area in square feet —
+                # Width in inches, length in feet, area in square feet -
                 # the export's convention (38 in × 52 ft = 164 sq ft).
                 "width_in": p.get("dredge_width"),
                 "length_ft": p.get("dredge_length"),

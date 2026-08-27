@@ -20,8 +20,8 @@ const ExternalArrow = () => (
 );
 
 /**
- * Mirrors the original site's information architecture — HOME / ABOUT /
- * RESTORATION / PARTNERING / CONTACT — with the four editorial pages
+ * Mirrors the original site's information architecture - HOME / ABOUT /
+ * RESTORATION / PARTNERING / CONTACT - with the four editorial pages
  * gathered under ABOUT.
  */
 const ABOUT_LINKS = [
@@ -66,7 +66,7 @@ export function SiteHeader() {
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-10">
-        <Link href="/" aria-label="CV Carbon — home" className="relative z-10 shrink-0">
+        <Link href="/" aria-label="CV Carbon - home" className="relative z-10 shrink-0">
           <Image
             src="/images/cv-carbon-logo.png"
             alt="CV Carbon"

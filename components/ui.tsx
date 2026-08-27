@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
 
 /* ------------------------------------------------------------------ */
-/* Tide rule — the site's recurring divider, a shallow wave crest that
+/* Tide rule - the site's recurring divider, a shallow wave crest that
    separates a dark band from a light one. `flip` points it upward.     */
 /* ------------------------------------------------------------------ */
 export function TideRule({ className = "", flip = false }: { className?: string; flip?: boolean }) {
@@ -26,7 +26,7 @@ export function TideRule({ className = "", flip = false }: { className?: string;
 }
 
 /* ------------------------------------------------------------------ */
-/* Page hero — full-bleed photograph under a navy scrim.                */
+/* Page hero - full-bleed photograph under a navy scrim.                */
 /* ------------------------------------------------------------------ */
 export function PageHero({
   eyebrow,
@@ -130,7 +130,7 @@ export function SectionHeading({
 }
 
 /* ------------------------------------------------------------------ */
-/* Statistic band — the load-bearing numbers from the source material.  */
+/* Statistic band - the load-bearing numbers from the source material.  */
 /* ------------------------------------------------------------------ */
 export type Stat = { value: string; unit?: string; label: string };
 
@@ -295,7 +295,7 @@ export function ButtonLink({
 }
 
 /* ------------------------------------------------------------------ */
-/* Next-page pager — carried over from the original site, which chained
+/* Next-page pager - carried over from the original site, which chained
    its long-form pages together.                                        */
 /* ------------------------------------------------------------------ */
 export function NextPage({
@@ -348,7 +348,7 @@ export function NextPage({
 }
 
 /* ------------------------------------------------------------------ */
-/* Literature cited — the original site carried full citations on every
+/* Literature cited - the original site carried full citations on every
    long-form page; they are a credibility asset, so they are kept.      */
 /* ------------------------------------------------------------------ */
 export function Citations({

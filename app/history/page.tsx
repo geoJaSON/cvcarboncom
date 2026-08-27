@@ -24,7 +24,7 @@ const TIMELINE = [
   {
     year: "1905",
     title: "Mechanization arrives",
-    copy: "The first account of a mechanical dredge used in the shell mining industry. A hydraulic dredge followed in 1912 — and the scale of extraction changed permanently.",
+    copy: "The first account of a mechanical dredge used in the shell mining industry. A hydraulic dredge followed in 1912 - and the scale of extraction changed permanently.",
   },
   {
     year: "1916",
@@ -39,12 +39,12 @@ const TIMELINE = [
   {
     year: "1955",
     title: "Shell roads",
-    copy: "Of more than ten million cubic yards of shell produced that year, an estimated 65% went to industry and about 28% into road construction — a belt of shell roads extending fifty to seventy miles inland from the coast.",
+    copy: "Of more than ten million cubic yards of shell produced that year, an estimated 65% went to industry and about 28% into road construction - a belt of shell roads extending fifty to seventy miles inland from the coast.",
   },
   {
     year: "1971",
     title: "The tally",
-    copy: "Combining figures from several historic reports, shell mining removed approximately 300 million cubic yards of oyster shell from Texas bays between 1912 and 1971. The true volume was likely larger — the reports cover a limited number of companies.",
+    copy: "Combining figures from several historic reports, shell mining removed approximately 300 million cubic yards of oyster shell from Texas bays between 1912 and 1971. The true volume was likely larger - the reports cover a limited number of companies.",
   },
 ];
 
@@ -68,7 +68,7 @@ export default function HistoryPage() {
             shell mining
           </>
         }
-        standfirst="Also known as the mud shell industry — six decades of extraction that the reefs could not recover from on their own."
+        standfirst="Also known as the mud shell industry - six decades of extraction that the reefs could not recover from on their own."
         image="/images/historic-dredge-oysterman.jpg"
         alt="Historic photograph of an oystermen holding a basket of live oysters beside a shell dredge"
         position="center 30%"
@@ -117,7 +117,7 @@ export default function HistoryPage() {
       <Section className="relative bg-navy">
         <SectionHeading
           tone="light"
-          eyebrow="1880 — 1971"
+          eyebrow="1880 - 1971"
           title="Ninety years of extraction"
           intro={
             <p>

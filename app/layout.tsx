@@ -20,13 +20,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://cvcarbon.eco"),
   title: {
-    default: "CV Carbon — Oyster Reef Restoration & Blue Carbon Credits",
-    template: "%s — CV Carbon",
+    default: "CV Carbon - Oyster Reef Restoration & Blue Carbon Credits",
+    template: "%s - CV Carbon",
   },
   description:
     "CV Carbon restores ecosystems by partnering with the commercial oyster industry to re-establish historic reefs, funded by verified carbon capture credits.",
   openGraph: {
-    title: "CV Carbon — Oyster Reef Restoration & Blue Carbon Credits",
+    title: "CV Carbon - Oyster Reef Restoration & Blue Carbon Credits",
     description:
       "Restoring historic oyster reefs in partnership with commercial oystermen, funded by verified carbon capture credits.",
     type: "website",

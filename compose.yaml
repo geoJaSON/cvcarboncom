@@ -1,5 +1,5 @@
 # Joins the network your existing Caddy container is already on, and does NOT
-# publish a host port — Caddy reaches it internally as http://cvcarbon-web:3000.
+# publish a host port - Caddy reaches it internally as http://cvcarbon-web:3000.
 #
 # Set CADDY_NETWORK to the name of that network (check with `docker network ls`),
 # either in a .env file next to this one or inline:

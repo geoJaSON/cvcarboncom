@@ -5,15 +5,15 @@ Usage:
         [--buffer-ft N] [--no-css-prior] [--assume-crs EPSG:XXXX]
 
 source_dir (default ~/Downloads/construction_data) holds one bedding layer
-per program year, the year parsed from the file name — bedding_2023.geojson,
+per program year, the year parsed from the file name - bedding_2023.geojson,
 bedding-2024.shp, 2025_bedding.gpkg all work; anything geopandas reads, any
 CRS. Each layer may be:
 
-  - polygons  — bedding areas already buffered/dissolved in GIS, used as-is
-  - lines or points — raw placement tracks; pass --buffer-ft (half-width in
+  - polygons  - bedding areas already buffered/dissolved in GIS, used as-is
+  - lines or points - raw placement tracks; pass --buffer-ft (half-width in
     feet, e.g. --buffer-ft 25) and the buffering happens here, round caps
 
-Method — Jason's GIS workflow, automated:
+Method - Jason's GIS workflow, automated:
   1. Buffer (if needed) and dissolve each year's placements into a single
      multipart "bedded" polygon.
   2. "Reef already there" before a year = every earlier year's bedded
@@ -26,15 +26,15 @@ Method — Jason's GIS workflow, automated:
      in acres.
 
 Outputs, written together only after every year bakes clean:
-  public/data/story/construction.json     — the numbers the /story ledger
+  public/data/story/construction.json     - the numbers the /story ledger
       band reads (ConstructionBars); absent file, absent chart
-  public/data/story/construction.geojson  — the constructed/restored
+  public/data/story/construction.geojson  - the constructed/restored
       polygons (WGS84, ~1 m simplified, 5-decimal coords) for a future map
       layer; nothing on the page consumes it yet
 
 Robustness contract:
   - A file that fails to read reports its error and kills the bake before
-    anything is written — never a half-written ledger.
+    anything is written - never a half-written ledger.
   - Line/point layers without --buffer-ft are an error, not a guess.
   - A layer with no CRS is an error unless --assume-crs is given.
   - Geometry is validated (make_valid) before every overlay; a year that
@@ -60,7 +60,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "public" / "data" / "story"
 CSS_TIERS = OUT_DIR / "css_tiers.geojson"
 
-EQUAL_AREA = "EPSG:5070"  # CONUS Albers — good across TX, LA, and MD water
+EQUAL_AREA = "EPSG:5070"  # CONUS Albers - good across TX, LA, and MD water
 WGS84 = "EPSG:4326"
 SQM_PER_ACRE = 4046.8564224
 FT_TO_M = 0.3048
@@ -78,7 +78,7 @@ def acres(geom: BaseGeometry) -> float:
 
 def polygons_only(geom: BaseGeometry) -> BaseGeometry:
     """Overlays of touching polygons can emit collections with slivers of
-    line — keep the parts that have area, drop the rest."""
+    line - keep the parts that have area, drop the rest."""
     if geom.geom_type in ("Polygon", "MultiPolygon"):
         return geom
     if geom.geom_type == "GeometryCollection":
@@ -115,11 +115,11 @@ def load_year_layer(path: Path, buffer_ft: float | None, assume_crs: str | None)
         frame = frame[~missing]
     if frame.crs is None:
         if assume_crs is None:
-            fail(f"{path.name}: no CRS on file — pass --assume-crs EPSG:XXXX if you know it")
+            fail(f"{path.name}: no CRS on file - pass --assume-crs EPSG:XXXX if you know it")
         frame = frame.set_crs(assume_crs)
     frame = frame.to_crs(EQUAL_AREA)
 
-    # KML/GPS exports wrap tracks in GeometryCollections — split every
+    # KML/GPS exports wrap tracks in GeometryCollections - split every
     # multi-part so line parts can't slip past the buffer gate below.
     frame = frame.explode(index_parts=False, ignore_index=True)
 
@@ -127,13 +127,13 @@ def load_year_layer(path: Path, buffer_ft: float | None, assume_crs: str | None)
     polygonal = kinds <= {"Polygon", "MultiPolygon"}
     frame["geometry"] = frame.geometry.make_valid()
     if polygonal:
-        # make_valid collapses zero-area sliver rings to lines — keep the
+        # make_valid collapses zero-area sliver rings to lines - keep the
         # parts with area so one sliver can't reclassify the layer as tracks
         frame["geometry"] = frame.geometry.apply(polygons_only)
     else:
         if buffer_ft is None:
             fail(
-                f"{path.name}: contains {sorted(kinds)} — raw tracks need "
+                f"{path.name}: contains {sorted(kinds)} - raw tracks need "
                 "--buffer-ft (half-width in feet) to become bedded area"
             )
         # Buffer only the track rows; polygons in a mixed layer stay as-is
@@ -149,7 +149,7 @@ def load_year_layer(path: Path, buffer_ft: float | None, assume_crs: str | None)
 def css_prior_unions() -> dict[int, BaseGeometry]:
     """Surveyed result areas per vintage, from the committed story snapshot."""
     if not CSS_TIERS.exists():
-        print(f"  note: {CSS_TIERS.relative_to(ROOT)} not found — prior reef is bedded area only")
+        print(f"  note: {CSS_TIERS.relative_to(ROOT)} not found - prior reef is bedded area only")
         return {}
     frame = gpd.read_file(CSS_TIERS).to_crs(EQUAL_AREA)
     frame["geometry"] = frame.geometry.make_valid()
@@ -283,7 +283,7 @@ def main() -> None:
             json.dumps({"type": "FeatureCollection", "features": features}, separators=(",", ":")),
         ),
     ]
-    # Stage beside the targets, then swap both in — a failed bake never
+    # Stage beside the targets, then swap both in - a failed bake never
     # leaves a half-written or mismatched pair.
     staged = []
     for path, text in outputs:

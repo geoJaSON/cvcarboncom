@@ -35,7 +35,7 @@ export function FeaturedArticle({
   quote: string;
   /** Omit to run the line as a standing statement rather than a
       quotation. Nothing on the card names a speaker in that case, so
-      the text loses its quotation marks along with the credit — a
+      the text loses its quotation marks along with the credit - a
       blockquote with no attribution reads as an unsourced claim. */
   attribution?: string;
   image?: string;

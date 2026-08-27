@@ -1,7 +1,7 @@
 import { setWorkerUrl } from "maplibre-gl";
 
 /* MapLibre's default worker is spawned from a bundler-transformed
-   module, which Turbopack breaks silently — every GeoJSON source then
+   module, which Turbopack breaks silently - every GeoJSON source then
    hangs forever unloaded. Serve the library's own pristine worker
    (copied into public/maplibre/ by the sync-maplibre-worker script,
    which predev/prebuild run automatically).

@@ -18,8 +18,8 @@ import {
    The worksheet. Everything above this band is our record; this is the
    one place the visitor's own number goes on it.
 
-   Every ratio here is read out of the snapshot — tons per acre, cultch
-   per ton — so the arithmetic tracks the survey database instead of a
+   Every ratio here is read out of the snapshot - tons per acre, cultch
+   per ton - so the arithmetic tracks the survey database instead of a
    sales figure someone typed once. No manifest, no band.
    ------------------------------------------------------------------ */
 
@@ -90,7 +90,7 @@ export function SizerBand({
         intro={
           <p>
             Everything above this line is our record. Set a tonnage below and it becomes
-            yours — the acres of bottom it represents, the rock and shell that went over the
+            yours - the acres of bottom it represents, the rock and shell that went over the
             side to build them, and the fishery those acres produce every year after. The
             ratios are read straight off the survey snapshot on this page.
           </p>
@@ -267,7 +267,7 @@ function Figure({ value, unit, label }: { value: string; unit: string; label: st
 }
 
 /* ------------------------------------------------------------------
-   Footprint plot — the buyer's acreage as a square, with the actual
+   Footprint plot - the buyer's acreage as a square, with the actual
    case-study lease drawn at the same scale inside it. Both shapes and
    the scale bar share one metres-per-unit viewBox, so the comparison
    holds at every slider position.
@@ -279,7 +279,7 @@ const M_PER_DEG_LAT = 110_574;
 const M_PER_DEG_LON = 111_320;
 const SCALE_BAR_STEPS = [50, 100, 200, 250, 500, 1_000, 2_000, 2_500, 5_000, 10_000];
 
-/** Flat-earth projection about the lease's own centre — exact enough
+/** Flat-earth projection about the lease's own centre - exact enough
     across a hundred acres, and it keeps the plot dependency-free. */
 function projectLease(fc: StoryFeatureCollection | null): Ring[] {
   if (!fc) return [];

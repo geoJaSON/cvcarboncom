@@ -11,7 +11,7 @@ For every image in source_dir (jpg/jpeg/png/heic), this script:
 
 Filenames ARE the captions, so name files descriptively before running
 ("crew culling oysters on the sorting table.jpg"). Hand-edits to
-existing gallery.json entries are preserved — the script only appends.
+existing gallery.json entries are preserved - the script only appends.
 
 Robustness contract:
   - Each entry records its source filename; re-running over the same
@@ -20,7 +20,7 @@ Robustness contract:
     being silently dropped.
   - The manifest is written after every successful file, and a file
     that fails to convert (corrupt, truncated, zero-size) is reported
-    and skipped without killing the batch — so an interrupted run never
+    and skipped without killing the batch - so an interrupted run never
     strands converted images outside the manifest.
   - Transparent PNGs are composited onto white before the JPEG save.
 
@@ -121,7 +121,7 @@ def main() -> None:
 
         try:
             width, height = convert(path, dest)
-        except Exception as err:  # corrupt/truncated/unsupported — keep going
+        except Exception as err:  # corrupt/truncated/unsupported - keep going
             failed.append(path.name)
             print(f"FAILED: {path.name}: {err}")
             continue

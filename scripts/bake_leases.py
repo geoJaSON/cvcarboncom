@@ -12,7 +12,7 @@ to surveyed reef alone.
 
 Quirks handled here, verified against the 2026-08 export:
   - The export is EPSG:3857 in fact as well as in its header, unlike the
-    bedding lines in bake_lease_case.py — reprojected here.
+    bedding lines in bake_lease_case.py - reprojected here.
   - Forty-odd ArcGIS attributes ride along per feature (editor names,
     GlobalIDs, timestamps) and account for most of the 15 MB. Only the
     handful the page could ever show survives the bake.
@@ -60,7 +60,7 @@ def main() -> None:
     raw = json.loads(src.read_text(encoding="utf-8"))
     crs = (raw.get("crs") or {}).get("properties", {}).get("name", "")
     if "3857" not in str(crs):
-        print(f"! source CRS is {crs!r}, expected EPSG:3857 — check before shipping")
+        print(f"! source CRS is {crs!r}, expected EPSG:3857 - check before shipping")
 
     features = []
     skipped = 0

@@ -15,7 +15,7 @@ this. For every image it:
 Why the originals matter
 ------------------------
 Re-encoding drops EXIF. add_gallery_photos.py saves without `exif=`, so
-anything imported through it has already lost GPS and capture time — the
+anything imported through it has already lost GPS and capture time - the
 two fields this match depends on. Always point this script at the camera
 originals, never at files already in public/images/.
 
@@ -23,11 +23,11 @@ How a photo is matched
 ----------------------
 Priority order, first hit wins:
 
-  1. FILENAME  — a name starting "load-<N>" or containing "objectid-<N>"
+  1. FILENAME  - a name starting "load-<N>" or containing "objectid-<N>"
      pins the photo to that OBJECTID. Always wins; use it to correct a
      bad automatic match without editing JSON by hand.
-  2. EXIF      — capture time and, when present, GPS.
-  3. UNMATCHED — recorded in the manifest with objectid null so nothing
+  2. EXIF      - capture time and, when present, GPS.
+  3. UNMATCHED - recorded in the manifest with objectid null so nothing
      is silently dropped. Fix by renaming the file per rule 1.
 
 TIMEZONE, THE EASY THING TO GET WRONG. EXIF DateTimeOriginal is naive
@@ -43,9 +43,9 @@ deployment stamp; among candidates in range the smallest combined
 (time, distance-to-track) score wins. Confidence is reported so the UI
 can caption honestly:
 
-  high   — inside the time window AND GPS within GPS_NEAR of the track
-  medium — inside the time window, no usable GPS
-  low    — GPS on-track but time outside the window (or vice versa)
+  high   - inside the time window AND GPS within GPS_NEAR of the track
+  medium - inside the time window, no usable GPS
+  low    - GPS on-track but time outside the window (or vice versa)
 
 Robustness contract:
   - The manifest is rewritten whole on each run, but hand-edited "alt"
@@ -93,7 +93,7 @@ TIME_TOL_MIN = 75
 # beside the boat, so anything past this is a different load.
 GPS_NEAR_M = 150
 # Wider than the lease itself (~0.6 km), so this only rules out photos taken
-# somewhere else entirely — it cannot pick between loads. Time does that.
+# somewhere else entirely - it cannot pick between loads. Time does that.
 GPS_MAX_M = 600
 
 FILENAME_PIN = re.compile(r"^load[-_ ]?(\d+)|objectid[-_ ]?(\d+)", re.IGNORECASE)
@@ -368,7 +368,7 @@ def main() -> int:
         )
     if unmatched:
         print(
-            f"\n  {unmatched} unmatched — rename each to 'load-<OBJECTID>-<description>.jpg'"
+            f"\n  {unmatched} unmatched - rename each to 'load-<OBJECTID>-<description>.jpg'"
             "\n  to pin it by hand, then re-run."
         )
 

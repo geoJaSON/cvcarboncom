@@ -4,7 +4,7 @@ import type { BBox } from "./use-story-data";
    Scenes are the vocabulary shared by the scroll narrative and the
    chart. A section declares which scene it wants; the map stage owns
    how to get there. Camera targets are named bboxes resolved against
-   the snapshot manifest at runtime, so the chart follows the data —
+   the snapshot manifest at runtime, so the chart follows the data -
    the fallbacks below only matter before a snapshot is baked.
    ------------------------------------------------------------------ */
 
@@ -99,8 +99,8 @@ export const SCENES: Record<SceneId, Scene> = {
     layers: { graticule: true },
   },
   /* Invitation-only opener. The reef extent is the one baked view that
-     holds both of the prospect's Louisiana sites at once — Calcasieu
-     Pass at the western edge, Plaquemines at the eastern — so their
+     holds both of the prospect's Louisiana sites at once - Calcasieu
+     Pass at the western edge, Plaquemines at the eastern - so their
      pins stand on shaded survey rather than on empty water. No
      targetId: the reticle stays off their facilities. */
   venture: {
@@ -179,7 +179,7 @@ export const SCENES: Record<SceneId, Scene> = {
     cssPlayback: true,
     cssTiers: ["low", "med", "high"],
   },
-  /* Chapter five — the coast-wide argument told again on two adjoining
+  /* Chapter five - the coast-wide argument told again on two adjoining
      leases. Same camera target throughout; only the survey data changes. */
   "case-before": {
     id: "case-before",
@@ -219,7 +219,7 @@ export const SCENES: Record<SceneId, Scene> = {
     caseWipe: true,
     casePhotoCycle: true,
   },
-  /* Bonus chapter, behind the ?32024 flag — the field save. One lease,
+  /* Bonus chapter, behind the ?32024 flag - the field save. One lease,
      one camera target; the drama is in the data layers, not the flight. */
   "save-island": {
     id: "save-island",
@@ -357,7 +357,7 @@ export function mapTarget(id: string | null | undefined) {
   return MAP_TARGETS.find((target) => target.id === id) ?? null;
 }
 
-/* Louisiana public oyster grounds — placeholder chart extent used only
+/* Louisiana public oyster grounds - placeholder chart extent used only
    until manifest.json ships real per-layer bounds. */
 export const FALLBACK_BOUNDS: BBox = [-93.95, 29.15, -89.6, 30.35];
 
@@ -367,27 +367,27 @@ export const FALLBACK_BOUNDS: BBox = [-93.95, 29.15, -89.6, 30.35];
    ------------------------------------------------------------------ */
 
 export const CHART = {
-  cultch: "#d6c5aa", // sand — shell returned to the water
-  coverage: "#c5d8e3", // mist — sonar-ping survey cells
+  cultch: "#d6c5aa", // sand - shell returned to the water
+  coverage: "#c5d8e3", // mist - sonar-ping survey cells
   graticule: "#c5d8e3",
   /** The one thing on the chart that is wrong on purpose: the errant
       barge load in the field-save chapter. Nothing else may wear it. */
   alert: "#e2694e",
   tiers: {
-    low: "#3e7191", // steel   — 20–119 oysters / m²
-    med: "#2f8a74", // verdigris — 119–244 oysters / m²
-    high: "#d6c5aa", // sand    — ≥ 244 oysters / m²
+    low: "#3e7191", // steel   - 20–119 oysters / m²
+    med: "#2f8a74", // verdigris - 119–244 oysters / m²
+    high: "#d6c5aa", // sand    - ≥ 244 oysters / m²
   },
   /** Low → high oyster density, navy floor to shell-gold peak. */
   densityRamp: ["#16405f", "#3e7191", "#2f8a74", "#5ea183", "#d6c5aa"],
   /** Density bin edges in oysters per square meter (survey convention). */
   densityBins: [20, 119, 244],
-  /** Polling substrate classes — cool, bare bottom up to shell-gold reef. */
+  /** Polling substrate classes - cool, bare bottom up to shell-gold reef. */
   substrate: {
-    mud: "#16405f", // navy  — mud
-    firm: "#3e7191", // steel — firm/hard bottom
-    buried: "#8fb0c4", // haze  — buried shell
-    scat: "#c5d8e3", // mist  — scattered shell
-    reef: "#d6c5aa", // sand  — solid reef
+    mud: "#16405f", // navy  - mud
+    firm: "#3e7191", // steel - firm/hard bottom
+    buried: "#8fb0c4", // haze  - buried shell
+    scat: "#c5d8e3", // mist  - scattered shell
+    reef: "#d6c5aa", // sand  - solid reef
   },
 } as const;

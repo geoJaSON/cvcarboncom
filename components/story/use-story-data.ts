@@ -46,7 +46,7 @@ export type StoryManifest = {
 
 export type StoryFeatureCollection = FeatureCollection;
 
-/* The construction ledger — how much reef each year's bedding built new
+/* The construction ledger - how much reef each year's bedding built new
    and how much it re-shelled. Baked from Jason's per-year bedding layers
    by scripts/bake_reef_construction.py; absent file, absent chart. */
 export type ConstructionManifest = {
@@ -87,7 +87,7 @@ export type CaseLease = {
 };
 
 /* Adjoining leases under one leaseholder, told start to finish as a
-   single record — chapter five's data pack, merged by
+   single record - chapter five's data pack, merged by
    scripts/bake_bay_boudreau.py. The top-level stats are the combined
    footprint; `leases` keeps each lease's own numbers. Optional like
    everything else: no files, no chapter. */
@@ -142,13 +142,13 @@ export type CasePhoto = {
   area_sqft: number | null;
 };
 
-/** "Limestone, River Rock and Combo" — prose list, no Oxford comma. */
+/** "Limestone, River Rock and Combo" - prose list, no Oxford comma. */
 export function fmtList(items: string[]): string {
-  if (items.length <= 1) return items[0] ?? "—";
+  if (items.length <= 1) return items[0] ?? "-";
   return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
 }
 
-/** "Leases 30260 and 36166" — or "Lease 30260" when the pack holds one. */
+/** "Leases 30260 and 36166" - or "Lease 30260" when the pack holds one. */
 export function caseLeaseLabel(cs: CaseStudyManifest, withNoun = true): string {
   const numbers = cs.leases.map((lease) => lease.lease_number);
   const list = fmtList(numbers);
@@ -164,7 +164,7 @@ export type CasePhaseStats = {
   pct_reef: number | null;
 };
 
-/* The lease 32024 field save — the bonus chapter told when the ?32024
+/* The lease 32024 field save - the bonus chapter told when the ?32024
    flag is up. Same shape as the case study, plus the one barge load
    that went down on the poled reef and was caught from out of state.
    Baked by scripts/bake_lease_save.py. */
@@ -197,7 +197,7 @@ export type SaveManifest = {
   provenance?: SaveSession[];
   /** Field photos matched to a placement; bedding features index into this. */
   photos?: SavePhoto[];
-  /** Adams Bay marsh loss around the lease — the sediment source that buries shell. */
+  /** Adams Bay marsh loss around the lease - the sediment source that buries shell. */
   marsh?: SaveMarsh;
   /** Known limits on the numbers above, surfaced rather than buried. */
   caveats?: { id: string; detail: string; affects?: string[] }[];
@@ -215,7 +215,7 @@ export type SaveSession = {
   points: number;
   /** Median hours from pole-in-the-mud to a row in the database. */
   lag_hours_median: number | null;
-  /** Median seconds between consecutive soundings — the boat's working pace. */
+  /** Median seconds between consecutive soundings - the boat's working pace. */
   cadence_seconds_median: number | null;
 };
 
@@ -251,7 +251,7 @@ export type SaveMarsh = {
   limit: string;
 };
 
-/* The field gallery — overflow home for photos that don't fit the
+/* The field gallery - overflow home for photos that don't fit the
    curated bands. Maintained by scripts/add_gallery_photos.py; absent
    file, absent band. */
 export type GalleryPhoto = {
@@ -266,7 +266,7 @@ export type GalleryPhoto = {
 };
 export type GalleryManifest = { photos: GalleryPhoto[] };
 
-/* A scrubbable photo sequence — the same place on different days. Both
+/* A scrubbable photo sequence - the same place on different days. Both
    the frames and the band's own copy live in the file, so aiming this
    at a new set of photographs never touches the components. */
 export type SequenceFrame = {
@@ -469,7 +469,7 @@ export type StorySeason = {
   polling: number;
   dredges: number;
   points: number;
-  /** The bake caught this season mid-flight — the boats are still out. */
+  /** The bake caught this season mid-flight - the boats are still out. */
   inProgress: boolean;
 };
 
@@ -492,7 +492,7 @@ export function latestSeason(manifest: StoryManifest | null): StorySeason | null
 
 /** Reef acreage a case-study lease gained between its two survey
     passes: the sounding share that flipped to solid reef, applied to
-    the lease's acres and floored — claim down, never up. Quoted by both
+    the lease's acres and floored - claim down, never up. Quoted by both
     the case-study chapter and the invitation-only opener, so it lives
     here rather than in whichever one happened to need it first. */
 export function newReefAcres(cs: CaseStudyManifest | null): number | null {
@@ -507,7 +507,7 @@ export function newReefAcres(cs: CaseStudyManifest | null): number | null {
     a missing file shows an em dash rather than a confident zero.
 
     Read by the invitation-only opener and quoted beside the same
-    ledger's per-year chart, so both must come from this one sum — a
+    ledger's per-year chart, so both must come from this one sum - a
     hand-typed total is the fastest way to contradict our own chart. */
 export function beddedReefAcres(
   construction: ConstructionManifest | null,
@@ -523,17 +523,17 @@ export function beddedReefAcres(
 }
 
 /* ------------------------------------------------------------------
-   Formatting helpers — stats render as an em dash until the snapshot
+   Formatting helpers - stats render as an em dash until the snapshot
    provides them, so a missing bake never shows a wrong number.
    ------------------------------------------------------------------ */
 
 export function fmtInt(n: number | undefined | null): string {
-  if (n == null || Number.isNaN(n)) return "—";
+  if (n == null || Number.isNaN(n)) return "-";
   return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(n);
 }
 
 export function fmtCompact(n: number | undefined | null): string {
-  if (n == null || Number.isNaN(n)) return "—";
+  if (n == null || Number.isNaN(n)) return "-";
   return new Intl.NumberFormat("en-US", {
     notation: "compact",
     maximumFractionDigits: 1,
