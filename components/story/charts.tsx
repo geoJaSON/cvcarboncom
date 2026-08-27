@@ -219,7 +219,7 @@ export function NetWaterfall({ manifest }: { manifest: StoryManifest | null }) {
 
   const cols = [
     { x: 0 * step + (step - barW) / 2, label: "Measured uptake", value: gross },
-    { x: 1 * step + (step - barW) / 2, label: "− our operations", value: deduction },
+    { x: 1 * step + (step - barW) / 2, label: "− our operations and nature", value: deduction },
     { x: 2 * step + (step - barW) / 2, label: "Net, credited", value: net },
   ];
 

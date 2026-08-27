@@ -497,6 +497,90 @@
   transform: rotate(90deg);
 }
 
+/* The carbon chapter can bind the selected flight target to both the
+   visible columns and the net figure. Styled as a chart instrument,
+   compact enough to live inside the existing AREAS rail. */
+.story-area-filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin: 0.15rem 0 0.55rem;
+  padding: 0.45rem 0.58rem 0.65rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-mist) 12%, transparent);
+}
+
+.story-area-filter strong,
+.story-area-filter small {
+  display: block;
+}
+
+.story-area-filter strong {
+  color: color-mix(in srgb, var(--color-mist) 74%, transparent);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.story-area-filter small {
+  overflow: hidden;
+  margin-top: 0.16rem;
+  color: color-mix(in srgb, var(--color-mist) 48%, transparent);
+  font-size: 0.51rem;
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.story-area-switch {
+  position: relative;
+  width: 2.15rem;
+  height: 1.08rem;
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--color-mist) 32%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-abyss) 72%, transparent);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.story-area-switch i {
+  position: absolute;
+  top: 50%;
+  left: 0.2rem;
+  width: 0.64rem;
+  height: 0.64rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-mist) 58%, transparent);
+  transform: translateY(-50%);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.story-area-switch[aria-checked="true"] {
+  border-color: color-mix(in srgb, var(--color-verdigris) 78%, transparent);
+  background: color-mix(in srgb, var(--color-verdigris) 24%, transparent);
+  box-shadow: 0 0 0.8rem rgba(47, 138, 116, 0.2);
+}
+
+.story-area-switch[aria-checked="true"] i {
+  background: var(--color-verdigris);
+  box-shadow: 0 0 0.55rem rgba(47, 138, 116, 0.72);
+  transform: translate(1rem, -50%);
+}
+
+.story-area-switch:hover,
+.story-area-switch:focus-visible {
+  border-color: var(--color-pearl);
+  outline: none;
+}
+
 .story-target-button {
   display: flex;
   align-items: center;

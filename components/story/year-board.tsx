@@ -5,6 +5,7 @@ import type { FeatureCollection, Geometry, Position } from "geojson";
 import { CHART } from "./scenes";
 import { ChartTable } from "./charts";
 import { CHESAPEAKE_OUTLINE } from "./chesapeake-outline";
+import { GULF_STATE_OUTLINES } from "./gulf-state-outlines";
 import { fmtInt, type StoryFeatureCollection, type StoryManifest } from "./use-story-data";
 
 /* ------------------------------------------------------------------
@@ -79,11 +80,19 @@ type Board = {
   w: number;
   h: number;
   graticule: string;
+  states: string;
+  stateLabels: { name: string; x: number }[];
   counties: string;
   chesOutline: string;
   chesBox: { x: number; y: number; w: number; h: number } | null;
   years: YearPaths[];
 };
+
+const GULF_STATE_LABELS = [
+  { name: "TEXAS", lon: -94.85 },
+  { name: "LOUISIANA", lon: -91.55 },
+  { name: "MISSISSIPPI", lon: -89.05 },
+] as const;
 
 /** Outer rings and holes alike - drawn into one path with evenodd fill. */
 function polygonRings(geometry: Geometry | null | undefined): Position[][] {
@@ -277,6 +286,10 @@ function buildBoard(
     w: STRIP_W,
     h,
     graticule: graticulePath(gulf),
+    states: outlinePath(GULF_STATE_OUTLINES, gulf, "gulf"),
+    stateLabels: GULF_STATE_LABELS.filter(
+      ({ lon }) => lon >= gulf.minLon && lon <= gulf.maxLon,
+    ).map(({ name, lon }) => ({ name, x: gulf.x(lon) })),
     counties: counties ? outlinePath(counties, gulf, "gulf") : "",
     chesOutline: ches ? outlinePath(CHESAPEAKE_OUTLINE, ches, "ches") : "",
     chesBox,
@@ -347,7 +360,7 @@ export const YearBoard = memo(function YearBoard({
 
   return (
     <figure>
-      <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-mist/70">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-mist/70">
         {(
           [
             ["high", "≥ 244 / m²"],
@@ -363,6 +376,13 @@ export const YearBoard = memo(function YearBoard({
             {label}
           </span>
         ))}
+        <span className="inline-flex items-center gap-1.5 text-mist/50 sm:ml-auto">
+          <svg width="28" height="8" viewBox="0 0 28 8" aria-hidden="true">
+            <path d="M0 2H28" stroke="currentColor" strokeOpacity="0.8" />
+            <path d="M0 6H28" stroke="currentColor" strokeOpacity="0.5" strokeDasharray="3 2" />
+          </svg>
+          State / surveyed county
+        </span>
       </div>
       <div className="mt-4 grid gap-5">
         {board.years.map((y) => {
@@ -415,6 +435,15 @@ export const YearBoard = memo(function YearBoard({
                 </defs>
 
                 <g clipPath={`url(#yb-gulf-${y.year})`}>
+                  <path
+                    d={board.states}
+                    fill="#c5d8e3"
+                    fillOpacity="0.025"
+                    fillRule="evenodd"
+                    stroke="#c5d8e3"
+                    strokeOpacity="0.42"
+                    strokeWidth="1.25"
+                  />
                   <path d={board.graticule} fill="none" stroke="#c5d8e3" strokeOpacity="0.09" strokeWidth="1" />
                   {board.counties && (
                     <path
@@ -429,6 +458,25 @@ export const YearBoard = memo(function YearBoard({
                   {TIER_ORDER.map((tier) =>
                     y.gulf[tier] ? <TierLayer key={tier} paths={y.gulf[tier]} tier={tier} /> : null,
                   )}
+                  {board.stateLabels.map((label) => (
+                    <text
+                      key={label.name}
+                      x={label.x}
+                      y="13"
+                      textAnchor="middle"
+                      fontSize="9"
+                      letterSpacing="0.16em"
+                      fill="#c5d8e3"
+                      fillOpacity="0.52"
+                      stroke="#071722"
+                      strokeOpacity="0.75"
+                      strokeWidth="3"
+                      paintOrder="stroke"
+                      style={NOTE_TEXT}
+                    >
+                      {label.name}
+                    </text>
+                  ))}
                   <text
                     x="4"
                     y={board.h - 6}

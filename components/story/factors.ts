@@ -20,6 +20,12 @@ export const FISH_G_PER_M2_YR = 260;
     whichever band happened to need it first. */
 export const EROSION_REDUCTION_PCT = 50;
 
+/** Standard cultch placement rate - short tons of shell, limestone and
+    rock over the side per acre of bottom. A published standard rather
+    than this program's own placement density, so the sizer quotes a
+    rate a buyer can check against anyone else's project. */
+export const CULTCH_SHORT_TONS_PER_ACRE = 13;
+
 /** Jobs supported per $1M of restoration spend. Hall & DeAngelis 2022. */
 export const JOBS_PER_MILLION = 18.55;
 

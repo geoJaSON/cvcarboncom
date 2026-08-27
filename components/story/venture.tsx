@@ -57,6 +57,13 @@ const PROSPECT = {
     this constant once construction.json reports the higher figure. */
 const BEDDED_ACRES_FLOOR = 3813;
 
+/** Venture-specific alignment figures from CV Carbon program records,
+    current as of August 2026 but not yet carried by the story manifest. */
+const LOCAL_ALIGNMENT = {
+  plaqueminesBusinesses: 196,
+  louisianaOffsetPct: 95,
+} as const;
+
 /* What the rest of the brief answers, in the order it answers it. A
    reader who has been handed a scrolling map deserves to know the shape
    of the argument before committing to the scroll. */
@@ -114,7 +121,9 @@ export function VentureBriefBand({
           theirs={` On your website you commit to invest in carbon capture and storage at each of your projects with a CCS goal of 1 million tons of carbon per year.`}
           ours={
             <>
-              {fmtInt(s?.net_mt_total)} MT CO₂e net of our own operation and already measured, verified, and serialized to a public registry.
+              {fmtInt(s?.net_mt_total)} MT CO₂e net of our own operation and already measured,
+              verified, and serialized to a public registry. Local, nature-based storage can
+              complement your geologic CCS portfolio.
             </>
           }
         />
@@ -140,7 +149,10 @@ export function VentureBriefBand({
           theirs="Calcasieu Pass in Cameron Parish, and the export facility in Plaquemines Parish."
           ours={
             <>
-              From Calcasieu Pass to Plaquemines Parish, we have 462,653 acres of oyster leases run by 405 commercial oyster businesses.
+              Approximately {LOCAL_ALIGNMENT.louisianaOffsetPct}% of our current offsets were
+              captured from oyster reefs in Louisiana coastal waters. Of our{" "}
+              {fmtInt(s?.entities_enrolled)} participating oyster businesses,{" "}
+              {LOCAL_ALIGNMENT.plaqueminesBusinesses} hold leases in Plaquemines Parish.
             </>
           }
         >
@@ -292,8 +304,9 @@ export function VentureBriefBand({
         >
           {PROSPECT.sourceLabel}
         </a>
-        , read {PROSPECT.readOn}. CV Carbon figures are read from the survey snapshot dated{" "}
-        {manifest?.snapshot_date ?? "-"}. Fish and shellfish
+        , read {PROSPECT.readOn}. CV Carbon survey figures are read from the snapshot dated{" "}
+        {manifest?.snapshot_date ?? "-"}; Plaquemines participation and Louisiana offset share
+        are from CV Carbon program records dated August 2026. Fish and shellfish
         production per Peterson, Grabowski &amp; Powers (2003); shoreline-erosion
         evidence per LSU AgCenter monitoring. Both cited in full on{" "}
         <a href="/beyond-carbon" className="underline underline-offset-2">

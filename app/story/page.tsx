@@ -20,8 +20,10 @@ export default async function StoryPage({
 }) {
   const params = await searchParams;
   const showVenturePois = Object.prototype.hasOwnProperty.call(params, "venture");
-  /* /story?32024 - the field-save bonus chapter, gated like ?venture. */
-  const showFieldSave = Object.prototype.hasOwnProperty.call(params, "32024");
+  /* /story?adams - the Adams Bay field-save bonus chapter, gated like
+     ?venture. The lease number stays the internal id; only the URL flag
+     is the readable name. */
+  const showFieldSave = Object.prototype.hasOwnProperty.call(params, "adams");
 
   return (
     <>

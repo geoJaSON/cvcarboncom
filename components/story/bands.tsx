@@ -136,7 +136,9 @@ export function WorkBand({ manifest }: { manifest: StoryManifest | null }) {
             any firm, non-toxic surface can serve. Ours is oyster shell, recycled crushed
             concrete, crushed limestone, and river rock, placed exactly where the chart says it
             should go. Once a larva cements itself to the cultch it is called spat, and from
-            there, the reef does the rest of the work itself.
+            there, the reef grows. As oysters colonize the cultch, carbon is incorporated into
+            shell, biomass, and organic deposits; as the reef accretes, some of that carbon is
+            buried in the sediment below.
           </p>
         }
       />
@@ -222,7 +224,9 @@ export function ProofBand() {
           <p>
             A carbon credit is only as good as the measurement under it. Ours stand on a survey
             program run from working oyster boats, logged in the field, and checked by
-            independent verifiers before a single serial number is issued.
+            independent verifiers before a single serial number is issued. The mass-balance
+            methodology is supported by formal monitoring, reporting, and verification (MRV)
+            and quality assurance and quality control (QA/QC) plans.
           </p>
         }
       />
@@ -265,7 +269,7 @@ export function ProofBand() {
                 Reinvest: the loop closes over the side of the boat
               </h3>
               <p className="prose-cv mt-4 !text-mist/85 [&_strong]:!text-white">
-                30 percent of net revenue is committed back into cultch. Every
+                Thirty percent of net revenue is committed back into cultch. Every
                 credit sold buys the shell, limestone and rock for the next season&rsquo;s
                 placements, so the next vintage starts on substrate this one paid for. It is
                 written into our partnership with the commercial oyster industry, not a line in
@@ -280,19 +284,19 @@ export function ProofBand() {
         <p className="prose-cv">
           Our tonnage is <strong>net of our own operation</strong>.
           The fuel our boats and barges burn is measured and subtracted before anything is
-          credited. If the program didn&rsquo;t come out ahead, the ledger would say so.
+          credited.
         </p>
       </Reveal>
 
       <div className="mt-16">
         <p className="eyebrow mb-6">One reef site, season over season</p>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Reveal key={i} delay={i * 80}>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[1, 2, 3, 5].map((imageNumber, index) => (
+            <Reveal key={imageNumber} delay={(index + 1) * 80}>
               <div className="relative aspect-square overflow-hidden rounded-lg bg-navy">
                 <Image
-                  src={`/images/reef-growth-${i}.png`}
-                  alt={`Reef growth sequence, stage ${i} of 5`}
+                  src={`/images/reef-growth-${imageNumber}.png`}
+                  alt={`Reef growth sequence, stage ${index + 1} of 4`}
                   fill
                   sizes="(min-width: 640px) 20vw, 50vw"
                   className="object-cover"
@@ -623,7 +627,7 @@ export function MaterialBand({ manifest }: { manifest: CaseStudyManifest }) {
             Filmed at the dock as the loads went aboard. From {fmtDayWindow(bedding.window)}, the
             crews put {fmtInt(bedding.placements)} barge loads of {fmtList(bedding.materials)}{" "}
             over the side on these two leases. The chart that follows replays every one of
-            those runs from the barge&rsquo;s own GPS.
+            those runs recorded in our app.
           </p>
         }
       />
@@ -768,7 +772,7 @@ function MarshBurialPanel({ marsh, buried }: { marsh: SaveMarsh; buried: string 
   );
 }
 
-/* ---- Bonus chapter (?32024): the field save ---- */
+/* ---- Bonus chapter (?adams): the field save ---- */
 export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
   const { before, after, bedding, error_load: err } = manifest;
   return (

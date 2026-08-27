@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CHART, MAP_TARGETS, SCENES, mapTarget, type SceneId } from "./scenes";
 import { vintageColor, type ChartView } from "./map-stage";
+import { fmtCompact } from "./use-story-data";
 
 /* ------------------------------------------------------------------
    Mission instrumentation. The chart still owns the spectacle; this
@@ -49,8 +50,11 @@ export function Hud({
   visible,
   targetId,
   carbonYears,
+  carbonAreaFilter,
+  carbonAreaNet,
   showSaveTarget = false,
   onTarget,
+  onCarbonAreaFilter,
 }: {
   view: ChartView | null;
   scene: SceneId;
@@ -60,9 +64,14 @@ export function Hud({
   /** Vintages in carbon_columns.geojson, oldest first - the carbon
       scene's legend follows the data like the columns do. */
   carbonYears?: number[];
-  /** The ?32024 chapter is up - list its lease in the flight deck. */
+  /** Opt-in link between the selected map target, the 3D columns, and
+      the net figure in the carbon chapter card. */
+  carbonAreaFilter: boolean;
+  carbonAreaNet?: number | null;
+  /** The ?adams chapter is up - list its lease in the flight deck. */
   showSaveTarget?: boolean;
   onTarget: (id: string) => void;
+  onCarbonAreaFilter: (enabled: boolean) => void;
 }) {
   /* The rail is useful but it sits over the chart; let the visitor fold
      it down to the header strip and keep the compass. */
@@ -134,6 +143,28 @@ export function Hud({
                   <i style={{ transform: `rotate(${compassBearing}deg)` }} />
                 </div>
               </div>
+              {showCarbon && targetsOpen && (
+                <div className="story-area-filter">
+                  <span className="min-w-0">
+                    <strong>Filter net</strong>
+                    <small aria-live="polite">
+                      {carbonAreaFilter
+                        ? `${target?.name ?? "Selected area"} · ${fmtCompact(carbonAreaNet)} MT`
+                        : "All areas"}
+                    </small>
+                  </span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={carbonAreaFilter}
+                    aria-label="Filter net carbon and 3D columns by the selected area"
+                    className="story-area-switch"
+                    onClick={() => onCarbonAreaFilter(!carbonAreaFilter)}
+                  >
+                    <i aria-hidden="true" />
+                  </button>
+                </div>
+              )}
               <div id="story-target-list" hidden={!targetsOpen} className="space-y-1">
                 {railTargets.map((candidate, index) => {
                   const active = candidate.id === targetId;
@@ -157,7 +188,6 @@ export function Hud({
                   );
                 })}
               </div>
-              {targetsOpen}
             </aside>
           )}
 

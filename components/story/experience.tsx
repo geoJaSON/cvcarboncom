@@ -23,7 +23,8 @@ import { GalleryBand } from "./gallery";
 import { Hud } from "./hud";
 import { MapStage, type ChartView } from "./map-stage";
 import { PlacementInset, dredgeInsetPhotos, placementInsetPhotos } from "./placement-inset";
-import { SCENES, type SceneId } from "./scenes";
+import { carbonNetForArea } from "./carbon-areas";
+import { SCENES, mapTarget, type SceneId } from "./scenes";
 import { SequenceBand } from "./sequence";
 import { SizerBand } from "./sizer";
 import {
@@ -59,6 +60,7 @@ export default function Experience({
   const [hudVisible, setHudVisible] = useState(true);
   const [view, setView] = useState<ChartView | null>(null);
   const [manualTarget, setManualTarget] = useState<string | null>(null);
+  const [filterNetByArea, setFilterNetByArea] = useState(false);
   const reducedMotion = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const viewThrottle = useRef(0);
@@ -109,6 +111,15 @@ export default function Experience({
   }, []);
 
   const activeTarget = manualTarget ?? SCENES[scene].targetId ?? null;
+  const carbonAreaId = scene === "carbon" && filterNetByArea ? activeTarget : null;
+  const carbonArea = mapTarget(carbonAreaId);
+  const carbonNet = useMemo(
+    () =>
+      carbonAreaId
+        ? carbonNetForArea(data.layers.carbon, data.layers.counties, carbonAreaId)
+        : data.manifest?.stats?.net_mt_total,
+    [carbonAreaId, data.layers.carbon, data.layers.counties, data.manifest?.stats?.net_mt_total],
+  );
 
   /* The carbon legend lists the vintages actually baked into the
      columns, oldest first - a new season needs no code change. */
@@ -124,7 +135,7 @@ export default function Experience({
   const snapshotDate = data.manifest?.snapshot_date;
   const s = data.manifest?.stats;
   const cs = data.caseManifest;
-  /* Fetched only behind the ?32024 flag, so its presence is the gate. */
+  /* Fetched only behind the ?adams flag, so its presence is the gate. */
   const sv = data.saveManifest;
   const insetPhotos = useMemo(
     () =>
@@ -135,9 +146,9 @@ export default function Experience({
           : undefined,
     [scene, cs?.photos, sv?.photos],
   );
-  /* Reef acreage created on the lease. (106 ac × 73.2% → 77.) The
-     invitation-only opener quotes the same figure, so the arithmetic
-     lives beside the snapshot types rather than in this file. */
+  /* Reef acreage created across the pack, measured against the bedding
+     footprint by the bake. The invitation-only opener quotes the same
+     figure, so it is read beside the snapshot types, not derived here. */
   const createdAcres = newReefAcres(cs);
 
   return (
@@ -146,6 +157,7 @@ export default function Experience({
         data={data}
         activeScene={scene}
         targetId={activeTarget}
+        carbonAreaId={carbonAreaId}
         showVenturePois={showVenturePois}
         reducedMotion={reducedMotion}
         onView={onView}
@@ -158,8 +170,11 @@ export default function Experience({
         visible={hudVisible}
         targetId={activeTarget}
         carbonYears={carbonYears}
+        carbonAreaFilter={filterNetByArea}
+        carbonAreaNet={carbonNet}
         showSaveTarget={hasFieldSave}
         onTarget={setManualTarget}
+        onCarbonAreaFilter={setFilterNetByArea}
       />
       {/* One inset, two photo sets: the placement replay's field shots,
           and the resurvey's dredge tows. The map runs one cycle at a time. */}
@@ -325,7 +340,15 @@ export default function Experience({
               verified the hand counts beneath it.
             </p>
             <CardStats
-              stats={[{ value: s?.net_mt_total, label: "net MT CO₂e banked", compact: true }]}
+              stats={[
+                {
+                  value: carbonNet,
+                  label: carbonArea
+                    ? `net MT CO₂e in ${carbonArea.name} ${carbonArea.suffix}`
+                    : "net MT CO₂e banked",
+                  compact: true,
+                },
+              ]}
             />
           </ChapterCard>
         </ChartStep>
@@ -441,7 +464,7 @@ export default function Experience({
           </>
         )}
 
-        {/* ---- Bonus chapter - the field save (?32024 flag). The band and
+        {/* ---- Bonus chapter - the field save (?adams flag). The band and
                  its scenes mount only when the pack was fetched, so the
                  public brief never hints the chapter exists. ---- */}
         {sv && (
@@ -552,6 +575,7 @@ export default function Experience({
             manifest={data.manifest}
             caseManifest={data.caseManifest}
             caseBoundary={data.layers.caseBoundary}
+            construction={data.construction}
           />
 
           {/* Everything above this is our own record making its own

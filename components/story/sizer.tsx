@@ -4,12 +4,13 @@ import { useMemo, useState } from "react";
 import { SectionHeading } from "@/components/ui";
 import { Reveal } from "@/components/reveal";
 import { BandShell } from "./bands";
-import { ACRE_M2, EPA, FISH_LB_PER_ACRE_YEAR } from "./factors";
+import { ACRE_M2, CULTCH_SHORT_TONS_PER_ACRE, EPA, FISH_LB_PER_ACRE_YEAR } from "./factors";
 import {
   caseLeaseLabel,
   fmtCompact,
   fmtInt,
   type CaseStudyManifest,
+  type ConstructionManifest,
   type StoryFeatureCollection,
   type StoryManifest,
 } from "./use-story-data";
@@ -18,15 +19,23 @@ import {
    The worksheet. Everything above this band is our record; this is the
    one place the visitor's own number goes on it.
 
-   Every ratio here is read out of the snapshot - tons per acre, cultch
-   per ton - so the arithmetic tracks the survey database instead of a
-   sales figure someone typed once. No manifest, no band.
+   Acreage is the measured tonnage over the acres that actually took
+   cultch, from the construction ledger - NOT over the surveyed acres,
+   most of which never had material placed on them. Cultch itself is the
+   standard rate in factors.ts. No manifest, no band.
    ------------------------------------------------------------------ */
 
 const MIN_TONS = 100;
 const MAX_TONS = 100_000;
 const SLIDER_STEPS = 1000;
 const PRESETS = [500, 2_500, 10_000, 50_000];
+
+/** A figure that rounds to zero is not nothing - the smallest purchase
+    on the slider really does buy a fraction of an acre. Floor it to
+    "<1" rather than print a bare 0, which reads as "you get none". */
+function fmtFloor(value: number): string {
+  return value > 0 && value < 1 ? "<1" : fmtInt(Math.round(value));
+}
 
 /** Round to a figure a person would actually say out loud. */
 function snapTons(value: number): number {
@@ -46,10 +55,12 @@ export function SizerBand({
   manifest,
   caseManifest,
   caseBoundary,
+  construction,
 }: {
   manifest: StoryManifest | null;
   caseManifest: CaseStudyManifest | null;
   caseBoundary: StoryFeatureCollection | null;
+  construction: ConstructionManifest | null;
 }) {
   const [tons, setTons] = useState(2_500);
   /* The number field holds its own text while it is being typed, or
@@ -58,18 +69,31 @@ export function SizerBand({
   const [draft, setDraft] = useState<string | null>(null);
 
   const s = manifest?.stats;
-  const surveyedAcres = s?.css_acres?.total;
   const netMt = s?.net_mt_total;
-  const cultchTons = s?.bedding_short_tons;
 
-  const mtPerAcre = netMt && surveyedAcres ? netMt / surveyedAcres : null;
-  const cultchPerMt = cultchTons && netMt ? cultchTons / netMt : null;
+  /* The acres that took material, summed off the construction ledger.
+     Prefer each year's whole dissolved bedding footprint; fall back to
+     the clipped figure on older bakes that shipped no bedded_acres. */
+  const placedAcres = useMemo(
+    () =>
+      construction?.by_year?.reduce(
+        (total, row) => total + (row.bedded_acres ?? row.constructed_acres ?? 0),
+        0,
+      ) ?? 0,
+    [construction],
+  );
 
   const leaseRings = useMemo(() => projectLease(caseBoundary), [caseBoundary]);
 
-  if (mtPerAcre == null) return null;
+  if (!netMt || !placedAcres) return null;
 
+  const mtPerAcre = netMt / placedAcres;
   const acres = tons / mtPerAcre;
+  /* Cultch is figured off the acreage as displayed, so a reader who
+     multiplies the two figures on the page gets the number the page
+     shows. Under an acre there is no whole number to multiply, so the
+     true fraction carries through and both figures floor to "<1". */
+  const shownAcres = acres >= 1 ? Math.round(acres) : acres;
   const fishLb = acres * FISH_LB_PER_ACRE_YEAR;
   const cars = tons * EPA.passenger_cars_year;
   const leaseAcres = caseManifest?.acres ?? null;
@@ -161,17 +185,15 @@ export function SizerBand({
 
               <dl className="mt-9 grid gap-x-8 gap-y-7 border-t border-navy/10 pt-8 sm:grid-cols-2">
                 <Figure
-                  value={fmtInt(Math.round(acres))}
+                  value={fmtFloor(acres)}
                   unit="acres"
                   label="of surveyed reef at commercial density"
                 />
-                {cultchPerMt != null && (
-                  <Figure
-                    value={fmtInt(Math.round(tons * cultchPerMt))}
-                    unit="short tons"
-                    label="of shell, limestone and rock over the side"
-                  />
-                )}
+                <Figure
+                  value={fmtFloor(shownAcres * CULTCH_SHORT_TONS_PER_ACRE)}
+                  unit="short tons"
+                  label="of shell, limestone and rock over the side"
+                />
                 <Figure
                   value={fmtCompact(Math.round(fishLb))}
                   unit="lb / year"
@@ -180,10 +202,13 @@ export function SizerBand({
                 {leaseCount != null && caseManifest && (
                   <Figure
                     value={
-                      /* Two decimals under 1×, or a 100 t buy reads "0.0". */
+                      /* Two decimals under 1×, and a floor below that,
+                         or the smallest purchase reads a flat "0.00". */
                       leaseCount >= 10
                         ? fmtInt(Math.round(leaseCount))
-                        : leaseCount.toFixed(leaseCount < 1 ? 2 : 1)
+                        : leaseCount < 0.01
+                          ? "<0.01"
+                          : leaseCount.toFixed(leaseCount < 1 ? 2 : 1)
                     }
                     unit="×"
                     label={`the ${caseManifest.location} leases from chapter five, ${fmtInt(caseManifest.acres)} acres together`}
@@ -210,7 +235,7 @@ export function SizerBand({
                     className="story-swatch"
                     style={{ background: "rgba(35,112,93,0.18)", borderColor: "#23705d" }}
                   />
-                  Your {fmtInt(Math.round(acres))} acres
+                  Your {fmtFloor(acres)} acres
                 </span>
                 {leaseRings.length > 0 && caseManifest && (
                   <span className="flex items-center gap-2">
@@ -226,14 +251,11 @@ export function SizerBand({
           </div>
 
           <p className="mt-10 border-t border-navy/10 pt-6 text-xs leading-relaxed text-ink/45">
-            Derived from this page&rsquo;s own snapshot: {fmtInt(netMt)} net MT CO₂e measured
-            across {fmtInt(surveyedAcres)} surveyed acres ({mtPerAcre.toFixed(1)} MT per acre)
-            {cultchPerMt != null
-              ? `, and ${fmtInt(cultchTons)} short tons of cultch placed against those tons (${cultchPerMt.toFixed(2)} short tons per credited ton)`
-              : ""}
-            . Fishery production per Peterson et al. (2003); car equivalence per the EPA
-            Greenhouse Gas Equivalencies Calculator. Acreage shown is the reef your tonnage
-            represents at the program&rsquo;s measured ratio, not a parcel deeded to you.
+            Cultch is figured at the standard{" "}
+            {CULTCH_SHORT_TONS_PER_ACRE} short tons per acre. Fishery production per Peterson
+            et al. (2003); car equivalence per the EPA Greenhouse Gas Equivalencies
+            Calculator. Acreage shown is the reef your tonnage represents, not a parcel
+            deeded to you.
             {s?.credits?.total != null
               ? ` ${fmtInt(s.credits.total)} serialized credits have been issued to date.`
               : ""}
@@ -330,7 +352,7 @@ function FootprintPlot({ acres, lease }: { acres: number; lease: Ring[] }) {
         viewBox={`${-half} ${-half} ${half * 2} ${half * 2}`}
         className="h-auto w-full rounded-lg border border-navy/10 bg-pearl"
         role="img"
-        aria-label={`A square of ${fmtInt(Math.round(acres))} acres${
+        aria-label={`A square of ${fmtFloor(acres)} acres${
           lease.length > 0 ? ", drawn at the same scale as the outlines of the chapter-five leases" : ""
         }.`}
       >

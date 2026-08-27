@@ -70,8 +70,7 @@ VIDEO = {
     "src": "/video/bay-boudreau-loading.mp4",
     "poster": "/video/bay-boudreau-loading.jpg",
     "caption": (
-        "Loading out for Bay Boudreau. Every barge that left this dock is one of the "
-        "GPS-logged runs replayed on the chart below."
+        "Three thousand tons of cultch material preparing to head out."
     ),
     "muteLoop": True,
 }
@@ -152,6 +151,24 @@ def parse_ms(ms):
     if not ms:
         return None
     return datetime.fromtimestamp(ms / 1000, timezone.utc)
+
+
+# Acres of new reef the resurvey found, per lease, measured against the
+# bedding footprint rather than the lease boundary. Supplied from the GIS
+# because the raw exports do not carry the figure yet - when they do,
+# delete this and let `created_acres` come off the lease properties.
+#
+# Do NOT substitute lease acres x reef share: most of a lease never had
+# material placed on it, and that arithmetic put 211 acres on the page
+# against a true 126.
+CREATED_ACRES = {"30260": 66.0, "36166": 60.0}
+
+
+def created_acres(number, props=None):
+    """Surveyed new-reef acres for a lease, or None if we do not have it."""
+    if props and props.get("created_acres") is not None:
+        return props["created_acres"]
+    return CREATED_ACRES.get(str(number))
 
 
 def fc(features, name):
@@ -258,6 +275,7 @@ def bake_raw(src: Path):
         "lease_number": number,
         "entity": lp.get("entity_name"),
         "acres": lp.get("acres"),
+        "created_acres": created_acres(number, lp),
         "bounds": {"lease": [round(v, 5) for v in bbox_of([boundary_geom])]},
         "before": phase_stats(classes["before"], windows["before"]),
         "after": phase_stats(classes["after"], windows["after"]),
@@ -292,6 +310,7 @@ def load_baked(prefix: str):
         "lease_number": number,
         "entity": None,
         "acres": manifest.get("acres"),
+        "created_acres": created_acres(number, manifest),
         "bounds": {"lease": manifest["bounds"]["lease"]},
         "before": manifest["before"],
         "after": manifest["after"],
@@ -584,6 +603,9 @@ def main():
         "state": meta["state"],
         "leases": leases,
         "acres": sum(lease["acres"] or 0 for lease in leases),
+        "created_acres": (
+            sum(c for lease in leases if (c := lease.get("created_acres")) is not None) or None
+        ),
         "bounds": {"lease": [round(v, 5) for v in lease_bbox], "view": view_bbox},
         "before": merge_phase([lease["before"] for lease in leases]),
         "after": merge_phase([lease["after"] for lease in leases]),

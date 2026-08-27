@@ -219,7 +219,7 @@ export const SCENES: Record<SceneId, Scene> = {
     caseWipe: true,
     casePhotoCycle: true,
   },
-  /* Bonus chapter, behind the ?32024 flag - the field save. One lease,
+  /* Bonus chapter, behind the ?adams flag - the field save. One lease,
      one camera target; the drama is in the data layers, not the flight. */
   "save-island": {
     id: "save-island",
@@ -347,7 +347,7 @@ export const MAP_TARGETS = [
     suffix: "Adams Bay",
     state: "LA",
     /* View extent baked by scripts/bake_lease_save.py (lease + soundings).
-       Listed in the flight deck only when the ?32024 chapter is up. */
+       Listed in the flight deck only when the ?adams chapter is up. */
     bounds: [-89.62892, 29.37404, -89.61488, 29.3884] as BBox,
     tag: "FIELD SAVE",
   },

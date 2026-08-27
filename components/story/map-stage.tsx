@@ -15,6 +15,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "./maplibre-worker";
 import { useEffect, useRef, useState } from "react";
 import { CHESAPEAKE_OUTLINE } from "./chesapeake-outline";
+import { carbonAreaIdsForPoint } from "./carbon-areas";
 import { SOUTHWEST_LA_OUTLINE } from "./southwest-la-outline";
 import { CHART, FALLBACK_BOUNDS, SCENES, mapTarget, type SceneId } from "./scenes";
 import type { BBox, StoryData, StoryFeatureCollection } from "./use-story-data";
@@ -45,6 +46,7 @@ type MapStageProps = {
   data: StoryData;
   activeScene: SceneId;
   targetId?: string | null;
+  carbonAreaId?: string | null;
   showVenturePois?: boolean;
   reducedMotion: boolean;
   onView?: (view: ChartView) => void;
@@ -63,6 +65,7 @@ export function MapStage({
   data,
   activeScene,
   targetId,
+  carbonAreaId,
   showVenturePois = false,
   reducedMotion,
   onView,
@@ -310,7 +313,11 @@ export function MapStage({
     }
 
     if (data.layers.carbon) {
-      ensureSource(map, "carbon", hexify(prepareCarbon(data.layers.carbon)));
+      ensureSource(
+        map,
+        "carbon",
+        hexify(prepareCarbon(data.layers.carbon, data.layers.counties)),
+      );
       ensureLayer(map, {
         id: "carbon",
         type: "fill-extrusion",
@@ -534,7 +541,7 @@ export function MapStage({
       });
     }
 
-    /* The field-save chapter (?32024) - same anatomy as chapter five,
+    /* The field-save chapter (?adams) - same anatomy as chapter five,
        plus a pair of alert layers holding only the errant barge load. */
     if (data.layers.saveBoundary) {
       ensureSource(map, "save-boundary", data.layers.saveBoundary);
@@ -676,6 +683,18 @@ export function MapStage({
       });
     }
   }, [ready, data]);
+
+  /* The area filter is independent of scene choreography: changing it
+     should not replay the flight or regrow every column. The source is
+     stamped with target memberships before its points become hexes. */
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !map.getLayer("carbon")) return;
+    const filter: FilterSpecification | null = carbonAreaId
+      ? ["in", carbonAreaId, ["get", "_storyAreaIds"]]
+      : null;
+    map.setFilter("carbon", filter);
+  }, [carbonAreaId, ready, data.layers.carbon]);
 
   /* ---- invitation-only POIs, enabled by the story URL ---- */
   useEffect(() => {
@@ -1476,7 +1495,10 @@ export function vintageColor(index: number): string {
    Cached per collection like the other prepare passes. */
 const carbonCache = new WeakMap<StoryFeatureCollection, StoryFeatureCollection>();
 
-function prepareCarbon(fc: StoryFeatureCollection): StoryFeatureCollection {
+function prepareCarbon(
+  fc: StoryFeatureCollection,
+  counties: StoryFeatureCollection | null,
+): StoryFeatureCollection {
   const cached = carbonCache.get(fc);
   if (cached) return cached;
   const cellTop = new Map<string, number>();
@@ -1492,12 +1514,20 @@ function prepareCarbon(fc: StoryFeatureCollection): StoryFeatureCollection {
     type: "FeatureCollection",
     features: fc.features.map((f) => {
       const p = f.properties as { base?: number; top?: number } | null;
+      const areaIds =
+        f.geometry.type === "Point"
+          ? carbonAreaIdsForPoint(
+              [f.geometry.coordinates[0], f.geometry.coordinates[1]],
+              counties,
+            )
+          : [];
       return {
         ...f,
         properties: {
           ...f.properties,
           _base01: cap > 0 ? Math.min((p?.base ?? 0) / cap, 1) : 0,
           _top01: cap > 0 ? Math.min((p?.top ?? 0) / cap, 1) : 0,
+          _storyAreaIds: areaIds,
         },
       };
     }),

@@ -80,6 +80,9 @@ export type CaseLease = {
   lease_number: string;
   entity?: string | null;
   acres: number | null;
+  /** Acres of reef the resurvey found where the bedding actually went.
+      A surveyed figure from the bake, not a share of the whole lease. */
+  created_acres?: number | null;
   bounds: { lease: BBox };
   before: CasePhaseStats;
   after: CasePhaseStats;
@@ -98,6 +101,8 @@ export type CaseStudyManifest = {
   leases: CaseLease[];
   /** Combined acreage across `leases`. */
   acres: number | null;
+  /** Combined new reef acreage; the sum of `leases[].created_acres`. */
+  created_acres?: number | null;
   bounds: { lease: BBox; view: BBox };
   before: CasePhaseStats;
   after: CasePhaseStats;
@@ -164,7 +169,7 @@ export type CasePhaseStats = {
   pct_reef: number | null;
 };
 
-/* The lease 32024 field save - the bonus chapter told when the ?32024
+/* The lease 32024 field save - the bonus chapter told when the ?adams
    flag is up. Same shape as the case study, plus the one barge load
    that went down on the poled reef and was caught from out of state.
    Baked by scripts/bake_lease_save.py. */
@@ -490,14 +495,25 @@ export function latestSeason(manifest: StoryManifest | null): StorySeason | null
   };
 }
 
-/** Reef acreage a case-study lease gained between its two survey
-    passes: the sounding share that flipped to solid reef, applied to
-    the lease's acres and floored - claim down, never up. Quoted by both
-    the case-study chapter and the invitation-only opener, so it lives
-    here rather than in whichever one happened to need it first. */
+/** Reef acreage a case-study pack gained between its two survey passes,
+    as measured against the bedding footprint by the bake.
+
+    This is NOT the lease acreage times the reef share: most of a lease
+    never had material placed on it, and applying the share to the whole
+    boundary overstates the claim by more than half. There is no safe
+    fallback, so an unbaked pack returns null and both surfaces simply
+    drop the figure - claim nothing rather than claim wrong.
+
+    Quoted by both the case-study chapter and the invitation-only opener,
+    so it lives here rather than in whichever one needed it first. */
 export function newReefAcres(cs: CaseStudyManifest | null): number | null {
-  if (cs?.acres == null || cs.after.pct_reef == null || cs.before.pct_reef == null) return null;
-  return Math.floor((cs.acres * (cs.after.pct_reef - cs.before.pct_reef)) / 100);
+  if (!cs) return null;
+  if (cs.created_acres != null) return Math.floor(cs.created_acres);
+  const summed = cs.leases?.reduce(
+    (total, lease) => (lease.created_acres == null ? total : total + lease.created_acres),
+    0,
+  );
+  return summed ? Math.floor(summed) : null;
 }
 
 /** Total reef acreage the fleet has put cultch on, summed across the
