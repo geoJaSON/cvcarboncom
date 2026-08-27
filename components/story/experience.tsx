@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { EMAIL } from "@/lib/site";
@@ -183,9 +184,14 @@ export default function Experience({
           className="relative flex min-h-screen items-center justify-center px-6"
         >
           <div className="story-titleblock relative max-w-2xl rounded-sm px-8 py-10 text-center sm:px-14 sm:py-14">
-            <p className="story-chart-note">
-              CV Carbon · Field operations brief · Shared by invitation
-            </p>
+            <Image
+              src="/images/cv-carbon-logo.png"
+              alt="CV Carbon, LLC"
+              width={873}
+              height={282}
+              priority
+              className="mx-auto h-10 w-auto brightness-0 invert sm:h-12"
+            />
             <h1 className="mt-7 font-display text-4xl leading-[1.05] text-white sm:text-6xl">
               We are bringing the reefs back!
             </h1>
