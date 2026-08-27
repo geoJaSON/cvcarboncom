@@ -158,7 +158,7 @@ export const SCENES: Record<SceneId, Scene> = {
     pitch: 52,
     bearing: -24,
     zoomBias: 0.35,
-    targetId: "st-bernard",
+    targetId: "plaquemines",
     flightDuration: 3000,
     orbitDegrees: 24,
     orbitDuration: 4600,

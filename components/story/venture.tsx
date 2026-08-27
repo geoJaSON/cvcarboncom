@@ -62,7 +62,7 @@ const BEDDED_ACRES_FLOOR = 3813;
    of the argument before committing to the scroll. */
 const AHEAD: [string, string][] = [
   ["The science", "How every acre is measured, and how it is validated."],
-  ["The ledger", "The net tonnage securely stored, is derived by a mass balance calculation that accounds for our own carbon footprint."],
+  ["The ledger", "The net tonnage of securely stored is derived by a mass balance calculation that accounts for our own carbon footprint."],
   ["Permanence", "What a hurricane does to a reef, and what the next resurvey would show if it took one."],
   ["Scalability", "Your tonnage, in acres of bottom and in shell over the side."],
 ];

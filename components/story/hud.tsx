@@ -107,22 +107,7 @@ export function Hud({
       )}
 
       {/* position readout + imagery credit */}
-      <div
-        className="story-hud pointer-events-none absolute bottom-6 left-4 hidden rounded-sm px-4 py-3 sm:block lg:left-8"
-        aria-hidden="true"
-      >
-        <div className="flex gap-6">
-          <span>
-            LAT <span className="story-hud-value">{view ? toDM(view.lat, "lat") : "\u2014\u2014"}</span>
-          </span>
-          <span>
-            LON <span className="story-hud-value">{view ? toDM(view.lon, "lon") : "\u2014\u2014"}</span>
-          </span>
-        </div>
-        {/* Esri's terms require the credit on-chart, and the map's own
-            attribution control is off (attributionControl: false). */}
 
-      </div>
 
       {/* flight deck + legend */}
       {(canTarget || showLegend) && (

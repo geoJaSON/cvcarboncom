@@ -303,8 +303,7 @@ export default function Experience({
           <ChapterCard eyebrow="The science" title="We pole every acre we claim">
             <p>
               Our strength is our data: continuous bottom soundings plus dredge tows and
-              point samples, all geolocated, all repeatable. We have compiled the world&rsquo;s largest set of ground-truthed substrate data. This is not an artist&rsquo;s
-              rendering of a reef - it is the reef&rsquo;s paper trail.
+              point samples. All geolocated, all repeatable. We have compiled one of the the world&rsquo;s largest set of ground-truthed substrate data.
             </p>
             <CardStats
               stats={[
@@ -487,7 +486,7 @@ export default function Experience({
                       value: sv.error_load?.short_tons,
                       label: "short tons on the wrong bottom",
                     },
-                    { value: 1000, label: "miles away, watching live" },
+                    { text: "Other side of the Mississippi", label: "watching live" },
                   ]}
                 />
               </ChapterCard>
@@ -697,7 +696,10 @@ function CardStats({
   stats,
 }: {
   stats: {
-    value: number | undefined | null;
+    value?: number | undefined | null;
+    /* Set instead of `value` when the answer is a place or a phrase
+       rather than a count. Takes the numeral's slot. */
+    text?: string;
     label: string;
     compact?: boolean;
     decimals?: number;
@@ -708,12 +710,20 @@ function CardStats({
     <div className="mt-7 flex flex-wrap gap-x-8 gap-y-5 border-t border-white/10 pt-6">
       {stats.map((stat) => (
         <div key={stat.label}>
-          <CountUp
-            value={stat.value}
-            compact={stat.compact}
-            decimals={stat.decimals}
-            suffix={stat.suffix}
-          />
+          {stat.text != null ? (
+            /* Same display face as the numerals, stepped down and capped
+               in width so a phrase wraps instead of stretching the row. */
+            <span className="block max-w-[13rem] font-display text-2xl leading-tight text-white">
+              {stat.text}
+            </span>
+          ) : (
+            <CountUp
+              value={stat.value}
+              compact={stat.compact}
+              decimals={stat.decimals}
+              suffix={stat.suffix}
+            />
+          )}
           <p className="story-chart-note mt-1.5 normal-case tracking-normal">{stat.label}</p>
         </div>
       ))}

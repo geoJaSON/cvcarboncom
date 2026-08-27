@@ -200,11 +200,7 @@ export function TrajectoryBand({ manifest }: { manifest: StoryManifest | null })
 
       <Reveal className="mt-16">
         <RunwayBar manifest={manifest} />
-        <p className="prose-cv mt-6 max-w-2xl">
-          The reef on this chart sits inside water already current within the program. Not every
-          acre of a lease becomes reef, bottom, depth and salinity all get a vote, but the room
-          to keep growing is measured in ground we already hold, not ground we hope to sign.
-        </p>
+
       </Reveal>
 
       <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:max-w-3xl">
@@ -789,10 +785,9 @@ export function FieldSaveBand({ manifest }: { manifest: SaveManifest }) {
             surrounded by buried reef. The leaseholder explained that massive erosion caused by tropical
             storms had buried the lower portions of what was previously highly productive reef. The
             plan for 2025 was to bed cultch around that island - never on it - watching each load
-            land against the substrate data in the app. The leaseholder was unable to be present at
-            during the work in Adams Bay because he was across the Mississippi restoring reef in
-            another leases. He was able to monitor the progress in Adams Bay on the app. even though
-            he was on the other side of the Mississippi River.
+            land against the substrate data in the app. The leaseholder was unable to be present 
+            during the work in Adams Bay because he was in another lease. He was able to monitor
+            the progress in Adams Bay on the app. even though he was on the other side of the Mississippi River.
           </p>
         }
       />
@@ -879,7 +874,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
         title="The carbon is the means. The reef is the point."
         intro={
           <p>
-            A ton of CO₂e is the same molecule wherever it comes from. What differs is
+            A ton of CO₂e is the same wherever it comes from. What differs is
             everything it drags along with it. This one buys hard bottom on the American Gulf
             Coast and the fishery, the shoreline, and the working fleet that come with it.
           </p>
@@ -905,7 +900,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
                   whose worth stands visibly in plants above the waterline. Then a
                   NOAA-funded synthesis pulled every production study from Texas to Cape Cod
                   and measured up the food chain instead of trusting the view from the
-                  surface. The overlooked habitat won.
+                  surface. The overlooked oyster beds won.
                 </p>
                 <p>
                   That synthesis closes by recommending the oyster be treated as habitat,
@@ -987,7 +982,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
           source="CV Carbon survey record"
         >
           Flat mud does not spontaneously become reef. Without the cultch there is no substrate,
-          no settlement, and no carbon the counterfactual is visible on the seafloor.
+          no settlement, and no carbon capture.
         </BenefitCard>
       </div>
 
@@ -1007,7 +1002,7 @@ export function CoBenefitsBand({ manifest }: { manifest: StoryManifest | null })
               ],
               [
                 "Who checks it?",
-                "Independent third-party verifiers resample our leases. Their numbers gate ours; disagreement means no credit issues.",
+                "Independent third-party verifiers resample our leases. Their numbers gate ours.",
               ],
               [
                 "Is it net?",
@@ -1107,8 +1102,8 @@ export function CreditsBand({
         title="Carbon, accounted for in public"
         intro={
           <p>
-            Every credit is serialized, every serial is looked up in a public registry, and the
-            reef it came from is on this chart. This is what the program has put on the books.
+            Every credit is serialized, every serial is available in our public registry, and the
+            reef it came from is on this chart.
           </p>
         }
       />

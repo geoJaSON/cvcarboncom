@@ -165,7 +165,7 @@ export function GalleryBand({ gallery }: { gallery: GalleryManifest }) {
         title="From the water"
         intro={
           <p>
-            The chart is the argument; these are the days it is made of. Barges, boats, rock,
+            Barges, boats, rock,
             and shell - the program as the crews see it, added to as the seasons turn.
           </p>
         }

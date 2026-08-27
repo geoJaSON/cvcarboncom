@@ -87,14 +87,7 @@ export function SizerBand({
       <SectionHeading
         eyebrow="Size it"
         title="Put your number on the chart"
-        intro={
-          <p>
-            Everything above this line is our record. Set a tonnage below and it becomes
-            yours - the acres of bottom it represents, the rock and shell that went over the
-            side to build them, and the fishery those acres produce every year after. The
-            ratios are read straight off the survey snapshot on this page.
-          </p>
-        }
+
       />
 
       <Reveal className="mt-14">
