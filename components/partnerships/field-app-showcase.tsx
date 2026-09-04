@@ -78,7 +78,7 @@ export function FieldAppShowcase() {
         </div>
         <div className="prose-cv field-app-intro max-w-xl">
           <p>
-            Our mobile application, CV Carbon Field, allows you to record the data needed to participate in our carbon capture project. Data collection include sounding the bottom, sampling for oyster density, and documenting loads of cultch placement. You always have access to your own data on your phone or computer. Plus your data is protected.
+            We have developed a proprietary mobile application, CV Carbon Field, which allows you to record the data needed to participate in our carbon capture project. Data collection includes sounding the bottom, sampling for oyster density, and documenting cultch placement. You always have access to your own data on your phone or computer. Plus your data is protected.
           </p>
           <p>The app works offline and syncs when the phone finds coverage again.</p>
         </div>

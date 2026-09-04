@@ -48,7 +48,7 @@ MEDIA = [
     {
         "src": "/images/lease-30260/spat-on-rock-pile.jpg",
         "alt": "A pile of river rock on deck, nearly every piece carrying young oyster spat",
-        "caption": "A deck sample of the placed river rock, spat on nearly every piece. This is the reef the December resurvey confirmed.",
+        "caption": "A broader view of the sample. The spat are approximately 2 weeks old.",
     },
     {
         "src": "/images/lease-30260/dredge-sample.jpg",

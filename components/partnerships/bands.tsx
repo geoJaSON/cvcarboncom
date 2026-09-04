@@ -54,13 +54,13 @@ export function FleetBand({ manifest }: { manifest: StoryManifest | null }) {
         intro={
           <>
             <p>
-              We started the project in 2023 with a handful of leases and currently have grown to across{" "}
-              {fmtInt(s?.leases_in_program)} leases, across {fmtInt(s?.entities_enrolled)} entities  and {fmtInt(s?.parishes)} parishes and counties
+              We started the project with only a handful of leases in 2023. Today we have grown to {" "}
+              {fmtInt(s?.leases_in_program)} leases, across {fmtInt(s?.entities_enrolled)} entities  and 12 parishes and counties
               in {fmtInt(s?.states)} states. Between them they have put{" "}
-              {fmtInt(s?.signed_acres)} acres of working bottom under survey.
+              {fmtInt(s?.signed_acres)} acres of bay bottom under survey.
             </p>
             <p>
-              Whether your purpose is restoration or harvest, participating in our carbon capture and storage project is a new and previously unavailable revenue source available that supports additional oyster restoration.
+              Whether your purpose is restoration or harvest, participating in our carbon capture and storage project is a new and previously unavailable revenue source that supports additional oyster restoration.
             </p>
           </>
         }
@@ -144,7 +144,7 @@ export function ExampleSeasonBand({ manifest }: { manifest: CaseStudyManifest })
   return (
     <BandShell>
       <SectionHeading
-        eyebrow="Act three: a worked example"
+        eyebrow=""
         title="One example of a project built from revenue derived from our carbon capture and storage project"
         intro={
           <>
@@ -181,9 +181,9 @@ export function ExampleSeasonBand({ manifest }: { manifest: CaseStudyManifest })
             figure={fmtInt(bedding.placements)}
             unit="barge load placements"
             accent
-          >
-            {fmtList(bedding.materials)}
-            {bedding.short_tons != null ? `, ${fmtInt(bedding.short_tons)} short tons` : ""}, each
+          > 
+            Limestone and river rock totalling
+            {bedding.short_tons != null ? ` ${fmtInt(bedding.short_tons)} short tons` : ""}, each
             pass GPS logged from the barge in the app. This is the work you already do, recorded as
             you do it.
           </PhasePanel>
@@ -300,7 +300,7 @@ export function CultchVideoBand({ manifest }: { manifest: CaseStudyManifest }) {
     <BandShell tone="abyss">
       <SectionHeading
         tone="light"
-        eyebrow="Act three: the material"
+        eyebrow=""
         title={
           bedding.short_tons != null
             ? `${fmtInt(bedding.short_tons)} short tons, one barge at a time`
@@ -309,10 +309,8 @@ export function CultchVideoBand({ manifest }: { manifest: CaseStudyManifest }) {
         intro={
           <p>
             Filmed at the dock as the loads went aboard. From {fmtDayWindow(bedding.window)} the
-            crews put {fmtInt(bedding.placements)} barge loads of {fmtList(bedding.materials)} over
-            the side on these two leases, and the chart that follows replays every run the app
-            recorded. On your lease it is the same loop: work the bottom, log the pass, keep the
-            record.
+            crews put {fmtInt(bedding.placements)} barge loads of limestone and river rock on these two leases, and the chart that follows replays every run the app
+            recorded. On your lease it would be the same: sound the bottom, deploy the cultch, resound the bottom, and monitor the oyster growth.
           </p>
         }
       />

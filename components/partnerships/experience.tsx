@@ -155,7 +155,7 @@ export default function PartnershipsExperience() {
               Your oyster restoration could also be part of our carbon capture and storage project.
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-mist/85 sm:text-lg">
-              Everything shaded area on this chart is restored oyster reef that is surveyed using our mobile application.
+              Shaded areas on this chart are restored oyster reef that is surveyed using our mobile application.
             </p>
             <p className="story-chart-note mt-9">{snapshotDate ?? "PRE-RELEASE"}</p>
           </div>
@@ -180,13 +180,13 @@ export default function PartnershipsExperience() {
             title="Four hundred oyster businesses are already on this chart"
           >
             <p>
-              Every shaded acre below is a reef that has been restored and surveyed.
+              Every shaded acre below is a reef that is being monitored by our project.
             </p>
             <CardStats
               stats={[
                 { value: s?.entities_enrolled, label: "family oyster businesses" },
                 { value: s?.leases_in_program, label: "leases under survey" },
-                { value: s?.parishes, label: "parishes and counties" },
+                { value: 12, label: "parishes and counties" },
               ]}
             />
           </ChapterCard>
@@ -216,7 +216,7 @@ export default function PartnershipsExperience() {
               >
                 <p>
                   {caseLeaseLabel(cs)}: {fmtInt(cs.acres)} acres side by side in {cs.county} Parish,
-                  one leaseholder, one shared boundary. Months of soundings before the work found
+                  one leaseholder, one shared boundary. Soundings before the work found
                   bare clay bottom and mud, with almost nothing for a larva to land on.
                 </p>
                 <CardStats
@@ -244,7 +244,7 @@ export default function PartnershipsExperience() {
             <ChartStep scene="case-work" tall>
               <ChapterCard eyebrow="Act three: the work" title="Six weeks of cultch">
                 <p>
-                  {fmtList(cs.bedding.materials)} went over the side in{" "}
+                  Limestone and river rock went over the side in{" "}
                   {fmtInt(cs.bedding.placements)} logged barge load placements, replayed here in the
                   order the barges made them. Your crew logs the same way, from the boat, as the
                   work happens.
