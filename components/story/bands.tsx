@@ -21,8 +21,12 @@ import { EROSION_REDUCTION_PCT, FISH_LB_PER_ACRE_YEAR, JOBS_PER_MILLION } from "
 import {
   caseLeaseLabel,
   fmtCompact,
+  fmtDayWindow,
   fmtInt,
   fmtList,
+  fmtMonth,
+  fmtPct,
+  fmtWindow,
   type CaseStudyManifest,
   type ConstructionManifest,
   type SaveManifest,
@@ -424,41 +428,6 @@ function DurabilityCard({
 }
 
 /* ---- Chapter five's cover page: the case study, before the dive ---- */
-
-function fmtPct(n: number | null | undefined): string {
-  if (n == null) return "-";
-  return `${Number.isInteger(n) ? n.toFixed(0) : n.toFixed(1)}%`;
-}
-
-function fmtMonth(iso: string | undefined): string {
-  if (!iso) return "-";
-  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", {
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
-
-/** "8 May to 18 Jun 2025" - day-level, year once when both ends share it. */
-function fmtDayWindow(window: [string, string] | undefined): string {
-  if (!window) return "-";
-  const [a, b] = window.map((iso) => new Date(`${iso}T00:00:00Z`));
-  const day = (d: Date, withYear: boolean) =>
-    d.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      ...(withYear ? { year: "numeric" } : {}),
-      timeZone: "UTC",
-    });
-  const sameYear = a.getUTCFullYear() === b.getUTCFullYear();
-  return `${day(a, !sameYear)} to ${day(b, true)}`;
-}
-
-function fmtWindow(window: [string, string] | undefined): string {
-  if (!window) return "-";
-  const [a, b] = [fmtMonth(window[0]), fmtMonth(window[1])];
-  return a === b ? a : `${a} – ${b}`;
-}
 
 function CasePanel({
   phase,

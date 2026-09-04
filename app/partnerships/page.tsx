@@ -18,7 +18,7 @@ export default function PartnershipsPage() {
         <div style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "2rem" }}>
           <div style={{ maxWidth: "36rem", textAlign: "center" }}>
             <h1 className="font-display" style={{ fontSize: "2rem", color: "#fff" }}>
-              Your lease is the restoration project.
+              Your lease  is the restoration project.
             </h1>
             <p style={{ marginTop: "1rem", color: "#c5d8e3" }}>
               This brief is an interactive chart and needs JavaScript. To hear it in person, email{" "}

@@ -2,14 +2,21 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { EMAIL } from "@/lib/site";
 import "@/components/story/story.css";
 import { CardStats, ChapterCard } from "@/components/story/chapter-card";
 import { Hud } from "@/components/story/hud";
 import { MapStage, type ChartView } from "@/components/story/map-stage";
-import { useStoryData } from "@/components/story/use-story-data";
-import { FieldAppBand, FleetBand } from "./bands";
+import { PlacementInset, dredgeInsetPhotos } from "@/components/story/placement-inset";
+import {
+  caseLeaseLabel,
+  fmtInt,
+  fmtList,
+  newReefAcres,
+  useStoryData,
+} from "@/components/story/use-story-data";
+import { CultchVideoBand, ExampleSeasonBand, FieldAppBand, FleetBand } from "./bands";
 import { PARTNER_SCENES, type PartnerSceneId } from "./scenes";
 
 /* ------------------------------------------------------------------
@@ -32,8 +39,10 @@ export default function PartnershipsExperience() {
   const [view, setView] = useState<ChartView | null>(null);
   const [manualTarget, setManualTarget] = useState<string | null>(null);
   const reducedMotion = useReducedMotion();
+  const [photoIndex, setPhotoIndex] = useState<number | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const viewThrottle = useRef(0);
+  const hasExample = data.caseManifest != null;
 
   /* Scene trigger: the section straddling the viewport's center wins.
      Opaque bands (data-covered) fade the HUD out while they hold the
@@ -59,7 +68,9 @@ export default function PartnershipsExperience() {
     );
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
-  }, []);
+    // Act three's sections mount once the case pack lands, so the
+    // observer must be rebuilt when they appear.
+  }, [hasExample]);
 
   /* The map fires per animation frame during the ease; the HUD needs
      roughly eight updates a second, and each setView re-renders here. */
@@ -70,9 +81,21 @@ export default function PartnershipsExperience() {
     setView(v);
   }, []);
 
+  const onPhoto = useCallback((next: number | null) => {
+    setPhotoIndex(next);
+  }, []);
+
   const activeTarget = manualTarget ?? PARTNER_SCENES[scene].targetId ?? null;
   const snapshotDate = data.manifest?.snapshot_date;
   const s = data.manifest?.stats;
+  /* The worked example: fetched for every reader of either storymap, so
+     the act mounts whenever the pack is on disk. */
+  const cs = data.caseManifest;
+  const createdAcres = newReefAcres(cs);
+  const insetPhotos = useMemo(
+    () => (scene === "case-after" ? dredgeInsetPhotos(cs?.photos) : undefined),
+    [scene, cs?.photos],
+  );
 
   return (
     <div ref={rootRef} className="story-root relative">
@@ -83,6 +106,7 @@ export default function PartnershipsExperience() {
         targetId={activeTarget}
         reducedMotion={reducedMotion}
         onView={onView}
+        onPhoto={onPhoto}
       />
       <Hud
         view={view}
@@ -95,6 +119,13 @@ export default function PartnershipsExperience() {
         showLegend={false}
         onTarget={setManualTarget}
         onCarbonAreaFilter={() => {}}
+      />
+
+      {/* The resurvey's dredge tows, lit one at a time on the after scene. */}
+      <PlacementInset
+        photos={insetPhotos}
+        index={photoIndex}
+        visible={hudVisible && scene === "case-after"}
       />
 
       {/* Way home - the site chrome is hidden on this route. */}
@@ -121,11 +152,10 @@ export default function PartnershipsExperience() {
               className="mx-auto h-10 w-auto brightness-0 invert sm:h-12"
             />
             <h1 className="mt-7 font-display text-4xl leading-[1.05] text-white sm:text-6xl">
-              Your lease is the restoration project.
+              Your oyster restoration could also be part of our carbon capture and storage project.
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-mist/85 sm:text-lg">
-              Everything shaded on this chart is bottom that surveyed, bedded and brought
-              back, on working leases they still fish. This is what joining them looks like.
+              Everything shaded area on this chart is restored oyster reef that is surveyed using our mobile application.
             </p>
             <p className="story-chart-note mt-9">{snapshotDate ?? "PRE-RELEASE"}</p>
           </div>
@@ -171,10 +201,95 @@ export default function PartnershipsExperience() {
           <FieldAppBand />
         </div>
 
+        {/* ---- Act three: the worked example. Mounts with its data pack,
+                 so a missing bake drops the act rather than the page. ---- */}
+        {cs && (
+          <>
+            <div data-scene="case-before" data-covered="true">
+              <ExampleSeasonBand manifest={cs} />
+            </div>
+
+            <ChartStep scene="case-before" tall>
+              <ChapterCard
+                eyebrow="Act three: the worked example"
+                title={`${cs.location}, before the shell`}
+              >
+                <p>
+                  {caseLeaseLabel(cs)}: {fmtInt(cs.acres)} acres side by side in {cs.county} Parish,
+                  one leaseholder, one shared boundary. Months of soundings before the work found
+                  bare clay bottom and mud, with almost nothing for a larva to land on.
+                </p>
+                <CardStats
+                  stats={[
+                    { value: cs.before.points, label: "soundings across both leases" },
+                    {
+                      value: cs.before.pct_unproductive,
+                      label: "mud or bare clay bottom",
+                      decimals: 1,
+                      suffix: "%",
+                    },
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+
+            {/* The dock footage: opaque, so it carries the next scene and the
+                camera lines up on the leases while the barges are loading. */}
+            {cs.video && (
+              <div data-scene="case-work" data-covered="true">
+                <CultchVideoBand manifest={cs} />
+              </div>
+            )}
+
+            <ChartStep scene="case-work" tall>
+              <ChapterCard eyebrow="Act three: the work" title="Six weeks of cultch">
+                <p>
+                  {fmtList(cs.bedding.materials)} went over the side in{" "}
+                  {fmtInt(cs.bedding.placements)} logged barge load placements, replayed here in the
+                  order the barges made them. Your crew logs the same way, from the boat, as the
+                  work happens.
+                </p>
+                <CardStats
+                  stats={[
+                    { value: cs.bedding.placements, label: "barge load placements, May–Jun 2025" },
+                    ...(cs.bedding.short_tons != null
+                      ? [{ value: cs.bedding.short_tons, label: "short tons placed" }]
+                      : []),
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+
+            <ChartStep scene="case-after" tall>
+              <ChapterCard eyebrow="Act three: what came back" title="Resurveyed: solid reef">
+                <p>
+                  Six months on, the survey boat crossed the same bottom at more than twice the
+                  sounding density. Where the chart turns shell-gold the substrate now rings hard,{" "}
+                  {createdAcres != null ? `${fmtInt(createdAcres)} acres of ` : ""}new reef built in
+                  a single season on bottom the leaseholder still fishes.
+                </p>
+                <CardStats
+                  stats={[
+                    ...(createdAcres != null
+                      ? [{ value: createdAcres, label: "acres of new reef created" }]
+                      : []),
+                    { value: cs.after.points, label: "soundings, Dec 2025" },
+                    {
+                      value: cs.after.pct_reef,
+                      label: "of the two leases reads solid reef",
+                      decimals: 1,
+                      suffix: "%",
+                    },
+                  ]}
+                />
+              </ChapterCard>
+            </ChartStep>
+          </>
+        )}
+
         {/* ------------------------------------------------------------
-            Acts three through seven land here:
-              3. What the chart does for you Adams Bay, the field save
-              4. Proof your cultch worked    Bay Boudreau, one season
+            The remaining acts land here:
+              4. What the chart does for you Adams Bay, the field save
               5. What it pays                blocked on leaseholder terms
               6. Who does the paperwork      verification and the registry
               7. Your lease, your number     the acreage calculator
@@ -191,7 +306,7 @@ export default function PartnershipsExperience() {
             Put your restoration project on the map.
           </h2>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-mist/85">
-            Enrolling costs nothing and you receive the tools to effectively monitor your harvest areas. We provide tutorials and are always available to support. 
+            Enrolling costs nothing and you receive the tools to effectively monitor your restoration areas. We provide tutorials and are always available to support. 
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <a

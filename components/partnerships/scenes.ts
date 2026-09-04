@@ -10,7 +10,13 @@ import type { Scene } from "@/components/story/scenes";
    affects this route alone.
    ------------------------------------------------------------------ */
 
-export type PartnerSceneId = "hero" | "fleet" | "close";
+export type PartnerSceneId =
+  | "hero"
+  | "fleet"
+  | "case-before"
+  | "case-work"
+  | "case-after"
+  | "close";
 
 export const PARTNER_SCENES: Record<PartnerSceneId, Scene> = {
   /* Opens on shaded survey rather than empty water. The first claim
@@ -60,6 +66,58 @@ export const PARTNER_SCENES: Record<PartnerSceneId, Scene> = {
     orbitDuration: 5200,
     layers: { graticule: true, counties: true, bedding: true, css: true },
     cssTiers: ["low", "med", "high"],
+  },
+
+  /* Act three - one leaseholder's season on two adjoining leases, the
+     worked example of everything the fleet acts claim. Same camera
+     target throughout; only the survey data changes underneath it, so
+     the reader watches one piece of bottom rather than three places.
+
+     The case pack is fetched for every reader of either storymap (see
+     useStoryData), so these cost no extra request here. */
+  "case-before": {
+    id: "case-before",
+    view: "overall",
+    pitch: 30,
+    bearing: -8,
+    targetId: "bay-boudreau",
+    flightDuration: 3400,
+    orbitDegrees: 10,
+    orbitDuration: 4600,
+    layers: { graticule: true, counties: true, case: true },
+    casePhase: "before",
+  },
+
+  /* The work. Steeper and closer, and the bedding sweeps on in the order
+     the barges logged it. */
+  "case-work": {
+    id: "case-work",
+    view: "overall",
+    pitch: 50,
+    bearing: -24,
+    zoomBias: 0.1,
+    targetId: "bay-boudreau",
+    flightDuration: 2600,
+    layers: { graticule: true, counties: true, case: true, caseBedding: true },
+    casePhase: "before",
+    caseBeddingSweep: true,
+  },
+
+  /* The return. The resurvey wipes across the same bottom and the
+     photographed dredge tows light in turn beside it. */
+  "case-after": {
+    id: "case-after",
+    view: "overall",
+    pitch: 36,
+    bearing: 10,
+    targetId: "bay-boudreau",
+    flightDuration: 2600,
+    orbitDegrees: -12,
+    orbitDuration: 5200,
+    layers: { graticule: true, counties: true, case: true, caseDredges: true },
+    casePhase: "after",
+    caseWipe: true,
+    casePhotoCycle: true,
   },
 
   /* The ask. Cultch placed and reef surveyed, back together, flat and

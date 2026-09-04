@@ -1,9 +1,18 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Reveal } from "@/components/reveal";
-import { PullQuote, SectionHeading, TideRule } from "@/components/ui";
-import { fmtInt, type StoryManifest } from "@/components/story/use-story-data";
+import { Figure, PullQuote, SectionHeading, TideRule } from "@/components/ui";
+import {
+  caseLeaseLabel,
+  fmtDayWindow,
+  fmtInt,
+  fmtList,
+  fmtPct,
+  fmtWindow,
+  type CaseStudyManifest,
+  type StoryManifest,
+} from "@/components/story/use-story-data";
 import { FieldAppShowcase } from "./field-app-showcase";
 
 /* ------------------------------------------------------------------
@@ -105,6 +114,263 @@ export function FleetBand({ manifest }: { manifest: StoryManifest | null }) {
         />
       </Reveal>
     </BandShell>
+  );
+}
+
+/* ---- Act three: the worked example ----
+
+   Bay Boudreau told to a leaseholder. The operations brief runs the same
+   pack as its chapter five and argues from it that a ton is real; here
+   the point is narrower and more useful to this reader: it is what a
+   season inside the program looked like for someone with a lease like
+   theirs. Same numbers, read from the same bake, different argument, so
+   the two sets of sentences never share a file. ---- */
+
+/* The pack's two dredge-table shots stay on the operations brief. Here
+   the resurvey's own tow photos cycle in the inset a few screens down,
+   so the band would be spending two frames on a picture the chart is
+   about to show. Matched by src: the bake can add media without
+   quietly putting these back. */
+const SKIP_MEDIA = new Set([
+  "/images/lease-30260/dredge-sample.jpg",
+  "/images/lease-30260/dredge-mature-reef.jpg",
+]);
+
+export function ExampleSeasonBand({ manifest }: { manifest: CaseStudyManifest }) {
+  const { before, after, bedding, leases } = manifest;
+  const several = leases.length > 1;
+  const media = manifest.media?.filter((item) => !SKIP_MEDIA.has(item.src)) ?? [];
+
+  return (
+    <BandShell>
+      <SectionHeading
+        eyebrow="Act three: a worked example"
+        title="One example of a project built from revenue derived from our carbon capture and storage project"
+        intro={
+          <>
+            <p>
+              This is what the program looks like on working bottom. {caseLeaseLabel(manifest)}{" "}
+              {several ? "adjoin each other" : "sits"} on {manifest.location || "the water"} in{" "}
+              {manifest.county} Parish, {fmtInt(manifest.acres)} acres of lease.
+            </p>
+            <p>
+              We sounded {several ? "both leases" : "the lease"} several months before any cultch placement.
+              The cultch was deployed during the spring spat set and was logged from the barges as the crews
+              worked. Six months later the survey boat crossed the same bottom again. This is an example of the monitoring record that this leaseholder now has at their disposal.
+            </p>
+          </>
+        }
+      />
+
+      <div className="mt-14 grid gap-6 lg:grid-cols-3">
+        <Reveal>
+          <PhasePanel
+            phase="Before you start"
+            window={fmtWindow(before.window)}
+            figure={fmtPct(before.pct_unproductive)}
+            unit="subtidal flat"
+          >
+            {fmtInt(before.points)} soundings found mud and bare clay. The survey comes first on
+            every lease in the program. This provides the baseline.
+          </PhasePanel>
+        </Reveal>
+        <Reveal delay={90}>
+          <PhasePanel
+            phase="Your season"
+            window={fmtWindow(bedding.window)}
+            figure={fmtInt(bedding.placements)}
+            unit="barge load placements"
+            accent
+          >
+            {fmtList(bedding.materials)}
+            {bedding.short_tons != null ? `, ${fmtInt(bedding.short_tons)} short tons` : ""}, each
+            pass GPS logged from the barge in the app. This is the work you already do, recorded as
+            you do it.
+          </PhasePanel>
+        </Reveal>
+        <Reveal delay={180}>
+          <PhasePanel
+            phase="What came back"
+            window={fmtWindow(after.window)}
+            figure={fmtPct(after.pct_reef)}
+            unit="solid reef"
+          >
+            {fmtInt(after.points)} soundings on the resurvey, more than twice the density of the
+            first pass, and the bottom now rings hard. That difference, surveyed at both ends, is
+            the asset the program is built on.
+          </PhasePanel>
+        </Reveal>
+      </div>
+
+      {several && (
+        <Reveal className="mt-10">
+          <p className="eyebrow">Lease by lease</p>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[36rem] text-left text-sm">
+              <thead>
+                <tr className="text-xs font-semibold uppercase tracking-[0.14em] text-steel">
+                  <th className="pb-3 pr-6 font-semibold">Lease</th>
+                  <th className="pb-3 pr-6 font-semibold">Acres</th>
+                  <th className="pb-3 pr-6 font-semibold">Before</th>
+                  <th className="pb-3 pr-6 font-semibold">After</th>
+                  <th className="pb-3 pr-6 font-semibold">Barge loads</th>
+                  <th className="pb-3 font-semibold">Short tons</th>
+                </tr>
+              </thead>
+              <tbody className="text-ink/80">
+                {leases.map((lease) => (
+                  <tr key={lease.lease_number} className="border-t border-navy/10">
+                    <td className="py-3 pr-6 font-display text-lg text-navy">
+                      {lease.lease_number}
+                    </td>
+                    <td className="py-3 pr-6">{fmtInt(lease.acres)}</td>
+                    <td className="py-3 pr-6">
+                      {fmtPct(lease.before.pct_reef)} reef
+                      <span className="text-ink/45"> &middot; {fmtInt(lease.before.points)} soundings</span>
+                    </td>
+                    <td className="py-3 pr-6">
+                      {fmtPct(lease.after.pct_reef)} reef
+                      <span className="text-ink/45"> &middot; {fmtInt(lease.after.points)} soundings</span>
+                    </td>
+                    <td className="py-3 pr-6">{fmtInt(lease.bedding.placements)}</td>
+                    <td className="py-3">{fmtInt(lease.bedding.short_tons)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Reveal>
+      )}
+
+      {!!media.length && (
+        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {media.map((item) => (
+            <Figure key={item.src} src={item.src} alt={item.alt} caption={item.caption} />
+          ))}
+        </div>
+      )}
+    </BandShell>
+  );
+}
+
+/** One phase of the worked example: before, the work, what came back. */
+function PhasePanel({
+  phase,
+  window,
+  figure,
+  unit,
+  children,
+  accent = false,
+}: {
+  phase: string;
+  window: string;
+  figure: string;
+  unit: string;
+  children: ReactNode;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className={`h-full rounded-lg border p-7 ${
+        accent ? "border-verdigris/40 bg-verdigris/5" : "border-navy/10 bg-white/60"
+      }`}
+    >
+      <div className="flex items-baseline justify-between gap-4">
+        <p className="eyebrow">{phase}</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-steel">{window}</p>
+      </div>
+      <p className="mt-5">
+        <span className="font-display text-5xl text-navy">{figure}</span>
+        <span className="ml-2 font-display text-lg text-steel">{unit}</span>
+      </p>
+      <p className="mt-4 text-sm leading-relaxed text-ink/70">{children}</p>
+    </div>
+  );
+}
+
+/* ---- Between the before and work scenes: the dock footage, so the
+        tonnage on the next chart step has a picture attached to it.
+        Carries the case-work scene while the camera repositions. ---- */
+
+export function CultchVideoBand({ manifest }: { manifest: CaseStudyManifest }) {
+  const { video, bedding } = manifest;
+  if (!video) return null;
+
+  return (
+    <BandShell tone="abyss">
+      <SectionHeading
+        tone="light"
+        eyebrow="Act three: the material"
+        title={
+          bedding.short_tons != null
+            ? `${fmtInt(bedding.short_tons)} short tons, one barge at a time`
+            : "One barge at a time"
+        }
+        intro={
+          <p>
+            Filmed at the dock as the loads went aboard. From {fmtDayWindow(bedding.window)} the
+            crews put {fmtInt(bedding.placements)} barge loads of {fmtList(bedding.materials)} over
+            the side on these two leases, and the chart that follows replays every run the app
+            recorded. On your lease it is the same loop: work the bottom, log the pass, keep the
+            record.
+          </p>
+        }
+      />
+      <Reveal className="mt-12">
+        <figure>
+          <div className="overflow-hidden rounded-lg border border-white/10 bg-navy">
+            <LoopVideo src={video.src} poster={video.poster} muteLoop={!!video.muteLoop} />
+          </div>
+          {video.caption && (
+            <figcaption className="mt-3 text-sm leading-relaxed text-mist/70">
+              {video.caption}
+            </figcaption>
+          )}
+        </figure>
+      </Reveal>
+    </BandShell>
+  );
+}
+
+/** A silent ambient loop that only fetches once the reader is near it:
+    the file is several megabytes and most visitors never scroll this far.
+    Reduced-motion readers get the poster and a play control instead. */
+function LoopVideo({ src, poster, muteLoop }: { src: string; poster?: string; muteLoop: boolean }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [armed, setArmed] = useState(false);
+  const [still, setStill] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    setStill(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setArmed(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "600px 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const ambient = muteLoop && !still;
+  return (
+    <video
+      ref={ref}
+      className="aspect-video w-full"
+      src={armed ? src : undefined}
+      poster={poster}
+      controls={!ambient}
+      autoPlay={ambient}
+      muted={muteLoop}
+      loop={muteLoop}
+      playsInline
+      preload={armed ? "auto" : "none"}
+    />
   );
 }
 

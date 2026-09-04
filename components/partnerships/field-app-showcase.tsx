@@ -151,12 +151,7 @@ export function FieldAppShowcase() {
             </div>
           </div>
 
-          <Link
-            href="/guide"
-            className="mt-7 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-mist transition-colors hover:text-white"
-          >
-            Open the full field app guide <span aria-hidden="true">&rarr;</span>
-          </Link>
+
         </div>
       </div>
     </div>
