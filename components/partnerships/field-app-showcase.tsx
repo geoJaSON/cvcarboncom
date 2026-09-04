@@ -234,7 +234,7 @@ function FieldMap({ active }: { active: CaptureMode }) {
       <g fill="#eef3f5" fontFamily="Arial, sans-serif" fontSize="7" fontWeight="700" opacity="0.9">
         <text x="103" y="157">LEASE 30260</text><text x="143" y="237">LEASE 36166</text>
       </g>
-      {active === "pole" ? <PollMarks /> : null}
+      {active === "poll" ? <PollMarks /> : null}
       {active === "dredge" ? <DredgeMark /> : null}
       {active === "point" ? <PointMark /> : null}
       {active === "bedding" ? <BeddingMark /> : null}
