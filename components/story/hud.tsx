@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { CHART, MAP_TARGETS, SCENES, mapTarget, type SceneId } from "./scenes";
+import {
+  CHART,
+  MAP_TARGETS,
+  mapTarget,
+  type LayerKey,
+  type MapTarget,
+  type SceneMap,
+} from "./scenes";
 import { vintageColor, type ChartView } from "./map-stage";
 import { fmtCompact } from "./use-story-data";
 
@@ -20,7 +27,7 @@ function toDM(value: number, axis: "lat" | "lon"): string {
   return `${deg}°${min.toFixed(2).padStart(5, "0")}′ ${hemi}`;
 }
 
-const LEGENDS: { key: keyof (typeof SCENES)["hero"]["layers"]; label: string; color: string }[] = [
+const LEGENDS: { key: LayerKey; label: string; color: string }[] = [
   { key: "bedding", label: "Cultch placed", color: CHART.cultch },
   { key: "caseBedding", label: "Cultch placed", color: CHART.cultch },
   { key: "saveBedding", label: "Cultch placed", color: CHART.cultch },
@@ -45,6 +52,7 @@ const SUBSTRATE_LEGEND = [
 
 export function Hud({
   view,
+  scenes,
   scene,
   snapshotDate,
   visible,
@@ -53,11 +61,16 @@ export function Hud({
   carbonAreaFilter,
   carbonAreaNet,
   showSaveTarget = false,
+  showLegend: legendEnabled = true,
+  targets,
   onTarget,
   onCarbonAreaFilter,
 }: {
   view: ChartView | null;
-  scene: SceneId;
+  /* Supplied by the caller for the same reason the chart takes it: the
+     legend and the flight deck follow whichever storymap is running. */
+  scenes: SceneMap;
+  scene: string;
   snapshotDate?: string;
   visible: boolean;
   targetId: string | null;
@@ -70,25 +83,34 @@ export function Hud({
   carbonAreaNet?: number | null;
   /** The ?adams chapter is up - list its lease in the flight deck. */
   showSaveTarget?: boolean;
+  /** Drop the swatch legend outright. The partnerships storymap runs
+      the same layers but argues its case in prose, so it asks for the
+      flight deck without the key. */
+  showLegend?: boolean;
+  /** Override the flight deck outright. A storymap that visits a
+      different set of places passes its own list; omit it and the deck
+      is the house list, minus anything still gated. */
+  targets?: readonly MapTarget[];
   onTarget: (id: string) => void;
   onCarbonAreaFilter: (enabled: boolean) => void;
 }) {
   /* The rail is useful but it sits over the chart; let the visitor fold
      it down to the header strip and keep the compass. */
   const [targetsOpen, setTargetsOpen] = useState(true);
-  const layers = SCENES[scene].layers;
+  const layers = scenes[scene]?.layers ?? {};
   const showTiers = !!layers.css;
   const showCarbon = !!layers.carbon && !!carbonYears?.length;
   const showSubstrate = !!layers.case || !!layers.save;
   const showErrant = !!layers.saveBedding;
   const showLegend =
-    showTiers || showCarbon || showSubstrate || LEGENDS.some((legend) => layers[legend.key]);
+    legendEnabled &&
+    (showTiers || showCarbon || showSubstrate || LEGENDS.some((legend) => layers[legend.key]));
   const canTarget = !!layers.counties;
   /* The field-save lease stays off the public flight deck; it flies
      only for readers who arrived with the chapter's URL flag. */
-  const railTargets = MAP_TARGETS.filter(
-    (candidate) => showSaveTarget || candidate.id !== "lease-32024",
-  );
+  const railTargets =
+    targets ??
+    MAP_TARGETS.filter((candidate) => showSaveTarget || candidate.id !== "lease-32024");
   const target = mapTarget(targetId);
   const compassBearing = view?.bearing ?? 0;
 

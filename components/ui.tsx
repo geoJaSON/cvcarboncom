@@ -208,7 +208,7 @@ export function Figure({
 /* ------------------------------------------------------------------ */
 /* Pull quote                                                           */
 /* ------------------------------------------------------------------ */
-export function PullQuote({ quote, cite }: { quote: string; cite: string }) {
+export function PullQuote({ quote, cite }: { quote: string; cite: ReactNode }) {
   return (
     <Reveal>
       <figure className="relative overflow-hidden rounded-lg bg-navy px-8 py-12 sm:px-14 sm:py-16">

@@ -17,7 +17,7 @@ import { useEffect, useRef, useState } from "react";
 import { CHESAPEAKE_OUTLINE } from "./chesapeake-outline";
 import { carbonAreaIdsForPoint } from "./carbon-areas";
 import { SOUTHWEST_LA_OUTLINE } from "./southwest-la-outline";
-import { CHART, FALLBACK_BOUNDS, SCENES, mapTarget, type SceneId } from "./scenes";
+import { CHART, FALLBACK_BOUNDS, mapTarget, type SceneMap } from "./scenes";
 import type { BBox, StoryData, StoryFeatureCollection } from "./use-story-data";
 import { VENTURE_POIS, type VenturePoi } from "./venture-pois";
 
@@ -44,7 +44,11 @@ export type StageState = {
 
 type MapStageProps = {
   data: StoryData;
-  activeScene: SceneId;
+  /* The scene vocabulary is supplied by the caller rather than imported,
+     so each storymap owns its own chapters and camera moves while sharing
+     one chart. */
+  scenes: SceneMap;
+  activeScene: string;
   targetId?: string | null;
   carbonAreaId?: string | null;
   showVenturePois?: boolean;
@@ -63,6 +67,7 @@ type MapStageProps = {
    ------------------------------------------------------------------ */
 export function MapStage({
   data,
+  scenes,
   activeScene,
   targetId,
   carbonAreaId,
@@ -715,7 +720,8 @@ export function MapStage({
     const map = mapRef.current;
     if (!map || !ready) return;
 
-    const scene = SCENES[activeScene];
+    const scene = scenes[activeScene];
+    if (!scene) return;
     clearStoryTimers(sweepTimer, cameraTimer);
     map.stop();
 
@@ -1217,7 +1223,7 @@ export function MapStage({
       clearStoryTimers(sweepTimer, cameraTimer, photoTimer);
       map.stop();
     };
-  }, [activeScene, targetId, ready, data, reducedMotion, onStageState, onPhoto]);
+  }, [scenes, activeScene, targetId, ready, data, reducedMotion, onStageState, onPhoto]);
 
   /* MapLibre stamps its own positioning classes onto the element it
      mounts in, so the fixed-position frame must be a separate parent.

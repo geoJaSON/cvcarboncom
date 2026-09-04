@@ -39,7 +39,9 @@ export type SceneId =
   | "close";
 
 export type Scene = {
-  id: SceneId;
+  /** Free-form: each storymap declares its own union and keys its own
+      record by it. Nothing in the engine branches on this value. */
+  id: string;
   /** Key into manifest.bounds; "overall" always exists once baked. */
   view: string;
   pitch: number;
@@ -86,6 +88,11 @@ export type Scene = {
   /** Scan-line wipe to the save lease's resurvey. */
   saveWipe?: boolean;
 };
+
+/* The chart engine looks scenes up by name rather than importing this
+   record, so a second storymap can bring its own vocabulary without
+   either narrative reaching into the other. See components/partnerships. */
+export type SceneMap = Record<string, Scene>;
 
 export const SCENES: Record<SceneId, Scene> = {
   hero: {
@@ -280,6 +287,18 @@ export const SCENES: Record<SceneId, Scene> = {
     layers: { graticule: true, counties: true, bedding: true, css: true },
     cssTiers: ["low", "med", "high"],
   },
+};
+
+/** One entry in the flight deck. Structural rather than derived from
+    MAP_TARGETS, so a second storymap can hand the HUD its own places. */
+export type MapTarget = {
+  id: string;
+  name: string;
+  suffix: string;
+  state: string;
+  geoid?: string;
+  bounds?: BBox;
+  tag?: string;
 };
 
 /** A short, authored flight deck rather than a directory of every
