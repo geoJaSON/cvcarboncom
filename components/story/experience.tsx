@@ -31,7 +31,6 @@ import { SizerBand } from "./sizer";
 import {
   caseLeaseLabel,
   fmtInt,
-  fmtList,
   newReefAcres,
   useStoryData,
 } from "./use-story-data";
@@ -393,7 +392,7 @@ export default function Experience({
               >
                 <p>
                   {caseLeaseLabel(cs)}: {fmtInt(cs.acres)} acres side by side in {cs.county}{" "}
-                  Parish, one leaseholder, one shared boundary. Months of soundings before the
+                  Parish, one leaseholder, one shared boundary. Soundings before the
                   work found what a mined coast leaves behind - bare clay bottom and mud, with
                   almost nothing for a larva to land on.
                 </p>
@@ -422,7 +421,7 @@ export default function Experience({
             <ChartStep scene="case-work" tall>
               <ChapterCard eyebrow="Chapter five - the work" title="Six weeks of cultch">
                 <p>
-                  {fmtList(cs.bedding.materials)} went over the side in {fmtInt(cs.bedding.placements)}{" "}
+                  Limestone and river rock went over the side in {fmtInt(cs.bedding.placements)}{" "}
                   logged barge load placements, replayed here in the order the barges made
                   them - both leases worked in the same window.
                 </p>

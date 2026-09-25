@@ -12,7 +12,6 @@ import { PlacementInset, dredgeInsetPhotos } from "@/components/story/placement-
 import {
   caseLeaseLabel,
   fmtInt,
-  fmtList,
   newReefAcres,
   useStoryData,
 } from "@/components/story/use-story-data";

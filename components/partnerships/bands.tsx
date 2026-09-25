@@ -7,7 +7,6 @@ import {
   caseLeaseLabel,
   fmtDayWindow,
   fmtInt,
-  fmtList,
   fmtPct,
   fmtWindow,
   type CaseStudyManifest,

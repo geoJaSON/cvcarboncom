@@ -23,7 +23,6 @@ import {
   fmtCompact,
   fmtDayWindow,
   fmtInt,
-  fmtList,
   fmtMonth,
   fmtPct,
   fmtWindow,
@@ -504,7 +503,7 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
             unit="barge load placements"
             accent
           >
-            {fmtList(bedding.materials)}
+            Limestone and river rock
             {bedding.short_tons != null
               ? ` - ${fmtInt(bedding.short_tons)} short tons`
               : ""}{" "}
@@ -594,7 +593,7 @@ export function MaterialBand({ manifest }: { manifest: CaseStudyManifest }) {
         intro={
           <p>
             Filmed at the dock as the loads went aboard. From {fmtDayWindow(bedding.window)}, the
-            crews put {fmtInt(bedding.placements)} barge loads of {fmtList(bedding.materials)}{" "}
+            crews put {fmtInt(bedding.placements)} barge loads of limestone and river rock{" "}
             over the side on these two leases. The chart that follows replays every one of
             those runs recorded in our app.
           </p>
