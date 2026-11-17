@@ -187,7 +187,7 @@ export function SizerBand({
                 <Figure
                   value={fmtFloor(acres)}
                   unit="acres"
-                  label="of surveyed reef at commercial density"
+                  label="of surveyed, highly productive reef"
                 />
                 <Figure
                   value={fmtFloor(shownAcres * CULTCH_SHORT_TONS_PER_ACRE)}

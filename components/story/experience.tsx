@@ -24,11 +24,13 @@ import { GalleryBand } from "./gallery";
 import { Hud } from "./hud";
 import { MapStage, type ChartView } from "./map-stage";
 import { PlacementInset, dredgeInsetPhotos, placementInsetPhotos } from "./placement-inset";
+import { PrologueBand } from "./prologue";
 import { carbonNetForArea } from "./carbon-areas";
 import { SCENES, mapTarget, type SceneId } from "./scenes";
 import { SequenceBand } from "./sequence";
 import { SizerBand } from "./sizer";
 import {
+  beddedReefAcres,
   caseLeaseLabel,
   fmtInt,
   newReefAcres,
@@ -133,6 +135,7 @@ export default function Experience({
 
   const snapshotDate = data.manifest?.snapshot_date;
   const s = data.manifest?.stats;
+  const restoredHabitat = beddedReefAcres(data.construction);
   const cs = data.caseManifest;
   /* Fetched only behind the ?adams flag, so its presence is the gate. */
   const sv = data.saveManifest;
@@ -233,9 +236,11 @@ export default function Experience({
           </div>
         </section>
 
-        {/* ---- Invitation-only opener, front-loaded ahead of chapter one.
-                 Additive: without the URL flag the brief runs exactly as
-                 it always has, hero straight into what was lost. ---- */}
+        <div data-scene={showVenturePois ? "venture" : "lost"} data-covered="true">
+          <PrologueBand manifest={data.manifest} />
+        </div>
+
+        {/* ---- Invitation-only opener, ahead of chapter one. ---- */}
         {showVenturePois && (
           <>
             <div data-scene="venture" data-covered="true">
@@ -255,14 +260,14 @@ export default function Experience({
                 title="Cameron Parish to Plaquemines Parish"
               >
                 <p>
-                  The shading between them is surveyed
-                  reef at commercial density. The bottom we have poled, counted, and had checked.
+                  The shading between them is surveyed,
+                  highly productive reef. The bottom we have poled, counted, and had checked.
                   It is roughly a hundred and eighty miles of working coast, and the brief that
                   follows is how every acre of it got onto the chart.
                 </p>
                 <CardStats
                   stats={[
-                    { value: s?.css_acres?.total, label: "acres at density" },
+                    { value: s?.css_acres?.total, label: "acres of highly productive reef" },
                     { value: 12, label: "counties and parishes surveyed" },
                   ]}
                 />
@@ -305,6 +310,12 @@ export default function Experience({
               stats={[
                 { value: s?.bedding_short_tons, label: "short tons placed" },
                 { value: s?.bedding_placements, label: "logged placements" },
+                {
+                  value: restoredHabitat?.acres,
+                  label: restoredHabitat
+                    ? `acres of habitat restored since ${restoredHabitat.firstYear}`
+                    : "acres of habitat restored",
+                },
               ]}
             />
           </ChapterCard>
@@ -316,7 +327,10 @@ export default function Experience({
 
         {/* ---- Chapter three - the science ---- */}
         <ChartStep scene="coverage" tall>
-          <ChapterCard eyebrow="The science" title="We pole every acre we claim">
+          <ChapterCard
+            eyebrow="The science"
+            title="Our data collection is extensive and meticulous. Every acre is sounded with a cane pole and oyster densities are assessed multiple times a year."
+          >
             <p>
               Our strength is our data: continuous bottom soundings plus dredge tows and
               point samples. All geolocated, all repeatable. We have compiled one of the the world&rsquo;s largest set of ground-truthed substrate data.
@@ -358,11 +372,11 @@ export default function Experience({
           <ProofBand />
         </div>
 
-        {/* ---- Chapter four - the return ---- */}
+        {/* ---- Chapter four - the results ---- */}
         <ChartStep scene="return" tall>
           <ChapterCard
-            eyebrow="Chapter four - the return"
-            title="Acres back at commercial density"
+            eyebrow="Chapter four - the results"
+            title="Acres of highly productive reef within commercial leases"
           >
             <p>
               The shaded areas are surveyed reef at or above densities capable of being a net sink for carbon,
@@ -371,7 +385,7 @@ export default function Experience({
             </p>
             <CardStats
               stats={[
-                { value: s?.css_acres?.total, label: "acres at density" },
+                { value: s?.css_acres?.total, label: "acres of highly productive reef" },
                 { value: s?.css_acres?.high, label: "acres at ≥244/m²" },
               ]}
             />
@@ -391,10 +405,9 @@ export default function Experience({
                 title={`${cs.location}, before the shell`}
               >
                 <p>
-                  {caseLeaseLabel(cs)}: {fmtInt(cs.acres)} acres side by side in {cs.county}{" "}
-                  Parish, one leaseholder, one shared boundary. Soundings before the
-                  work found what a mined coast leaves behind - bare clay bottom and mud, with
-                  almost nothing for a larva to land on.
+                  {caseLeaseLabel(cs)}: {fmtInt(cs.acres)} acres side by side in {cs.county} Parish,
+                  one leaseholder, one shared boundary. Soundings before the work found
+                  bare clay bottom and mud, with almost nothing for a larva to land on.
                 </p>
                 <CardStats
                   stats={[
@@ -421,9 +434,10 @@ export default function Experience({
             <ChartStep scene="case-work" tall>
               <ChapterCard eyebrow="Chapter five - the work" title="Six weeks of cultch">
                 <p>
-                  Limestone and river rock went over the side in {fmtInt(cs.bedding.placements)}{" "}
-                  logged barge load placements, replayed here in the order the barges made
-                  them - both leases worked in the same window.
+                  Limestone and river rock went over the side in{" "}
+                  {fmtInt(cs.bedding.placements)} logged barge load placements, replayed here in the
+                  order the barges made them. Your crew logs the same way, from the boat, as the
+                  work happens.
                 </p>
                 <CardStats
                   stats={[
@@ -439,12 +453,12 @@ export default function Experience({
             </ChartStep>
 
             <ChartStep scene="case-after" tall>
-              <ChapterCard eyebrow="Chapter five - the return" title="Resurveyed: solid reef">
+              <ChapterCard eyebrow="Chapter five - what came back" title="Resurveyed: solid reef">
                 <p>
                   Six months on, the survey boat crossed the same bottom at more than twice the
-                  sounding density. Where the chart turns shell-gold, the substrate now rings
-                  hard - {createdAcres != null ? `${fmtInt(createdAcres)} acres of ` : ""}new
-                  reef, created in a single season, where before there was none.
+                  sounding density. Where the chart turns shell-gold the substrate now rings hard,{" "}
+                  {createdAcres != null ? `${fmtInt(createdAcres)} acres of ` : ""}new reef built in
+                  a single season on bottom the leaseholder still fishes.
                 </p>
                 <CardStats
                   stats={[

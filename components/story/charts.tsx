@@ -657,7 +657,7 @@ export function ManhattanTile({ manifest }: { manifest: StoryManifest | null }) 
   return (
     <PerspectiveTile
       figure={`${ratio >= 2 ? ratio.toFixed(1) : ratio.toFixed(2)}×`}
-      text="the land area of Manhattan, now surveyed reef at commercial oyster density"
+      text="the land area of Manhattan, now surveyed as highly productive reef"
     />
   );
 }

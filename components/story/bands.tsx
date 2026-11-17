@@ -84,16 +84,58 @@ export function LostBand() {
     <BandShell>
       <SectionHeading
         eyebrow="The historical record"
-        title="The reefs were mined, not fished out"
+        title="Shell mining and other major changes to our estuaries are to blame for the massive losses of oyster reefs over the past 100 years."
         intro={
-          <p>
-            For most of a century, dredges pulled ancient shell from the bottom faster than any
-            reef could rebuild it, crushed for roadbed, concrete, and lime. What the industry
-            lost wasn&rsquo;t this year&rsquo;s harvest; it was the foundation the next hundred
-            harvests needed to settle on.
-          </p>
+          <>
+            <p>
+              While the commercial fishing industry is frequently called out as the primary
+              culprit for the historically low amount of oyster habitat in our bays, their
+              contribution to the loss is relatively small in comparison to the regional scale
+              changes we have made to our estuaries by restricting and rerouting freshwater
+              inflows (dams, locks, flood gates, and diversions), changing the hydrologic dynamics
+              of the estuaries by constructing and maintaining unnaturally large navigation
+              channels, nutrient-fueled hypoxia, industrial pollution discharges (mostly prior
+              to the 1970s but there are plenty of examples of recent spill events), losses of
+              other ecologically coupled habitats (e.g. sea grass meadows and wetlands), and
+              from shell mining.
+            </p>
+            <p>
+              The lasting effects of shell mining over the past century are rarely considered
+              when explaining today&rsquo;s oyster habitat crisis. Historical records indicate
+              that about 300 million cubic yards of oyster shell were removed from Texas bays
+              between 1912 and 1971 (see references). The actual volume was likely much higher
+              because the available reports cover only a subset of the companies operating in
+              the state&rsquo;s bays. During the same period, the shell-mining, or
+              &ldquo;mudshell,&rdquo; industry was also widespread in Louisiana and other Gulf
+              Coast states. Mined shell supplied lime for cement plants and was used to produce
+              soda ash, paper, and poultry feed; extract magnesium from seawater; and build
+              roadbeds. Shell mining is especially destructive because removing shell from the
+              bay floor eliminates the hard substrate, or cultch&mdash;such as shell, limestone,
+              or crushed concrete&mdash;that oyster larvae need to attach, mature, and sustain
+              the reef&rsquo;s natural regeneration.
+            </p>
+            <p>
+              Today, companies in the &quot;on bottom&quot; oyster fishery deploy cultch material
+              in their leased water bottoms to construct and restore oyster habitat that they
+              have exclusive rights to. We find that oyster densities within &quot;on bottom&quot;
+              commercial leases are higher on average than the public or wild reefs even though
+              the harvesting pressure is higher within the lease. This is due to the attention,
+              hands-on approach, and diligence of the leaseholders.
+            </p>
+          </>
         }
       />
+      <div className="mt-8 max-w-3xl space-y-3 text-sm leading-relaxed text-ink/65">
+        <p className="eyebrow">References</p>
+        <p>
+          Gaines, F.L. 1965. <em>What the shell industry means to Texas.</em> Report prepared by:
+          Joint Organizations for Business Survival. Texas Avenue Building, Houston, Texas.
+        </p>
+        <p>
+          Kerr, A. 1967. <em>The Texas reef shell industry.</em> Bureau of Business Research.
+          University of Texas at Austin. Industry Series No. 11.
+        </p>
+      </div>
       <div className="mt-14 grid gap-10 lg:grid-cols-2">
         <Figure
           src="/images/historic-shell-dredge-1968.jpg"
@@ -186,7 +228,7 @@ export function TrajectoryBand({ manifest }: { manifest: StoryManifest | null })
         title="Each season, the chart fills in further"
         intro={
           <p>
-            Reef at commercial density has grown roughly fivefold across three survey seasons,
+            Highly productive reef has grown roughly fivefold across three survey seasons,
             and the credits issued against it have kept pace. These are surveyed acres and
             serialized credits, not projections, and the growth is the reinvestment loop at
             work: each vintage&rsquo;s proceeds put more cultch in the water, and the next
@@ -465,60 +507,68 @@ function CasePanel({
 export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
   const { before, after, bedding, leases } = manifest;
   const several = leases.length > 1;
+  // The resurvey's tow photos appear in the map inset, matching the partnerships brief.
+  const media = manifest.media?.filter((item) =>
+    item.src !== "/images/lease-30260/dredge-sample.jpg" &&
+    item.src !== "/images/lease-30260/dredge-mature-reef.jpg",
+  ) ?? [];
   return (
     <BandShell>
       <SectionHeading
         eyebrow="Chapter five: the case study"
-        title={several ? "Two leases, one bottom, start to finish" : "One lease, start to finish"}
+        title="One example of a project built from revenue derived from our carbon capture and storage project"
         intro={
-          <p>
-            The whole argument, told once at full survey resolution.{" "}
-            {caseLeaseLabel(manifest)} {several ? "share a boundary" : "sits"} on{" "}
-            {manifest.location || "the water"}, {manifest.county} Parish -{" "}
-            {fmtInt(manifest.acres)} acres {several ? "together, under one leaseholder" : ""}.
-            We sounded {several ? "both" : "it"} for months before the work, bedded{" "}
-            {several ? "them" : "it"} in one summer window, then sent the survey boat back over
-            the same bottom. What follows is that record, plotted where it happened.
-          </p>
+          <>
+            <p>
+              This is what the program looks like on working bottom. {caseLeaseLabel(manifest)}{" "}
+              {several ? "adjoin each other" : "sits"} on {manifest.location || "the water"} in{" "}
+              {manifest.county} Parish, {fmtInt(manifest.acres)} acres of lease.
+            </p>
+            <p>
+              We sounded {several ? "both leases" : "the lease"} several months before any cultch placement.
+              The cultch was deployed during the spring spat set and was logged from the barges as the crews
+              worked. Six months later the survey boat crossed the same bottom again. This is an example of the monitoring record that this leaseholder now has at their disposal.
+            </p>
+          </>
         }
       />
 
       <div className="mt-14 grid gap-6 lg:grid-cols-3">
         <Reveal>
           <CasePanel
-            phase="Before"
+            phase="Before you start"
             window={fmtWindow(before.window)}
             figure={fmtPct(before.pct_unproductive)}
-            unit="unproductive bottom"
+            unit="subtidal flat"
           >
-            {fmtInt(before.points)} soundings found mud and bare clay bottom, clean, hard,
-            and empty. Nothing for an oyster larva to hold.
+            {fmtInt(before.points)} soundings found mud and bare clay. The survey comes first on
+            every lease in the program. This provides the baseline.
           </CasePanel>
         </Reveal>
         <Reveal delay={90}>
           <CasePanel
-            phase="The work"
+            phase="Your season"
             window={fmtWindow(bedding.window)}
             figure={fmtInt(bedding.placements)}
             unit="barge load placements"
             accent
           >
-            Limestone and river rock
-            {bedding.short_tons != null
-              ? ` - ${fmtInt(bedding.short_tons)} short tons`
-              : ""}{" "}
-            over the side in one summer window, every pass GPS-logged from the barge.
+            Limestone and river rock totalling
+            {bedding.short_tons != null ? ` ${fmtInt(bedding.short_tons)} short tons` : ""}, each
+            pass GPS logged from the barge in the app. This is the work you already do, recorded as
+            you do it.
           </CasePanel>
         </Reveal>
         <Reveal delay={180}>
           <CasePanel
-            phase="After"
+            phase="What came back"
             window={fmtWindow(after.window)}
             figure={fmtPct(after.pct_reef)}
             unit="solid reef"
           >
-            {fmtInt(after.points)} soundings on the resurvey more than twice the density of
-            the first pass and the bottom now rings hard.
+            {fmtInt(after.points)} soundings on the resurvey, more than twice the density of the
+            first pass, and the bottom now rings hard. That difference, surveyed at both ends, is
+            the asset the program is built on.
           </CasePanel>
         </Reveal>
       </div>
@@ -561,9 +611,9 @@ export function CaseStudyBand({ manifest }: { manifest: CaseStudyManifest }) {
         </Reveal>
       )}
 
-      {!!manifest.media?.length && (
+      {!!media.length && (
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {manifest.media.map((item) => (
+          {media.map((item) => (
             <Figure key={item.src} src={item.src} alt={item.alt} caption={item.caption} />
           ))}
         </div>
@@ -592,10 +642,9 @@ export function MaterialBand({ manifest }: { manifest: CaseStudyManifest }) {
         }
         intro={
           <p>
-            Filmed at the dock as the loads went aboard. From {fmtDayWindow(bedding.window)}, the
-            crews put {fmtInt(bedding.placements)} barge loads of limestone and river rock{" "}
-            over the side on these two leases. The chart that follows replays every one of
-            those runs recorded in our app.
+            Filmed at the dock as the loads went aboard. From {fmtDayWindow(bedding.window)} the
+            crews put {fmtInt(bedding.placements)} barge loads of limestone and river rock on these two leases, and the chart that follows replays every run the app
+            recorded. On your lease it would be the same: sound the bottom, deploy the cultch, resound the bottom, and monitor the oyster growth.
           </p>
         }
       />
@@ -1071,11 +1120,13 @@ export function CreditsBand({
       <SectionHeading
         tone="light"
         eyebrow="The ledger"
-        title="Carbon, accounted for in public"
+        title="Carbon captured and securely stored in the sediments beneath the living veneer of the reef."
         intro={
           <p>
-            Every credit is serialized, every serial is available in our public registry, and the
-            reef it came from is on this chart.
+            Each carbon offset represents 1 MT of CO₂e carbon captured and securely stored in
+            the sediments of the estuary. Every carbon offset is serialized, and the serial
+            number allows the purchaser access to the data in our registry pertaining to the
+            reef restoration, sampling, and verification that document the carbon capture.
           </p>
         }
       />
@@ -1107,10 +1158,8 @@ export function CreditsBand({
         <Reveal className="mt-16">
           <p className="eyebrow text-steel-400">The ledger, year by year</p>
           <p className="prose-cv mt-4 max-w-2xl !text-mist/80">
-            Every vintage on the books, both coasts, one scale. The lit water is the reef
-            that season&rsquo;s survey found at commercial density; the count beside it is
-            the credits serialized against that water. Set any year against the next and the
-            growth is simply the chart filling in.
+            Each year our program has expanded. The highlighted areas on the maps below track
+            our progress as we have added additional leaseholders and have been restoring reef.
           </p>
           <div className="mt-8">
             <YearBoard manifest={manifest} cssTiers={cssTiers} counties={counties} />
@@ -1123,7 +1172,7 @@ export function CreditsBand({
           <p className="eyebrow text-steel-400">How the footprint grew</p>
           <p className="prose-cv mt-4 max-w-2xl !text-mist/80">
             How much reef is on the books, and how much of it is new? Each bar is a
-            season&rsquo;s surveyed footprint at commercial density. Solid is the acreage that
+            season&rsquo;s surveyed footprint of highly productive reef. Solid is the acreage that
             season added; the outline carried over from the year before.
           </p>
           <div className="mt-8 max-w-xl">

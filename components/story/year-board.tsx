@@ -91,7 +91,7 @@ type Board = {
 const GULF_STATE_LABELS = [
   { name: "TEXAS", lon: -94.85 },
   { name: "LOUISIANA", lon: -91.55 },
-  { name: "MISSISSIPPI", lon: -89.05 },
+  { name: "MISS.", lon: -89.15 },
 ] as const;
 
 /** Outer rings and holes alike - drawn into one path with evenodd fill. */
@@ -409,7 +409,7 @@ export const YearBoard = memo(function YearBoard({
                   yearCredits != null ? `${fmtInt(yearCredits)} credits issued against ` : ""
                 }${
                   yearAcres != null ? `${fmtInt(yearAcres)} acres of ` : ""
-                }reef surveyed at commercial density${
+                }surveyed, highly productive reef${
                   hasChes ? ", including the first Chesapeake Bay water" : ""
                 }`}
               >
@@ -486,7 +486,7 @@ export const YearBoard = memo(function YearBoard({
                     fillOpacity="0.4"
                     style={NOTE_TEXT}
                   >
-                    GULF COAST · TX–LA
+                    GULF COAST · TX–MS
                   </text>
                 </g>
 
